@@ -1155,7 +1155,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
           else
           {
             // Can add autosearch&register logic here before try starting trailers
-            if (GUIUtils.ShowYesNoDialog(GUILocalizeStrings.Get(10798704), MyFilms.r[MyFilms.conf.StrIndex][MyFilms.conf.StrSTitle].ToString() + "\n" + GUILocalizeStrings.Get(10798737) + "\n" + GUILocalizeStrings.Get(10798739))) //trailer ////no video found locally // Search local trailers  and update DB ?
+            if (GUIUtils.ShowYesNoDialog(GUILocalizeStrings.Get(10798704), MyFilms.r[MyFilms.conf.StrIndex][MyFilms.conf.StrSTitle] + "\n" + GUILocalizeStrings.Get(10798737) + "\n" + GUILocalizeStrings.Get(10798739))) //trailer ////no video found locally // Search local trailers  and update DB ?
             {
               SetProcessAnimationStatus(true, m_SearchAnimation);
               //LogMyFilms.Debug("SearchTrailerLocal() SelectedItemInfo from (MyFilms.r[MyFilms.conf.StrIndex][MyFilms.conf.StrTitle1].ToString(): '" + (MyFilms.r[MyFilms.conf.StrIndex][MyFilms.conf.StrTitle1].ToString() + "'"));
@@ -1988,7 +1988,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
                 {
                   try
                   {
-                    LogMyFilms.Debug("Attempting to read Mediainfo for ", file.ToString());
+                    LogMyFilms.Debug("Attempting to read Mediainfo for ", file);
 
                     // open file in MediaInfo
                     mediainfo.Open(file);
@@ -3052,7 +3052,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
       if (Helper.FieldIsSet(MyFilms.conf.ItemSearchGrabber) && !string.IsNullOrEmpty(r1[index][MyFilms.conf.ItemSearchGrabber].ToString()))
       {
         title = r1[index][MyFilms.conf.ItemSearchGrabber].ToString(); // Configured GrabberTitle
-        LogMyFilms.Debug("GetSearchTitle() - selecting searchtitle with '" + MyFilms.conf.ItemSearchGrabber + "' = '" + title.ToString() + "'");
+        LogMyFilms.Debug("GetSearchTitle() - selecting searchtitle with '" + MyFilms.conf.ItemSearchGrabber + "' = '" + title + "'");
       }
       else if (Helper.FieldIsSet(MyFilms.conf.StrTitle1) && !string.IsNullOrEmpty(r1[index][MyFilms.conf.StrTitle1].ToString())) // Master Title
       {
@@ -4688,7 +4688,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
       }
 
       string cleanedtitle = GetSearchString(MyFilms.r[MyFilms.conf.StrIndex][MyFilms.conf.StrTitle1].ToString());
-      LogMyFilms.Debug("Clean title '" + MyFilms.r[MyFilms.conf.StrIndex][MyFilms.conf.StrTitle1].ToString() + "' to '" + cleanedtitle + "'");
+      LogMyFilms.Debug("Clean title '" + MyFilms.r[MyFilms.conf.StrIndex][MyFilms.conf.StrTitle1] + "' to '" + cleanedtitle + "'");
 
       try
       {
@@ -4705,8 +4705,8 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
       string oldPicture = MyFilmsDetail.getGUIProperty("picture");
       if (oldPicture.Length == 0 || oldPicture == null)
         oldPicture = newPicture;
-      LogMyFilms.Debug("Picture Grabber options: Old temp Cover Image: '" + oldPicture.ToString() + "'");
-      LogMyFilms.Debug("Picture Grabber options: New temp Cover Image: '" + newPicture.ToString() + "'");
+      LogMyFilms.Debug("Picture Grabber options: Old temp Cover Image: '" + oldPicture + "'");
+      LogMyFilms.Debug("Picture Grabber options: New temp Cover Image: '" + newPicture + "'");
       setGUIProperty("picture", newPicture);
       GUIWindowManager.Process(); // To Update GUI display ...
 
@@ -4734,7 +4734,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
       }
       catch (Exception ex)
       {
-        LogMyFilms.Debug("Error copy file: '" + newPicture + "' - Exception: " + ex.ToString());
+        LogMyFilms.Debug("Error copy file: '" + newPicture + "' - Exception: " + ex);
       }
       MyFilms.r[MyFilms.conf.StrIndex]["Picture"] = strThumb;
       Update_XML_database();
@@ -4747,8 +4747,8 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
       {
         var minfo = new MediaInfoWrapper(FileName);
 
-        LogMyFilms.Debug("Mediainfo width: " + minfo.Width.ToString());
-        LogMyFilms.Debug("Mediainfo height: " + minfo.Height.ToString());
+        LogMyFilms.Debug("Mediainfo width: " + minfo.Width);
+        LogMyFilms.Debug("Mediainfo height: " + minfo.Height);
         //ToDo: Calculate aspect ratio here...
 
         return minfo.AspectRatio;
@@ -5437,7 +5437,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
               }
               catch (Exception ex)
               {
-                LogMyFilms.Error("Remove_Backdrops_Fanart() - error on deletion in directory: '" + wtitle + "', file: '" + sfi.FullName.ToString() + "', exception: '" + ex.Message + "'");
+                LogMyFilms.Error("Remove_Backdrops_Fanart() - error on deletion in directory: '" + wtitle + "', file: '" + sfi.FullName + "', exception: '" + ex.Message + "'");
               }
             }
           }
@@ -7033,7 +7033,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
                 if (MyFilms.r[itemId]["VideoFormat"].ToString().Length > 0)
                   wstring = MyFilms.r[itemId][dc.ColumnName].ToString();
                 setGUIProperty("db." + dc.ColumnName.ToLower() + ".value", wstring);
-                wstrformat = "V:" + MyFilms.r[itemId]["VideoFormat"].ToString();
+                wstrformat = "V:" + MyFilms.r[itemId]["VideoFormat"];
                 break;
                 #endregion
               case "audioformat":
@@ -7042,9 +7042,9 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
                 {
                   wstring = MyFilms.r[itemId][dc.ColumnName].ToString();
                   if (wstrformat.Length > 1)
-                    wstrformat = wstrformat + ", A:" + MyFilms.r[itemId]["AudioFormat"].ToString();
+                    wstrformat = wstrformat + ", A:" + MyFilms.r[itemId]["AudioFormat"];
                   else
-                    wstrformat = "A:" + MyFilms.r[itemId]["AudioFormat"].ToString();
+                    wstrformat = "A:" + MyFilms.r[itemId]["AudioFormat"];
                 }
                 setGUIProperty("db." + dc.ColumnName.ToLower() + ".value", wstring);
                 setGUIProperty("db.calc.format" + ".value", wstrformat);
@@ -7659,7 +7659,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
           {
             if (MyFilms.conf.StrCheckWOLuserdialog)
             {
-              if (!(GUIUtils.ShowYesNoDialog(GUILocalizeStrings.Get(107986), "Film    : '" + MyFilms.r[select_item][MyFilms.conf.StrSTitle.ToString()] + "'" + "\n" + "Server  : '" + UNCpath + "'" + "\n" + "Status  : '" + GUILocalizeStrings.Get(10798742)))) // srv name + " - (offline) - start ?"
+              if (!(GUIUtils.ShowYesNoDialog(GUILocalizeStrings.Get(107986), "Film    : '" + MyFilms.r[select_item][MyFilms.conf.StrSTitle] + "'" + "\n" + "Server  : '" + UNCpath + "'" + "\n" + "Status  : '" + GUILocalizeStrings.Get(10798742)))) // srv name + " - (offline) - start ?"
                 return;
             }
 
@@ -8019,7 +8019,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
             GUIPropertyManager.SetProperty("#OnlineVideos.startparams.downloaddir", path);
             //GUIPropertyManager.SetProperty("#OnlineVideos.startparams.downloadfilename", "");
             GUIPropertyManager.SetProperty("#OnlineVideos.startparams.downloadmenuentry", GUILocalizeStrings.Get(10798749) + " (" + title + ")"); // download to movie directory
-            LogMyFilms.Debug("Starting OnlineVideos with '" + oVstartparams.ToString() + "'");
+            LogMyFilms.Debug("Starting OnlineVideos with '" + oVstartparams + "'");
             // should this be set here to make original movie doesn't get set to watched??
             // trailerPlayed = true;
 
@@ -8696,7 +8696,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
           if (movie["Picture"].ToString().Length > 0)
           {
             if ((movie["Picture"].ToString().IndexOf(":\\", System.StringComparison.Ordinal) == -1) && (movie["Picture"].ToString().Substring(0, 2) != "\\\\"))
-              pictureFile = MyFilms.conf.StrPathImg + "\\" + movie["Picture"].ToString();
+              pictureFile = MyFilms.conf.StrPathImg + "\\" + movie["Picture"];
             else
               pictureFile = movie["Picture"].ToString();
           }
@@ -9357,7 +9357,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
 
       if (field == "Genre")
       {
-        int iiGenre = VideoDatabase.AddGenre(champselect.ToString());
+        int iiGenre = VideoDatabase.AddGenre(champselect);
         VideoDatabase.AddGenreToMovie(iidmovie, iiGenre);
         if (wzone == null)
           wzone = champselect;
@@ -10678,7 +10678,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
       switch (message.Message)
       {
         case GUIMessage.MessageType.GUI_MSG_AUTOPLAY_VOLUME:
-          LogMyFilms.Debug("GUIWindowManager_OnNewMessage() - New Message received ! - MessageType = '" + message.Message.ToString() + "', Param1 = '" + message.Param1.ToString() + "', Param2 = '" + message.Param2.ToString() + "', message label = '" + message.Label.ToString() + "'");
+          LogMyFilms.Debug("GUIWindowManager_OnNewMessage() - New Message received ! - MessageType = '" + message.Message + "', Param1 = '" + message.Param1 + "', Param2 = '" + message.Param2 + "', message label = '" + message.Label + "'");
           if (message.Param1 == (int)MediaPortal.Ripper.AutoPlay.MediaType.VIDEO)
           {
             switch (message.Param2)

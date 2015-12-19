@@ -16,33 +16,33 @@ namespace MyFilmsPlugin.MyFilms
       //MovieRow = null;
       //AllowLatestMediaAPI = false;
       //AllowTrakt = false;
-      this.Category = string.Empty;
-      this.Year = 1900;
-      this.TMDBNumber = string.Empty;
-      this.IMDBNumber = string.Empty;
-      this.Path = string.Empty;
-      this.Trailer = string.Empty;
-      this.File = string.Empty;
-      this.Edition = string.Empty;
-      this.GroupName = string.Empty;
-      this.FormattedTitle = string.Empty;
-      this.TranslatedTitle = string.Empty;
-      this.Title = string.Empty;
-      this.WatchedCount = -1;
-      this.CategoryTrakt = new List<string>();
-      this.Length = 0;
-      this.DateTime = System.DateTime.Today;
-      this.DateAdded = string.Empty;
-      this.Picture = string.Empty;
-      this.Fanart = string.Empty;
-      this.Config = string.Empty;
-      this.Username = string.Empty;
-      this.ReadOnly = false;
-      this.ID = -1;
-      this.Actors = new List<string>();
-      this.Directors = new List<string>();
-      this.Writers = new List<string>();
-      this.Producers = new List<string>();
+      Category = string.Empty;
+      Year = 1900;
+      TMDBNumber = string.Empty;
+      IMDBNumber = string.Empty;
+      Path = string.Empty;
+      Trailer = string.Empty;
+      File = string.Empty;
+      Edition = string.Empty;
+      GroupName = string.Empty;
+      FormattedTitle = string.Empty;
+      TranslatedTitle = string.Empty;
+      Title = string.Empty;
+      WatchedCount = -1;
+      CategoryTrakt = new List<string>();
+      Length = 0;
+      DateTime = DateTime.Today;
+      DateAdded = string.Empty;
+      Picture = string.Empty;
+      Fanart = string.Empty;
+      Config = string.Empty;
+      Username = string.Empty;
+      ReadOnly = false;
+      ID = -1;
+      Actors = new List<string>();
+      Directors = new List<string>();
+      Writers = new List<string>();
+      Producers = new List<string>();
     }
 
     private static NLog.Logger LogMyFilms = NLog.LogManager.GetCurrentClassLogger();
@@ -55,7 +55,7 @@ namespace MyFilmsPlugin.MyFilms
     {
       get
       {
-        return (this.Title == string.Empty) || (this.Title == Strings.Unknown);
+        return (Title == string.Empty) || (Title == Strings.Unknown);
       }
     }
 
@@ -175,7 +175,7 @@ namespace MyFilmsPlugin.MyFilms
     {
       lock (BaseMesFilms.MovieUpdateQueue)
       {
-        MFMovie movie = this.GetCurrentMovie();
+        MFMovie movie = GetCurrentMovie();
         lock (BaseMesFilms.MovieUpdateQueue)
         {
           BaseMesFilms.MovieUpdateQueue.Enqueue(movie);
@@ -200,12 +200,12 @@ namespace MyFilmsPlugin.MyFilms
 
     public void AddCategoryTrakt(string toAdd)
     {
-      this.CategoryTrakt.Add(toAdd);
+      CategoryTrakt.Add(toAdd);
     }
 
     public void RemoveCategoryTrakt(string toRemove)
     {
-      this.CategoryTrakt.Remove(toRemove);
+      CategoryTrakt.Remove(toRemove);
     }
   }
 }

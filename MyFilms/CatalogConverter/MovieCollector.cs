@@ -284,7 +284,7 @@ namespace MyFilmsPlugin.MyFilms.CatalogConverter
             try
             {
               DateTime dt = new DateTime();
-              dt = DateTime.Parse(nodeDate.InnerText.ToString());
+              dt = DateTime.Parse(nodeDate.InnerText);
               WriteAntAtribute(destXml, "Date", dt.ToShortDateString());
             }
             catch

@@ -1974,7 +1974,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
           XmlConfig.WriteXmlConfig("MyFilms", "MyFilms", "NbConfig", Config_Name.Items.Count);
           if (textBoxPluginName.Text == "")
             textBoxPluginName.Text = "MyFilms"; // Make sure, a plugin name is given - assign default, if user didn't choose any!
-          XmlConfig.WriteXmlConfig("MyFilms", "MyFilms", "PluginName", textBoxPluginName.Text.ToString());
+          XmlConfig.WriteXmlConfig("MyFilms", "MyFilms", "PluginName", textBoxPluginName.Text);
           XmlConfig.WriteXmlConfig("MyFilms", "MyFilms", "Default_Config", "");
           XmlConfig.Save();
           LogMyFilms.Debug("(Setup) - Quit - created default empty config!");
@@ -4032,7 +4032,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
           }
           catch (Exception ex)
           {
-            LogMyFilms.Debug("Setup: Error deleting file '" + wfile.ToString() + "' - Exception: " + ex.ToString());
+            LogMyFilms.Debug("Setup: Error deleting file '" + wfile + "' - Exception: " + ex);
           }
         }
       }
@@ -4492,7 +4492,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
         AmcTitleSearchHandling.Focus();
         return;
       }
-      string wfiledefault = Config.GetDirectoryInfo(Config.Dir.Config).ToString() + @"\MyFilmsAMCSettings";
+      string wfiledefault = Config.GetDirectoryInfo(Config.Dir.Config) + @"\MyFilmsAMCSettings";
       if (System.IO.File.Exists(wfiledefault + ".xml"))
       {
         if (System.IO.File.Exists(wfiledefault + "_" + Config_Name.Text + ".xml"))
@@ -4522,7 +4522,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
 
       }
       else
-        MessageBox.Show("The default AMCupdater configfile cannot be found! (" + Config.GetDirectoryInfo(Config.Dir.Config).ToString() + @"\MyFilmsAMCSettings.xml" + ")", "Configuration", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+        MessageBox.Show("The default AMCupdater configfile cannot be found! (" + Config.GetDirectoryInfo(Config.Dir.Config) + @"\MyFilmsAMCSettings.xml" + ")", "Configuration", MessageBoxButtons.OK, MessageBoxIcon.Stop);
     }
 
     private void CreateMyFilmsDefaultsForAMCconfig(string currentconfig)
@@ -5403,7 +5403,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
       #endregion
 
       #region Create config file for AMCupdater
-      string wfiledefault = Config.GetDirectoryInfo(Config.Dir.Config).ToString() + @"\MyFilmsAMCSettings";
+      string wfiledefault = Config.GetDirectoryInfo(Config.Dir.Config) + @"\MyFilmsAMCSettings";
       if (System.IO.File.Exists(wfiledefault + ".xml"))
       {
         if (System.IO.File.Exists(wfiledefault + "_" + Config_Name.Text + ".xml"))
@@ -5619,7 +5619,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
         }
 
         p.StartInfo = psi;
-        LogMyFilms.Debug("MyFilmsSetup: Launch Grabber_Interface from PluginSetup with command param '" + psi.Arguments.ToString() + "'");
+        LogMyFilms.Debug("MyFilmsSetup: Launch Grabber_Interface from PluginSetup with command param '" + psi.Arguments + "'");
         try
         {
           p.Start();
@@ -5820,8 +5820,8 @@ namespace MyFilmsPlugin.MyFilms.Configuration
                 }
                 catch (IOException exception)
                 {
-                  LogMyFilms.Debug("Watched info NOT exported!  Error: " + exception.ToString());
-                  MessageBox.Show("Watched info NOT exported!  Error: " + exception.ToString(), "Configuration", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                  LogMyFilms.Debug("Watched info NOT exported!  Error: " + exception);
+                  MessageBox.Show("Watched info NOT exported!  Error: " + exception, "Configuration", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                   return;
                 }
               }

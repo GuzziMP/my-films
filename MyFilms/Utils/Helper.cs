@@ -807,7 +807,7 @@ namespace MyFilmsPlugin.MyFilms.Utils
         {
           if (a.GetName().Name == name && a.GetName().Version >= ver)
           {
-            LogMyFilms.Debug(string.Format("Assembly '{0}' with Version '{1}' is available and loaded.", name, a.GetName().Version.ToString()));
+            LogMyFilms.Debug(string.Format("Assembly '{0}' with Version '{1}' is available and loaded.", name, a.GetName().Version));
             result = true;
             break;
           }

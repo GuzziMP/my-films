@@ -303,7 +303,7 @@ namespace MyFilmsPlugin.MyFilms.CatalogConverter
           IFormatProvider culture = new CultureInfo("en-US", true);
           if (nodeDate != null && nodeDate.Value.Length > 0)
           {
-            strDateAdded = nodeDate.Value.ToString();
+            strDateAdded = nodeDate.Value;
             if (strDateAdded.Contains(" "))
               strDateAdded = strDateAdded.Substring(0, strDateAdded.IndexOf(" ")); // Remove time...
           }

@@ -164,13 +164,13 @@ namespace MyFilmsPlugin.MyFilms.CatalogConverter
           if (nodeDVD.Attributes["ModifiedDate"] != null)
             try
             {
-              dt = DateTime.Parse(nodeDVD.Attributes["ModifiedDate"].Value.ToString());
+              dt = DateTime.Parse(nodeDVD.Attributes["ModifiedDate"].Value);
             }
             catch
             {
               try
               {
-                dt = DateTime.Parse(nodeDVD.Attributes["ModifiedDate"].Value.ToString(), ci);
+                dt = DateTime.Parse(nodeDVD.Attributes["ModifiedDate"].Value, ci);
               }
               catch
               {

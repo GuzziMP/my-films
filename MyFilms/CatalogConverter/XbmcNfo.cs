@@ -76,7 +76,7 @@ namespace MyFilmsPlugin.MyFilms.CatalogConverter
     {
       if (TitleDelim.Length == 0)
         TitleDelim = "\\";
-      string[] wStrStorage = MyFilms.conf.StrDirStor.ToString().Split(new Char[] { ';' }); //The movie folders configured in setup to contain the movies ...
+      string[] wStrStorage = MyFilms.conf.StrDirStor.Split(new Char[] { ';' }); //The movie folders configured in setup to contain the movies ...
       string WStrPath = System.IO.Path.GetDirectoryName(source);
       string destFile = WStrPath + "\\" + source.Substring(source.LastIndexOf(@"\") + 1, source.Length - source.LastIndexOf(@"\") - 5) + ".xml";
       XmlTextWriter destXml = new XmlTextWriter(destFile, Encoding.Default);
@@ -160,7 +160,7 @@ namespace MyFilmsPlugin.MyFilms.CatalogConverter
             if (nodeDVD.Attributes["ModifiedDate"] != null)
               try
               {
-                dt = DateTime.Parse(nodeDVD.Attributes["ModifiedDate"].Value.ToString(), ci);
+                dt = DateTime.Parse(nodeDVD.Attributes["ModifiedDate"].Value, ci);
               }
               catch
               {

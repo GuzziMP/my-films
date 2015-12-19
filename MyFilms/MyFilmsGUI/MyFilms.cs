@@ -6143,7 +6143,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
       int i = 0;
       for (i = 0; i < 13; i++)
       {
-        if ((cleanerList[i].Length > 0) && (filter = true))
+        if ((cleanerList[i].Length > 0) && filter)
         {
           champselect = champselect.Replace(cleanerList[i], " ");
           //LogMyFilms.Debug("(SubWordGrabbing): CleanerListItem: '" + CleanerList[i] + "'");
@@ -9938,7 +9938,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
           dlg1.DoModal(GetID);
           if (dlg1.SelectedLabel == -1) return;
 
-          LogMyFilms.Debug("Call global menu with option: '" + choiceViewGlobalOptions[dlg1.SelectedLabel].ToString() + "'");
+          LogMyFilms.Debug("Call global menu with option: '" + choiceViewGlobalOptions[dlg1.SelectedLabel] + "'");
           this.Change_Menu_Action(choiceViewGlobalOptions[dlg1.SelectedLabel].ToLower());
           return;
           #endregion
@@ -10172,7 +10172,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
           infoBackgroundProcess = bgUpdateFanart.IsBusy ? "running (fanart & artwork)" : "not active";
           System.Reflection.Assembly asm = System.Reflection.Assembly.GetExecutingAssembly();
           GUIUtils.ShowOKDialog(
-            "MyFilms Version = 'V" + asm.GetName().Version.ToString() + "'", 
+            "MyFilms Version = 'V" + asm.GetName().Version + "'", 
             "MyFilms Operations Mode = '" + Configuration.PluginMode + "'", 
             "MyFilms Background Process = '" + infoBackgroundProcess + "'", 
             "");
@@ -10268,7 +10268,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
 
         case "filterdbsetrating":
           #region Set global value for minimum Rating to restrict movielist
-          LogMyFilms.Info("(FilterDbSetRating) - 'AntFilterMinRating' current setting = '" + MyFilms.conf.StrAntFilterMinRating + "', current decimalseparator: '" + CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator.ToString() + "'");
+          LogMyFilms.Info("(FilterDbSetRating) - 'AntFilterMinRating' current setting = '" + MyFilms.conf.StrAntFilterMinRating + "', current decimalseparator: '" + CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator + "'");
           MyFilmsDialogSetRating dlgRating = (MyFilmsDialogSetRating)GUIWindowManager.GetWindow(ID_MyFilmsDialogRating);
           if (MyFilms.conf.StrAntFilterMinRating.Length > 0)
           {
@@ -12033,7 +12033,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
                     try
                     {
                       MyFilmsDetail.SearchAndDownloadTrailerOnlineTMDB(r, i, true, false, (MyFilms.conf.StrDirStorTrailer.Length > 0) ? MyFilms.conf.StrDirStorTrailer : null);
-                      MyFilmsDetail.setGUIProperty("statusmessage", "adding TMDB trailers to download queue for '" + r[i][MyFilms.conf.StrTitle1].ToString() + "'", false);
+                      MyFilmsDetail.setGUIProperty("statusmessage", "adding TMDB trailers to download queue for '" + r[i][MyFilms.conf.StrTitle1] + "'", false);
                     }
                     catch (Exception ie)
                     {
@@ -13074,7 +13074,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
             // reload fanart
             string[] wfanart = MyFilmsDetail.Search_Fanart(this.facadeFilms.SelectedListItem.Label, true, "file", false, this.facadeFilms.SelectedListItem.ThumbnailImage, string.Empty);
             backdrop.Filename = wfanart[0];
-            MyFilmsDetail.setGUIProperty("currentfanart", wfanart[0].ToString());
+            MyFilmsDetail.setGUIProperty("currentfanart", wfanart[0]);
           }
           break;
 
@@ -14980,7 +14980,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
           dlg.SetHeading(GUILocalizeStrings.Get(10798613)); // menu
           //Modified to checked for GlobalFilterString
           string GlobalFilterString = GlobalFilterStringUnwatched + GlobalFilterStringIsOnline + GlobalFilterStringTrailersOnly + GlobalFilterStringMinRating + GlobalFilterStringMovieFormat3D;
-          DataRow[] wr = BaseMesFilms.ReadDataMovies(GlobalFilterString + conf.StrDfltSelect, conf.StrTitle1.ToString() + " like '*'", conf.StrSorta, conf.StrSortSens);
+          DataRow[] wr = BaseMesFilms.ReadDataMovies(GlobalFilterString + conf.StrDfltSelect, conf.StrTitle1 + " like '*'", conf.StrSorta, conf.StrSortSens);
           //DataColumn[] wc = BaseMesFilms.ReadDataMovies(conf.StrDfltSelect, conf.StrTitle1.ToString() + " like '*'", conf.StrSorta, conf.StrSortSens);
           wTableau.Add(string.Format(GUILocalizeStrings.Get(10798623))); //Add Defaultgroup for invalid or empty properties
           wCount.Add(0);
@@ -15491,7 +15491,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
                   {
                     for (int i = 0; i < wTableau.Count; i++)
                     {
-                      if (wTableau[i].ToString() == wsearch)
+                      if (wTableau[i] == wsearch)
                       {
                         wCount[i] = (int)wCount[i] + 1;
                         break;
@@ -16922,7 +16922,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
             }
           }
         }
-        catch (Exception ex) { LogMyFilms.Debug("bgIsOnlineCheck_DoWork: SearchDir exception: " + ex.Message + ", " + ex.StackTrace.ToString()); }
+        catch (Exception ex) { LogMyFilms.Debug("bgIsOnlineCheck_DoWork: SearchDir exception: " + ex.Message + ", " + ex.StackTrace); }
         LogMyFilms.Debug("bgIsOnlineCheck_DoWork: Movie Files found: '" + conf.MovieList.Count + "'");
       }
 

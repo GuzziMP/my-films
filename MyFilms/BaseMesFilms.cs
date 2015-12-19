@@ -761,7 +761,7 @@ namespace MyFilmsPlugin.MyFilms
       }
       if (getDataRowDetailsForArtwork)
       {
-        movie.FormattedTitle = row["FormattedTitle"].ToString() ?? "";
+        movie.FormattedTitle = row["FormattedTitle"].ToString();
       }
       #endregion
 
@@ -1812,7 +1812,7 @@ namespace MyFilmsPlugin.MyFilms
           }
           catch (Exception e)
           {
-            LogMyFilms.Error(": Error reading xml database after " + dataExport.Movie.Count.ToString() + " records; error : " + e.Message.ToString() + ", " + e.StackTrace.ToString());
+            LogMyFilms.Error(": Error reading xml database after " + dataExport.Movie.Count + " records; error : " + e.Message + ", " + e.StackTrace);
             throw e;
           }
           finally
