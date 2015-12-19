@@ -12,7 +12,7 @@ Imports System.Runtime.InteropServices
 <Assembly: AssemblyDescription("Movie DB AutoUpdater for MyFilms & Ant Movie Catalog")> 
 <Assembly: AssemblyCompany("")> 
 <Assembly: AssemblyProduct("AMC Updater")> 
-<Assembly: AssemblyCopyright("Copyright © 2012")> 
+<Assembly: AssemblyCopyright("Copyright © 2015")> 
 <Assembly: AssemblyTrademark("Orion Hall, Zebons, Guzzi")> 
 
 <Assembly: ComVisible(false)> 

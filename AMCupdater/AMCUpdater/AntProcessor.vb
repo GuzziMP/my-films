@@ -537,6 +537,9 @@ Public Class AntProcessor
         If (_ManualOperation.ToString = "Delete NFO File") Then
             LogEvent(" - Delete NFO File : " & _ManualNfoFileHandling.ToString, EventLogLevel.ImportantEvent)
         End If
+        If (_ManualOperation.ToString = "Add IMDB to File") Then
+            LogEvent(" - Renaming movie media file - adding IMDB id where missing", EventLogLevel.ImportantEvent)
+        End If
 
 
         'Dim XmlDoc As New XmlDocument
@@ -1401,6 +1404,59 @@ Public Class AntProcessor
                             End Try
                         Else
                             bgwManualUpdate.ReportProgress(ProcessCounter, "NFO File(s) not deleted (File/Path Not Found) : " & CurrentNode.Attributes("Number").Value & " | " & row("AntTitle").ToString)
+                        End If
+
+                    Case "Add IMDB to File"
+                        Dim imdb As String = GetValue(CurrentNode, "IMDB_Id")
+                        If (imdb Is Nothing)  Or (New Regex("" & "tt\d{7}" & "").Match(imdb).Success <> True) Then
+                            bgwManualUpdate.ReportProgress(ProcessCounter, "Cannot rename directory (no IMDB id found) : " & CurrentNode.Attributes("Number").Value & " | " & row("AntTitle").ToString)
+                        Else
+                            Dim FileNames As String() = New String(){}
+                            Dim AllFilesPath As String = String.Empty
+                            If Not IsNothing(CurrentNode.Attributes(CurrentSettings.Ant_Database_Source_Field)) Then
+                                AllFilesPath = CurrentNode.Attributes(CurrentSettings.Ant_Database_Source_Field).Value
+                                FileNames  = CurrentNode.Attributes(CurrentSettings.Ant_Database_Source_Field).Value.Split(";")
+                            End If
+
+                            ' check, if all files do exist            
+                            DoScan = True
+                            For Each fileName In From fileName1 In FileNames Where Not fileName1.Length > 0 Or File.Exists(fileName1) <> True
+                                DoScan = False
+                            Next
+
+                            ' check, if imdb if already in filenam(s)
+                            For Each fileName In From fileName1 In FileNames Where (New Regex("" & "tt\d{7}" & "").Match(fileName1).Success)
+                                DoScan = False
+                            Next
+
+                            If DoScan = True Then
+                                Dim NewAllFilesPath As String = ""
+
+                                For Each fileName As String In FileNames
+                                    Try
+                                        Dim newFilename = Path.Combine(Path.GetDirectoryName(fileName), Path.GetFileNameWithoutExtension(fileName) & "{" & imdb & "}" & Path.GetExtension(fileName))
+                                        My.Computer.FileSystem.RenameFile(fileName, newFilename)
+                                        Dim filenameShort As String = Path.GetFileName(fileName)
+                                        Dim newFilenameShort As String = Path.GetFileName(newFilename)
+                                        bgwManualUpdate.ReportProgress(ProcessCounter, "Movie renamed: " & CurrentNode.Attributes("Number").Value & " | " & row("AntTitle").ToString & " from: '" & filenameShort & "' to '" & newFilenameShort & "'")
+                                        If (NewAllFilesPath.Length > 0) Then
+                                            NewAllFilesPath = NewAllFilesPath & ";"
+                                        End If
+                                        NewAllFilesPath = NewAllFilesPath & newFilename
+                                    Catch ex As Exception
+                                        bgwManualUpdate.ReportProgress(ProcessCounter, "ErrorEvent renaming movie file '" & fileName & "' : " & ex.Message)
+                                        DoScan = False
+                                    End Try
+                                Next
+
+                                ' If the rename was successful, we need to update the source path in the DB
+                                If DoScan Then
+                                    SetValue(CurrentNode, CurrentSettings.Ant_Database_Source_Field, NewAllFilesPath)
+                                    bgwManualUpdate.ReportProgress(ProcessCounter, "DB updated (renamed Source): " & CurrentNode.Attributes("Number").Value & " | " & row("AntTitle").ToString & " -> '" & NewAllFilesPath & "'")
+                                End If
+                            Else
+                                bgwManualUpdate.ReportProgress(ProcessCounter, "Files not renamed (File/Path Not Found) : " & CurrentNode.Attributes("Number").Value & " | " & row("AntTitle").ToString)
+                            End If
                         End If
                 End Select
                 ProcessCounter += 1

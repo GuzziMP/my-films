@@ -1886,6 +1886,9 @@ Public Class Form1
                         End If
                     End If
                 End If
+
+            ElseIf cbManualSelectOperation.SelectedItem = "Add IMDB to File" Then
+                'Add logic checks here if necessary
             End If
         End If
 
