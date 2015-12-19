@@ -19,12 +19,12 @@ namespace Grabber_Interface
     public XmlConf(string configFile)
     {
       if (File.Exists(configFile))
-        init(configFile);
+        Init(configFile);
       else
-        initNew(configFile);
+        InitNew(configFile);
     }
 
-    public void initNew(string configFile)
+    private void InitNew(string configFile)
     {
       //Assembly _ass = Assembly.GetExecutingAssembly();
       //Stream _stream = _ass.GetManifestResourceStream(_ass.GetName().Name + ".MyFilmsSample.xml");
@@ -42,10 +42,10 @@ namespace Grabber_Interface
       }
 
       File.WriteAllText(configFile, _xmlStrings, Encoding.UTF8);
-      init(configFile);
+      Init(configFile);
     }
 
-    public void init(string configFile)
+    private void Init(string configFile)
     {
       //Loading conf file
       var doc = new XmlDocument();
@@ -58,7 +58,7 @@ namespace Grabber_Interface
       {
         if (l.Item(i).ParentNode.Name == "Section"
             && !l.Item(i).Name.Equals("URLSearch") && !l.Item(i).Name.Equals("Details") && !l.Item(i).Name.Equals("Mapping"))
-          setList(1, l.Item(i));
+          SetList(1, l.Item(i));
       }
 
       l = n.SelectNodes("URLSearch/*");
@@ -66,7 +66,7 @@ namespace Grabber_Interface
       for (int i = 0; i < l.Count; i++)
       {
         if (l.Item(i).ParentNode.Name == "URLSearch")
-          setList(2, l.Item(i));
+          SetList(2, l.Item(i));
       }
 
       l = n.SelectNodes("Details/*");
@@ -74,7 +74,7 @@ namespace Grabber_Interface
       for (int i = 0; i < l.Count; i++)
       {
         if (l.Item(i).ParentNode.Name == "Details")
-          setList(3, l.Item(i));
+          SetList(3, l.Item(i));
       }
 
       l = n.SelectNodes("Mapping/*");
@@ -82,7 +82,7 @@ namespace Grabber_Interface
       for (int i = 0; i < l.Count; i++)
       {
         if (l.Item(i).ParentNode.Name == "Mapping")
-          setList(4, l.Item(i));
+          SetList(4, l.Item(i));
       }
 
     }
@@ -91,7 +91,7 @@ namespace Grabber_Interface
     /// Adds a new element in the specified list.
     /// Parameter List : 1 for listGen, 2 for listSearch, 3 for listDetail
     /// </summary>
-    public void setList(int list, XmlNode node)
+    private void SetList(int list, XmlNode node)
     {
       XmlNode att1 = null;
       XmlNode att2 = null;

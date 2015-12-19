@@ -204,7 +204,6 @@ namespace MyFilmsPlugin.MyFilms.Configuration
       AntIdentItem.Items.Add("(none)");
       AntFilterItem1.Items.Add("(none)");
       AntFilterItem2.Items.Add("(none)");
-      //AntViewItem.Items.Add("(none)"); // removed, as we do not want to have "none" views defined - they can be disabled instead, as they are handled dynamic
       AntItem1.Items.Add("(none)");
       AntItem2.Items.Add("(none)");
       AntItem3.Items.Add("(none)");
@@ -6155,7 +6154,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
 
       foreach (FileSystemInfo sfi in sfiles.Where(sfi => sfi.Extension.ToLower() == ".xml"))
       {
-        try // do try-catch, if there is old or invalid greabber script files in directory !
+        try
         {
           var script = new GrabberScript(sfi.FullName);
           script.Load(sfi.FullName);

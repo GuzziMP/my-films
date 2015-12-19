@@ -1,13 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using System.Xml;
 using System.IO;
-using System.Web;
 using System.Net;
 using Grabber;
 using System.Collections;
@@ -24,7 +22,7 @@ namespace Grabber_Interface
 
   public partial class GrabConfig : Form
   {
-    private System.Resources.ResourceManager RM = new System.Resources.ResourceManager("Localisation.Form1", System.Reflection.Assembly.GetExecutingAssembly());
+    private System.Resources.ResourceManager RM = new System.Resources.ResourceManager("Localisation.Form1", Assembly.GetExecutingAssembly());
     private readonly CultureInfo EnglishCulture = new CultureInfo("en-US");
     private readonly CultureInfo FrenchCulture = new CultureInfo("fr-FR");
 
@@ -148,7 +146,7 @@ namespace Grabber_Interface
         openFileDialog1.RestoreDirectory = true;
       }
       openFileDialog1.Filter = "XML Files (*.xml)|*.xml";
-      openFileDialog1.Title = "Find Internet Grabber Script file (xml file)";
+      openFileDialog1.Title = "Open Internet Grabber Script file (xml file)";
       if (openFileDialog1.ShowDialog() == DialogResult.OK)
       {
         ResetFormControlValues(this);
@@ -408,7 +406,7 @@ namespace Grabber_Interface
       }
     }
 
-    public void LoadXml()
+    private void LoadXml()
     {
       // InitMappingTable();
       xmlConf = new XmlConf(textConfig.Text);
