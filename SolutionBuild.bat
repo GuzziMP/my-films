@@ -1,6 +1,6 @@
 REM %1 = Solution Directory
 REM %2 = $(ConfigurationName) Debug/Release
-
+REM echo ${revision}
 REM Select program path based on current machine environment
 set progpath=%ProgramFiles%
 if not "%ProgramFiles(x86)%".=="". set progpath=%ProgramFiles(x86)%

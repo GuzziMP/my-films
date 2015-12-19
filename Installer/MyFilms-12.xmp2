@@ -4494,20 +4494,6 @@ Note: Folders which may contain your user files, like Catalog, GroupViewImages..
             <FileItem InstallType="CopyFile" SystemFile="false" Modified="false">
               <Param1 />
               <UpdateOption>OverwriteIfOlder</UpdateOption>
-              <LocalFileName>Skin.12\Black Glass\MyFilmsFullScreen.xml</LocalFileName>
-              <ZipFileName>Installer{CopyFile}\{54974221-66ab-45bd-a7ee-7221784ea8d4}-MyFilmsFullScreen.xml</ZipFileName>
-              <DestinationFilename>%Config%\MyFilms\Skin.12\Black Glass\MyFilmsFullScreen.xml</DestinationFilename>
-            </FileItem>
-            <FileItem InstallType="CopyFile" SystemFile="false" Modified="false">
-              <Param1 />
-              <UpdateOption>OverwriteIfOlder</UpdateOption>
-              <LocalFileName>Skin.12\Black Glass\MyFilmsTrailerOSD.xml</LocalFileName>
-              <ZipFileName>Installer{CopyFile}\{521a0225-88ff-4427-af3e-5411303d02ac}-MyFilmsTrailerOSD.xml</ZipFileName>
-              <DestinationFilename>%Config%\MyFilms\Skin.12\Black Glass\MyFilmsTrailerOSD.xml</DestinationFilename>
-            </FileItem>
-            <FileItem InstallType="CopyFile" SystemFile="false" Modified="false">
-              <Param1 />
-              <UpdateOption>OverwriteIfOlder</UpdateOption>
               <LocalFileName>Skin.12\DefaultWide\MyFilmsDialogImageSelect.xml</LocalFileName>
               <ZipFileName>Installer{CopyFile}\{1b52f8cb-fe45-4185-a222-d08d8eb34e3f}-MyFilmsDialogImageSelect.xml</ZipFileName>
               <DestinationFilename>%Config%\MyFilms\Skin.12\DefaultWide\MyFilmsDialogImageSelect.xml</DestinationFilename>
@@ -5705,7 +5691,7 @@ Please refer to the Wiki online documentation.</Value>
         <Id>269bd257-7ce5-450a-b786-1c2834c81849</Id>
         <MinVersion>
           <Major>2</Major>
-          <Minor>0</Minor>
+          <Minor>1</Minor>
           <Build>0</Build>
           <Revision>0</Revision>
         </MinVersion>
@@ -5787,12 +5773,12 @@ Please refer to the Wiki online documentation.</Value>
     <Author>Zebons, Guzzi</Author>
     <HomePage>http://wiki.team-mediaportal.com/1_MEDIAPORTAL_1/17_Extensions/3_Plugins/My_Films</HomePage>
     <ForumPage>http://forum.team-mediaportal.com/my-films-164/</ForumPage>
-    <UpdateUrl>http://my-films.googlecode.com/svn/trunk/Installer/update.xml</UpdateUrl>
+    <UpdateUrl>https://raw.githubusercontent.com/GuzziMP/my-films/master/Installer/update.xml</UpdateUrl>
     <Version>
       <Major>6</Major>
       <Minor>1</Minor>
-      <Build>1</Build>
-      <Revision>3140</Revision>
+      <Build>2</Build>
+      <Revision>1452</Revision>
     </Version>
     <ExtensionDescription>MyFilms is a movie plugin to use your ANTmovie catalog (AMC) video database or other external catalog managers in mediaportal.
 
@@ -5828,7 +5814,7 @@ Fixes:
 - Depreciate old Trakt plugin support and adapt for new Trakt V2 API Plugin Version.Support 'Cleanup' option on Grabber Editor Search page for filebased reader grabbers like NFO</VersionDescription>
     <DevelopmentStatus>Stable</DevelopmentStatus>
     <OnlineLocation>http://www.team-mediaportal.com/index.php?option=com_mtree&amp;task=att_download&amp;link_id=155&amp;cf_id=64</OnlineLocation>
-    <ReleaseDate>2015-03-31T13:05:30.6889656+02:00</ReleaseDate>
+    <ReleaseDate>2015-12-19T12:55:58.6048671+01:00</ReleaseDate>
     <Tags>movies, films, videos, myfilms, catalog, manager, ant movie catalog (amc), dvdprofiler, extreme movie manager, xbmc, personal video database (pvd), eax movie catalog (eax), dvd profiler, extreme movie manager (xmm) , movie collector pro, mymovies</Tags>
     <Location>.\MPE-Packages\MyFilms-V[Version].mpe1</Location>
     <Params>
@@ -9690,20 +9676,6 @@ Fixes:
       <FileItem InstallType="CopyFile" SystemFile="false" Modified="false">
         <Param1 />
         <UpdateOption>OverwriteIfOlder</UpdateOption>
-        <LocalFileName>Skin.12\Black Glass\MyFilmsFullScreen.xml</LocalFileName>
-        <ZipFileName>Installer{CopyFile}\{54974221-66ab-45bd-a7ee-7221784ea8d4}-MyFilmsFullScreen.xml</ZipFileName>
-        <DestinationFilename>%Config%\MyFilms\Skin.12\Black Glass\MyFilmsFullScreen.xml</DestinationFilename>
-      </FileItem>
-      <FileItem InstallType="CopyFile" SystemFile="false" Modified="false">
-        <Param1 />
-        <UpdateOption>OverwriteIfOlder</UpdateOption>
-        <LocalFileName>Skin.12\Black Glass\MyFilmsTrailerOSD.xml</LocalFileName>
-        <ZipFileName>Installer{CopyFile}\{521a0225-88ff-4427-af3e-5411303d02ac}-MyFilmsTrailerOSD.xml</ZipFileName>
-        <DestinationFilename>%Config%\MyFilms\Skin.12\Black Glass\MyFilmsTrailerOSD.xml</DestinationFilename>
-      </FileItem>
-      <FileItem InstallType="CopyFile" SystemFile="false" Modified="false">
-        <Param1 />
-        <UpdateOption>OverwriteIfOlder</UpdateOption>
         <LocalFileName>Skin.12\Black Glass\MyFilmsDialogImageSelect.xml</LocalFileName>
         <ZipFileName>Installer{CopyFile}\{9ea6ae07-34ed-4655-b808-92d29c9e0f52}-MyFilmsDialogImageSelect.xml</ZipFileName>
         <DestinationFilename>%Config%\MyFilms\Skin.12\Black Glass\MyFilmsDialogImageSelect.xml</DestinationFilename>
@@ -9810,14 +9782,14 @@ Fixes:
         <Param1 />
         <UpdateOption>OverwriteIfOlder</UpdateOption>
         <LocalFileName>..\MyFilms\Resources\film-reel-128x128.png</LocalFileName>
-        <ZipFileName>Installer{CopyFile}\{11686057-54f3-477d-9691-a4874b628300}-film-reel-128x128.png</ZipFileName>
+        <ZipFileName>Installer{CopyFile}\{93fc1c68-49d4-4d1b-9ba0-07d68cffd696}-film-reel-128x128.png</ZipFileName>
         <DestinationFilename />
       </FileItem>
       <FileItem InstallType="CopyFile" SystemFile="true" Modified="true">
         <Param1 />
         <UpdateOption>OverwriteIfOlder</UpdateOption>
         <LocalFileName>ReadMe.txt</LocalFileName>
-        <ZipFileName>Installer{CopyFile}\{9c2dcb13-984a-4953-b140-c0829e8e5370}-ReadMe.txt</ZipFileName>
+        <ZipFileName>Installer{CopyFile}\{0dabe390-2e50-43b0-b6ba-db8652921671}-ReadMe.txt</ZipFileName>
         <DestinationFilename />
       </FileItem>
     </Items>
