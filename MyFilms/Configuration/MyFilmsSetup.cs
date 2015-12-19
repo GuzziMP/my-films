@@ -6068,7 +6068,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
         {
           string versionfile = Config.GetFolder(Config.Dir.Config) + @"\MyFilmsScriptVersions.xml";
           if (System.IO.File.Exists(versionfile)) System.IO.File.Delete(versionfile);
-          var url = new Uri("http://my-films.googlecode.com/svn/trunk/Installer" + @"/updateScriptVersions.xml");
+          var url = new Uri("https://raw.githubusercontent.com/GuzziMP/my-films/master/Installer" + @"/updateScriptVersions.xml");
 
           if (DownloadFile(url, versionfile)) // DownloadFileAsync(url, versionfile);
           {
