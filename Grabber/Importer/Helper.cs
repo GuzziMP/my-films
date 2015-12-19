@@ -22,17 +22,10 @@
 #endregion
 
 using System;
-using MediaPortal.Configuration;
 using System.Collections.Generic;
-using System.Text;
-using System.Diagnostics;
 using MediaPortal.GUI.Library;
 using MediaPortal.Util;
 using MediaPortal.Ripper;
-using System.Globalization;
-using System.Reflection;
-using System.Security.Cryptography;
-using System.Net;
 using System.IO;
 using System.Xml;
 

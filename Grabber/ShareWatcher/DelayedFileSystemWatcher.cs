@@ -101,7 +101,7 @@ namespace ShareWatcherHelper
   /// </summary>
   public class DelayedFileSystemWatcher
   {
-    private FileSystemWatcher _fileSystemWatcher = null;
+    private FileSystemWatcher _fileSystemWatcher;
 
     // Lock order is _enterThread, _events.SyncRoot
     private object _enterThread = new object(); // Only one timer event is processed at any given moment

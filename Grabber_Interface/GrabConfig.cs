@@ -25,11 +25,11 @@ namespace Grabber_Interface
   public partial class GrabConfig : Form
   {
     private System.Resources.ResourceManager RM = new System.Resources.ResourceManager("Localisation.Form1", System.Reflection.Assembly.GetExecutingAssembly());
-    private CultureInfo EnglishCulture = new CultureInfo("en-US");
-    private CultureInfo FrenchCulture = new CultureInfo("fr-FR");
+    private readonly CultureInfo EnglishCulture = new CultureInfo("en-US");
+    private readonly CultureInfo FrenchCulture = new CultureInfo("fr-FR");
 
-    static System.Windows.Forms.OpenFileDialog openFileDialog1 = new OpenFileDialog();
-    static System.Windows.Forms.SaveFileDialog saveFileDialog1 = new SaveFileDialog();
+    static OpenFileDialog openFileDialog1 = new OpenFileDialog();
+    static SaveFileDialog saveFileDialog1 = new SaveFileDialog();
 
     private int GLiSearch = 0;
     private int GLiSearchD = 0;
@@ -106,7 +106,7 @@ namespace Grabber_Interface
       System.Threading.Thread.CurrentThread.CurrentUICulture = CultureInfo.InstalledUICulture;
       InitializeComponent();
 
-      this.InitMappingTable(); // load Mappingtable with values and other initialization
+      InitMappingTable(); // load Mappingtable with values and other initialization
 
       if (CultureInfo.InstalledUICulture.ToString() == FrenchCulture.ToString())
         radioButtonFR.Checked = true;
@@ -116,8 +116,8 @@ namespace Grabber_Interface
       // tabPageDetailPage.Enabled = false;
       ChangeVisibility(true);
 
-      System.Reflection.Assembly asm = System.Reflection.Assembly.GetExecutingAssembly();
-      this.Version_Label.Text = "V" + asm.GetName().Version.ToString();
+      Assembly asm = Assembly.GetExecutingAssembly();
+      Version_Label.Text = "V" + asm.GetName().Version;
 
       // Test if input arguments were supplied:
       if (args.Length > 0)
@@ -125,7 +125,7 @@ namespace Grabber_Interface
         // ExpertModeOn = false; // Disabled due to google request z3us -> show always expert mode
         // ChangeVisibility(false);
         ResetFormControlValues(this);
-        if (System.IO.File.Exists(args[0]))
+        if (File.Exists(args[0]))
         {
           textConfig.Text = args[0]; // load command line file
           LoadXml();
@@ -136,7 +136,7 @@ namespace Grabber_Interface
 
     private void button_Browse_Click(object sender, EventArgs e)
     {
-      if (System.IO.Directory.Exists(Config.GetDirectoryInfo(Config.Dir.Config) + @"\scripts\MyFilms\"))
+      if (Directory.Exists(Config.GetDirectoryInfo(Config.Dir.Config) + @"\scripts\MyFilms\"))
       {
         openFileDialog1.InitialDirectory = Config.GetDirectoryInfo(Config.Dir.Config) + @"\scripts\MyFilms\";
         // openFileDialog1.FileName = Config.GetDirectoryInfo(Config.Dir.Config) + @"\scripts\MyFilms\*.xml";
@@ -281,7 +281,7 @@ namespace Grabber_Interface
         MessageBox.Show("Please, insert search keyword !", "Error");
         return;
       }
-      if (TextURL.Text.Contains("#Page#") && (textPage.Text.Length == 0))
+      if (TextURL.Text.Contains("#page#") && (textPage.Text.Length == 0))
       {
         MessageBox.Show("Please, give the page number to load !", "Error");
         return;
@@ -313,7 +313,7 @@ namespace Grabber_Interface
           strSearch = GrabUtil.encodeSearch(strSearch, textEncoding.Text);
 
         string wurl = TextURL.Text.Replace("#Search#", strSearch);
-        wurl = wurl.Replace("#Page#", textPage.Text);
+        wurl = wurl.Replace("#page#", textPage.Text);
 
         if (wurl.StartsWith("http://") == false && !TextSearch.Text.Contains("\\"))
           wurl = "http://" + wurl;
@@ -431,7 +431,7 @@ namespace Grabber_Interface
       catch (Exception) { textUserAgent.Text = ""; }
       try { textHeaders.Text = xmlConf.find(xmlConf.listGen, TagName.Headers)._Value; }
       catch (Exception) { textHeaders.Text = ""; }
-      try { cbFileBasedReader.Checked = (xmlConf.find(xmlConf.listGen, TagName.FileBasedReader)._Value == "true"); }
+      try { cbFileBasedReader.Checked = xmlConf.find(xmlConf.listGen, TagName.FileBasedReader)._Value == "true"; }
       catch (Exception) { cbFileBasedReader.Checked = false; }
 
       TextURL.Text = xmlConf.find(xmlConf.listSearch, TagName.URL)._Value;
@@ -440,7 +440,7 @@ namespace Grabber_Interface
       textStartPage.Text = xmlConf.find(xmlConf.listSearch, TagName.KeyStartPage)._Value;
       textStepPage.Text = xmlConf.find(xmlConf.listSearch, TagName.KeyStepPage)._Value;
       textPage.Text = textStartPage.Text;
-      // Load User Settings Page...
+      // Load User Settings page...
       try { cbMaxActors.Text = xmlConf.find(xmlConf.listDetail, TagName.KeyCreditsMaxItems)._Value; }
       catch { cbMaxActors.Text = string.Empty; }
       cbMaxActors.Enabled = !string.IsNullOrEmpty(cbMaxActors.Text);
@@ -451,7 +451,7 @@ namespace Grabber_Interface
       {
         strGrabActorRoles = xmlConf.find(xmlConf.listDetail, TagName.KeyCreditsGrabActorRoles)._Value;
         strGrabActorRegex = xmlConf.find(xmlConf.listDetail, TagName.KeyCreditsRegExp)._Value;
-        this.chkGrabActorRoles.Checked = strGrabActorRoles == "true";
+        chkGrabActorRoles.Checked = strGrabActorRoles == "true";
       }
       catch
       {
@@ -463,15 +463,15 @@ namespace Grabber_Interface
 
       try { cbMaxProducers.Text = xmlConf.find(xmlConf.listDetail, TagName.KeyProductMaxItems)._Value; }
       catch { cbMaxProducers.Text = string.Empty; }
-      this.cbMaxProducers.Enabled = !string.IsNullOrEmpty(this.cbMaxProducers.Text);
+      cbMaxProducers.Enabled = !string.IsNullOrEmpty(cbMaxProducers.Text);
 
       try { cbMaxDirectors.Text = xmlConf.find(xmlConf.listDetail, TagName.KeyRealiseMaxItems)._Value; }
       catch { cbMaxDirectors.Text = string.Empty; }
-      this.cbMaxDirectors.Enabled = !string.IsNullOrEmpty(this.cbMaxDirectors.Text);
+      cbMaxDirectors.Enabled = !string.IsNullOrEmpty(cbMaxDirectors.Text);
 
       try { cbMaxWriters.Text = xmlConf.find(xmlConf.listDetail, TagName.KeyWriterMaxItems)._Value; }
       catch { cbMaxWriters.Text = string.Empty; }
-      this.cbMaxWriters.Enabled = !string.IsNullOrEmpty(this.cbMaxWriters.Text);
+      cbMaxWriters.Enabled = !string.IsNullOrEmpty(cbMaxWriters.Text);
 
       try { cbTtitlePreferredLanguage.Text = xmlConf.find(xmlConf.listDetail, TagName.KeyTTitleLanguage)._Value; }
       catch { cbTtitlePreferredLanguage.Text = string.Empty; }
@@ -480,7 +480,7 @@ namespace Grabber_Interface
 
       try { cbTtitleMaxTitles.Text = xmlConf.find(xmlConf.listDetail, TagName.KeyTTitleMaxItems)._Value; }
       catch { cbTtitleMaxTitles.Text = string.Empty; }
-      this.cbTtitleMaxTitles.Enabled = !string.IsNullOrEmpty(this.cbTtitleMaxTitles.Text);
+      cbTtitleMaxTitles.Enabled = !string.IsNullOrEmpty(cbTtitleMaxTitles.Text);
 
       try { cbCertificationPreferredLanguage.Text = xmlConf.find(xmlConf.listDetail, TagName.KeyCertificationLanguage)._Value; }
       catch { cbCertificationPreferredLanguage.Text = string.Empty; }
@@ -511,7 +511,7 @@ namespace Grabber_Interface
         if (!cbCertificationPreferredLanguage.Items.Contains(strDroptext.Trim()))
           cbCertificationPreferredLanguage.Items.Add(strDroptext.Trim());
       }
-      this.cbCertificationPreferredLanguage.Enabled = this.cbCertificationPreferredLanguage.Items.Count > 0;
+      cbCertificationPreferredLanguage.Enabled = cbCertificationPreferredLanguage.Items.Count > 0;
 
       // Read Mapping Infos
       List<string> fields = Grabber.Grabber_URLClass.FieldList();
@@ -551,7 +551,7 @@ namespace Grabber_Interface
       }
     }
 
-    public void SaveXml(string File)
+    private void SaveXml(string File)
     {
       xmlConf.find(xmlConf.listGen, TagName.DBName)._Value = textName.Text;
       xmlConf.find(xmlConf.listGen, TagName.URLPrefix)._Value = textURLPrefix.Text;
@@ -574,7 +574,7 @@ namespace Grabber_Interface
 
       try
       {
-        this.xmlConf.find(this.xmlConf.listGen, TagName.FileBasedReader)._Value = this.cbFileBasedReader.Checked ? "true" : "false";
+        xmlConf.find(xmlConf.listGen, TagName.FileBasedReader)._Value = cbFileBasedReader.Checked ? "true" : "false";
       }
       catch (Exception) { }
 
@@ -585,46 +585,44 @@ namespace Grabber_Interface
       xmlConf.find(xmlConf.listSearch, TagName.KeyStepPage)._Value = textStepPage.Text;
 
 
-      XmlTextWriter tw = new XmlTextWriter(File, UTF8Encoding.UTF8);
-      tw.Formatting = Formatting.Indented;
+      XmlTextWriter tw = new XmlTextWriter(File, UTF8Encoding.UTF8) {Formatting = Formatting.Indented};
       tw.WriteStartDocument(true);
       tw.WriteStartElement("Profile");
       tw.WriteStartElement("Section");
 
-      for (int i = 0; i < xmlConf.listGen.Count; i++)
+      foreach (ListNode t in xmlConf.listGen)
       {
-        tw.WriteStartElement(xmlConf.listGen[i]._Tag);
-        tw.WriteString(xmlConf.listGen[i]._Value);
+        tw.WriteStartElement(t._Tag);
+        tw.WriteString(t._Value);
         tw.WriteEndElement();
       }
 
       tw.WriteStartElement("URLSearch");
 
-      for (int i = 0; i < xmlConf.listSearch.Count; i++)
+      foreach (ListNode t in xmlConf.listSearch)
       {
-        tw.WriteStartElement(xmlConf.listSearch[i]._Tag);
-        if (xmlConf.listSearch[i]._Tag.StartsWith("KeyStart") || xmlConf.listSearch[i]._Tag.Equals("URL"))
+        tw.WriteStartElement(t._Tag);
+        if (t._Tag.StartsWith("KeyStart") || t._Tag.Equals("URL"))
         {
-          tw.WriteAttributeString("Param1", XmlConvert.EncodeName(xmlConf.listSearch[i]._Param1));
-          tw.WriteAttributeString("Param2", XmlConvert.EncodeName(xmlConf.listSearch[i]._Param2));
+          tw.WriteAttributeString("Param1", XmlConvert.EncodeName(t._Param1));
+          tw.WriteAttributeString("Param2", XmlConvert.EncodeName(t._Param2));
         }
-        tw.WriteString(XmlConvert.EncodeName(xmlConf.listSearch[i]._Value));
+        tw.WriteString(XmlConvert.EncodeName(t._Value));
         tw.WriteEndElement();
-
       }
 
       tw.WriteEndElement();
       tw.WriteStartElement("Details");
 
-      for (int i = 0; i < xmlConf.listDetail.Count; i++)
+      foreach (ListNode t in xmlConf.listDetail)
       {
-        tw.WriteStartElement(xmlConf.listDetail[i]._Tag);
-        if (xmlConf.listDetail[i]._Tag.StartsWith("KeyStart"))
+        tw.WriteStartElement(t._Tag);
+        if (t._Tag.StartsWith("KeyStart"))
         {
-          tw.WriteAttributeString("Param1", XmlConvert.EncodeName(xmlConf.listDetail[i]._Param1));
-          tw.WriteAttributeString("Param2", XmlConvert.EncodeName(xmlConf.listDetail[i]._Param2));
+          tw.WriteAttributeString("Param1", XmlConvert.EncodeName(t._Param1));
+          tw.WriteAttributeString("Param2", XmlConvert.EncodeName(t._Param2));
         }
-        tw.WriteString(XmlConvert.EncodeName(xmlConf.listDetail[i]._Value));
+        tw.WriteString(XmlConvert.EncodeName(t._Value));
         tw.WriteEndElement();
       }
       tw.WriteEndElement();
@@ -872,11 +870,11 @@ namespace Grabber_Interface
       }
       else
       {
-        if (System.IO.Directory.Exists(Config.GetDirectoryInfo(Config.Dir.Config) + @"\scripts\MyFilms"))
+        if (Directory.Exists(Config.GetDirectoryInfo(Config.Dir.Config) + @"\scripts\MyFilms"))
         {
-          if (!System.IO.Directory.Exists(Config.GetDirectoryInfo(Config.Dir.Config) + @"\scripts\myfilms\user"))
+          if (!Directory.Exists(Config.GetDirectoryInfo(Config.Dir.Config) + @"\scripts\myfilms\user"))
           {
-            try { System.IO.Directory.CreateDirectory(Config.Dir.Config + @"\scripts\myfilms\user"); }
+            try { Directory.CreateDirectory(Config.Dir.Config + @"\scripts\myfilms\user"); }
             catch (Exception) { }
           }
           saveFileDialog1.InitialDirectory = Config.GetDirectoryInfo(Config.Dir.Config) + @"\scripts\MyFilms";
@@ -980,7 +978,7 @@ namespace Grabber_Interface
           break;
       }
 
-      this.textBody.Text = this.cb_Parameter.SelectedIndex > 0 ? this.BodyStripped : this.Body;  // && TextKeyStop.Text.Length > 0
+      textBody.Text = cb_Parameter.SelectedIndex > 0 ? BodyStripped : Body;  // && TextKeyStop.Text.Length > 0
       textBody_NewSelection(TextKeyStart.Text, TextKeyStop.Text, false);
     }
 
@@ -998,7 +996,7 @@ namespace Grabber_Interface
 
     private void textBody_SelectionChanged(object sender, EventArgs e)
     {
-      if (GLbBlockSelect == true)
+      if (GLbBlockSelect)
         return;
 
       int nb = 0;
@@ -1012,7 +1010,7 @@ namespace Grabber_Interface
         // i = textBody.Find(textBody.SelectedText, i + textBody.SelectedText.Length, RichTextBoxFinds.NoHighlight);
         i = GrabUtil.FindPosition(textBody.Text, textBody.SelectedText, i + iLength, ref iLength, true, false);
       }
-      lblResultsFound.Text = nb.ToString() + " match found";
+      lblResultsFound.Text = nb + " match found";
     }
 
 
@@ -1300,7 +1298,7 @@ namespace Grabber_Interface
           textBodyDetail.Text = BodyDetail;
 
         watch.Stop();
-        TimeBodyDetail = " (" + (watch.ElapsedMilliseconds).ToString() + " ms)";
+        TimeBodyDetail = " (" + watch.ElapsedMilliseconds + " ms)";
         #endregion
       }
 
@@ -1332,7 +1330,7 @@ namespace Grabber_Interface
         else
           BodyDetail2 = "";
         watch.Stop();
-        TimeBodyDetail2 = " (" + (watch.ElapsedMilliseconds).ToString() + " ms)";
+        TimeBodyDetail2 = " (" + watch.ElapsedMilliseconds + " ms)";
       }
       catch
       {
@@ -1340,7 +1338,7 @@ namespace Grabber_Interface
       }
       #endregion
 
-      #region Test if there is a page for Generic 1 Page
+      #region Test if there is a page for Generic 1 page
       try
       {
         watch.Reset();
@@ -1376,7 +1374,7 @@ namespace Grabber_Interface
       }
       #endregion
 
-      #region Test if there is a page for Generic 2 Page
+      #region Test if there is a page for Generic 2 page
       try
       {
         watch.Reset();
@@ -1390,7 +1388,7 @@ namespace Grabber_Interface
         try { strEncoding = xmlConf.find(xmlConf.listDetail, TagName.KeyEncodingLinkGeneric2)._Value; }
         catch (Exception) { strEncoding = ""; }
 
-        strActivePage = this.LoadPage(strPage);
+        strActivePage = LoadPage(strPage);
         if (strStart.Length > 0)
         {
           string strTemp = string.Empty;
@@ -1399,12 +1397,12 @@ namespace Grabber_Interface
           else
             strTemp = GrabUtil.Find(strActivePage, strStart, strEnd).Trim();
           URLBodyLinkGeneric2 = strTemp;
-          BodyLinkGeneric2 = GrabUtil.GetPage(strTemp, (string.IsNullOrEmpty(strEncoding)) ? textEncoding.Text : strEncoding, out absoluteUri, new CookieContainer(), textHeaders.Text, textAccept.Text, textUserAgent.Text);
+          BodyLinkGeneric2 = GrabUtil.GetPage(strTemp, string.IsNullOrEmpty(strEncoding) ? textEncoding.Text : strEncoding, out absoluteUri, new CookieContainer(), textHeaders.Text, textAccept.Text, textUserAgent.Text);
         }
         else
           BodyLinkGeneric2 = "";
         watch.Stop();
-        TimeBodyLinkGeneric2 = " (" + (watch.ElapsedMilliseconds).ToString() + " ms)";
+        TimeBodyLinkGeneric2 = " (" + watch.ElapsedMilliseconds + " ms)";
       }
       catch
       {
@@ -1424,7 +1422,7 @@ namespace Grabber_Interface
       try { strEncoding = xmlConf.find(xmlConf.listDetail, TagName.KeyEncodingLinkImg)._Value; }
       catch (Exception) { strEncoding = ""; }
 
-      strActivePage = this.LoadPage(strPage);
+      strActivePage = LoadPage(strPage);
       if (strStart.Length > 0)
       {
         string strTemp = string.Empty;
@@ -1433,12 +1431,12 @@ namespace Grabber_Interface
         else
           strTemp = GrabUtil.Find(strActivePage, strStart, strEnd).Trim();
         URLBodyLinkImg = strTemp;
-        BodyLinkImg = GrabUtil.GetPage(strTemp, (string.IsNullOrEmpty(strEncoding)) ? textEncoding.Text : strEncoding, out absoluteUri, new CookieContainer(), textHeaders.Text, textAccept.Text, textUserAgent.Text);
+        BodyLinkImg = GrabUtil.GetPage(strTemp, string.IsNullOrEmpty(strEncoding) ? textEncoding.Text : strEncoding, out absoluteUri, new CookieContainer(), textHeaders.Text, textAccept.Text, textUserAgent.Text);
       }
       else
         BodyLinkImg = "";
       watch.Stop();
-      TimeBodyLinkImg = " (" + (watch.ElapsedMilliseconds).ToString() + " ms)";
+      TimeBodyLinkImg = " (" + watch.ElapsedMilliseconds + " ms)";
       #endregion
 
       #region Test if there is a redirection page for Persons and load page in BodyLinkPersons
@@ -1453,7 +1451,7 @@ namespace Grabber_Interface
       try { strEncoding = xmlConf.find(xmlConf.listDetail, TagName.KeyEncodingLinkPersons)._Value; }
       catch (Exception) { strEncoding = ""; }
 
-      strActivePage = this.LoadPage(strPage);
+      strActivePage = LoadPage(strPage);
       if (strStart.Length > 0)
       {
         string strTemp = string.Empty;
@@ -1462,12 +1460,12 @@ namespace Grabber_Interface
         else
           strTemp = GrabUtil.Find(strActivePage, strStart, strEnd).Trim();
         URLBodyLinkPersons = strTemp;
-        BodyLinkPersons = GrabUtil.GetPage(strTemp, (string.IsNullOrEmpty(strEncoding)) ? textEncoding.Text : strEncoding, out absoluteUri, new CookieContainer(), textHeaders.Text, textAccept.Text, textUserAgent.Text);
+        BodyLinkPersons = GrabUtil.GetPage(strTemp, string.IsNullOrEmpty(strEncoding) ? textEncoding.Text : strEncoding, out absoluteUri, new CookieContainer(), textHeaders.Text, textAccept.Text, textUserAgent.Text);
       }
       else
         BodyLinkPersons = "";
       watch.Stop();
-      TimeBodyLinkPersons = " (" + (watch.ElapsedMilliseconds).ToString() + " ms)";
+      TimeBodyLinkPersons = " (" + watch.ElapsedMilliseconds + " ms)";
       #endregion
 
       #region Test if there is a redirection page for Titles and load page in BodyLinkTitles
@@ -1482,7 +1480,7 @@ namespace Grabber_Interface
       try { strEncoding = xmlConf.find(xmlConf.listDetail, TagName.KeyEncodingLinkTitles)._Value; }
       catch (Exception) { strEncoding = ""; }
 
-      strActivePage = this.LoadPage(strPage);
+      strActivePage = LoadPage(strPage);
       if (strStart.Length > 0)
       {
         string strTemp = string.Empty;
@@ -1491,12 +1489,12 @@ namespace Grabber_Interface
         else
           strTemp = GrabUtil.Find(strActivePage, strStart, strEnd).Trim();
         URLBodyLinkTitles = strTemp;
-        BodyLinkTitles = GrabUtil.GetPage(strTemp, (string.IsNullOrEmpty(strEncoding)) ? textEncoding.Text : strEncoding, out absoluteUri, new CookieContainer(), textHeaders.Text, textAccept.Text, textUserAgent.Text);
+        BodyLinkTitles = GrabUtil.GetPage(strTemp, string.IsNullOrEmpty(strEncoding) ? textEncoding.Text : strEncoding, out absoluteUri, new CookieContainer(), textHeaders.Text, textAccept.Text, textUserAgent.Text);
       }
       else
         BodyLinkTitles = "";
       watch.Stop();
-      TimeBodyLinkTitles = " (" + (watch.ElapsedMilliseconds).ToString() + " ms)";
+      TimeBodyLinkTitles = " (" + watch.ElapsedMilliseconds + " ms)";
       #endregion
 
       #region Test if there is a redirection page for Certification and load page in BodyLinkCertification
@@ -1511,7 +1509,7 @@ namespace Grabber_Interface
       try { strEncoding = xmlConf.find(xmlConf.listDetail, TagName.KeyEncodingLinkCertification)._Value; }
       catch (Exception) { strEncoding = ""; }
 
-      strActivePage = this.LoadPage(strPage);
+      strActivePage = LoadPage(strPage);
       if (strStart.Length > 0)
       {
         string strTemp = string.Empty;
@@ -1520,12 +1518,12 @@ namespace Grabber_Interface
         else
           strTemp = GrabUtil.Find(strActivePage, strStart, strEnd).Trim();
         URLBodyLinkCertification = strTemp;
-        BodyLinkCertification = GrabUtil.GetPage(strTemp, (string.IsNullOrEmpty(strEncoding)) ? textEncoding.Text : strEncoding, out absoluteUri, new CookieContainer(), textHeaders.Text, textAccept.Text, textUserAgent.Text);
+        BodyLinkCertification = GrabUtil.GetPage(strTemp, string.IsNullOrEmpty(strEncoding) ? textEncoding.Text : strEncoding, out absoluteUri, new CookieContainer(), textHeaders.Text, textAccept.Text, textUserAgent.Text);
       }
       else
         BodyLinkCertification = "";
       watch.Stop();
-      TimeBodyLinkCertification = " (" + (watch.ElapsedMilliseconds).ToString() + " ms)";
+      TimeBodyLinkCertification = " (" + watch.ElapsedMilliseconds + " ms)";
       #endregion
 
       #region Test if there is a redirection page for Synopsis/Description and load page in BodyLinkSyn
@@ -1540,21 +1538,21 @@ namespace Grabber_Interface
       try { strEncoding = xmlConf.find(xmlConf.listDetail, TagName.KeyEncodingLinkSyn)._Value; }
       catch (Exception) { strEncoding = ""; }
 
-      strActivePage = this.LoadPage(strPage);
+      strActivePage = LoadPage(strPage);
       if (strStart.Length > 0)
       {
-        string strTemp = string.Empty;
+        string strTemp;
         if (strParam1.Length > 0 && strParam2.Length > 0)
           strTemp = GrabUtil.FindWithAction(strActivePage, strStart, strEnd, strParam1, strParam2).Trim();
         else
           strTemp = GrabUtil.Find(strActivePage, strStart, strEnd).Trim();
         URLBodyLinkSyn = strTemp;
-        BodyLinkSyn = GrabUtil.GetPage(strTemp, (string.IsNullOrEmpty(strEncoding)) ? textEncoding.Text : strEncoding, out absoluteUri, new CookieContainer(), textHeaders.Text, textAccept.Text, textUserAgent.Text);
+        BodyLinkSyn = GrabUtil.GetPage(strTemp, string.IsNullOrEmpty(strEncoding) ? textEncoding.Text : strEncoding, out absoluteUri, new CookieContainer(), textHeaders.Text, textAccept.Text, textUserAgent.Text);
       }
       else
         BodyLinkSyn = "";
       watch.Stop();
-      TimeBodyLinkSyn = " (" + (watch.ElapsedMilliseconds).ToString() + " ms)";
+      TimeBodyLinkSyn = " (" + watch.ElapsedMilliseconds + " ms)";
       #endregion
 
       #region Test if there is a redirection page for Comment and load page in BodyLinkComment
@@ -1607,12 +1605,12 @@ namespace Grabber_Interface
         else
           strTemp = GrabUtil.Find(strActivePage, strStart, strEnd).Trim();
         URLBodyLinkMultiPosters = strTemp;
-        BodyLinkMultiPosters = GrabUtil.GetPage(strTemp, (string.IsNullOrEmpty(strEncoding)) ? textEncoding.Text : strEncoding, out absoluteUri, new CookieContainer(), textHeaders.Text, textAccept.Text, textUserAgent.Text);
+        BodyLinkMultiPosters = GrabUtil.GetPage(strTemp, string.IsNullOrEmpty(strEncoding) ? textEncoding.Text : strEncoding, out absoluteUri, new CookieContainer(), textHeaders.Text, textAccept.Text, textUserAgent.Text);
       }
       else
         BodyLinkMultiPosters = "";
       watch.Stop();
-      TimeBodyLinkMultiPosters = " (" + (watch.ElapsedMilliseconds).ToString() + " ms)";
+      TimeBodyLinkMultiPosters = " (" + watch.ElapsedMilliseconds + " ms)";
       #endregion
 
       #region Test if there is a redirection page for Photos and load page in BodyLinkPhotos
@@ -1627,21 +1625,21 @@ namespace Grabber_Interface
       try { strEncoding = xmlConf.find(xmlConf.listDetail, TagName.KeyEncodingLinkPhotos)._Value; }
       catch (Exception) { strEncoding = ""; }
 
-      strActivePage = this.LoadPage(strPage);
+      strActivePage = LoadPage(strPage);
       if (strStart.Length > 0)
       {
-        string strTemp = string.Empty;
+        string strTemp;
         if (strParam1.Length > 0 && strParam2.Length > 0)
           strTemp = GrabUtil.FindWithAction(strActivePage, strStart, strEnd, strParam1, strParam2).Trim();
         else
           strTemp = GrabUtil.Find(strActivePage, strStart, strEnd).Trim();
         URLBodyLinkPhotos = strTemp;
-        BodyLinkPhotos = GrabUtil.GetPage(strTemp, (string.IsNullOrEmpty(strEncoding)) ? textEncoding.Text : strEncoding, out absoluteUri, new CookieContainer(), textHeaders.Text, textAccept.Text, textUserAgent.Text);
+        BodyLinkPhotos = GrabUtil.GetPage(strTemp, string.IsNullOrEmpty(strEncoding) ? textEncoding.Text : strEncoding, out absoluteUri, new CookieContainer(), textHeaders.Text, textAccept.Text, textUserAgent.Text);
       }
       else
         BodyLinkPhotos = "";
       watch.Stop();
-      TimeBodyLinkPhotos = " (" + (watch.ElapsedMilliseconds).ToString() + " ms)";
+      TimeBodyLinkPhotos = " (" + watch.ElapsedMilliseconds + " ms)";
       #endregion
 
       #region Test if there is a redirection page for PersonImages and load page in BodyLinkPersonImages
@@ -1656,7 +1654,7 @@ namespace Grabber_Interface
       try { strEncoding = xmlConf.find(xmlConf.listDetail, TagName.KeyEncodingLinkPersonImages)._Value; }
       catch (Exception) { strEncoding = ""; }
 
-      strActivePage = this.LoadPage(strPage);
+      strActivePage = LoadPage(strPage);
       if (strStart.Length > 0)
       {
         string strTemp = string.Empty;
@@ -1665,12 +1663,12 @@ namespace Grabber_Interface
         else
           strTemp = GrabUtil.Find(strActivePage, strStart, strEnd).Trim();
         URLBodyLinkPersonImages = strTemp;
-        BodyLinkPersonImages = GrabUtil.GetPage(strTemp, (string.IsNullOrEmpty(strEncoding)) ? textEncoding.Text : strEncoding, out absoluteUri, new CookieContainer(), textHeaders.Text, textAccept.Text, textUserAgent.Text);
+        BodyLinkPersonImages = GrabUtil.GetPage(strTemp, string.IsNullOrEmpty(strEncoding) ? textEncoding.Text : strEncoding, out absoluteUri, new CookieContainer(), textHeaders.Text, textAccept.Text, textUserAgent.Text);
       }
       else
         BodyLinkPersonImages = "";
       watch.Stop();
-      TimeBodyLinkPersonImages = " (" + (watch.ElapsedMilliseconds).ToString() + " ms)";
+      TimeBodyLinkPersonImages = " (" + watch.ElapsedMilliseconds + " ms)";
       #endregion
 
       #region Test if there is a redirection page for MultiFanart and load page in BodyLinkMultiFanart
@@ -1685,7 +1683,7 @@ namespace Grabber_Interface
       try { strEncoding = xmlConf.find(xmlConf.listDetail, TagName.KeyEncodingLinkMultiFanart)._Value; }
       catch (Exception) { strEncoding = ""; }
 
-      strActivePage = this.LoadPage(strPage);
+      strActivePage = LoadPage(strPage);
       if (strStart.Length > 0)
       {
         string strTemp = string.Empty;
@@ -1694,12 +1692,12 @@ namespace Grabber_Interface
         else
           strTemp = GrabUtil.Find(strActivePage, strStart, strEnd).Trim();
         URLBodyLinkMultiFanart = strTemp;
-        BodyLinkMultiFanart = GrabUtil.GetPage(strTemp, (string.IsNullOrEmpty(strEncoding)) ? textEncoding.Text : strEncoding, out absoluteUri, new CookieContainer(), textHeaders.Text, textAccept.Text, textUserAgent.Text);
+        BodyLinkMultiFanart = GrabUtil.GetPage(strTemp, string.IsNullOrEmpty(strEncoding) ? textEncoding.Text : strEncoding, out absoluteUri, new CookieContainer(), textHeaders.Text, textAccept.Text, textUserAgent.Text);
       }
       else
         BodyLinkMultiFanart = "";
       watch.Stop();
-      TimeBodyLinkMultiFanart = " (" + (watch.ElapsedMilliseconds).ToString() + " ms)";
+      TimeBodyLinkMultiFanart = " (" + watch.ElapsedMilliseconds + " ms)";
       #endregion
 
       #region Test if there is a redirection page for Trailer and load page in BodyLinkTrailer
@@ -1714,7 +1712,7 @@ namespace Grabber_Interface
       try { strEncoding = xmlConf.find(xmlConf.listDetail, TagName.KeyEncodingLinkTrailer)._Value; }
       catch (Exception) { strEncoding = ""; }
 
-      strActivePage = this.LoadPage(strPage);
+      strActivePage = LoadPage(strPage);
       if (strStart.Length > 0)
       {
         string strTemp = string.Empty;
@@ -1723,19 +1721,19 @@ namespace Grabber_Interface
         else
           strTemp = GrabUtil.Find(strActivePage, strStart, strEnd).Trim();
         URLBodyLinkTrailer = strTemp;
-        BodyLinkTrailer = GrabUtil.GetPage(strTemp, (string.IsNullOrEmpty(strEncoding)) ? textEncoding.Text : strEncoding, out absoluteUri, new CookieContainer(), textHeaders.Text, textAccept.Text, textUserAgent.Text);
+        BodyLinkTrailer = GrabUtil.GetPage(strTemp, string.IsNullOrEmpty(strEncoding) ? textEncoding.Text : strEncoding, out absoluteUri, new CookieContainer(), textHeaders.Text, textAccept.Text, textUserAgent.Text);
       }
       else
         BodyLinkTrailer = "";
       watch.Stop();
-      TimeBodyLinkTrailer = " (" + (watch.ElapsedMilliseconds).ToString() + " ms)";
+      TimeBodyLinkTrailer = " (" + watch.ElapsedMilliseconds + " ms)";
       #endregion
     }
 
-    private string LoadPage(string Page)
+    private string LoadPage(string page)
     {
-      string strActivePage = string.Empty;
-      switch (Page)
+      string strActivePage;
+      switch (page)
       {
         case "":
           strActivePage = BodyDetail;
@@ -1824,7 +1822,6 @@ namespace Grabber_Interface
         int iEnd = 0;
         int iLength = 0;
 
-        string strTemp = String.Empty;
         // HTMLUtil htmlUtil = new HTMLUtil(); // in MP Core.dll
         bool bregexs = false;
         bool bregexe = false;
@@ -1838,7 +1835,7 @@ namespace Grabber_Interface
           iLength = starttext.Length;
           if (param1.StartsWith("#REVERSE#"))
           {
-            iStart = bregexs ? GrabUtil.FindRegEx(this.textBodyDetail.Text, starttext, iStart, ref iLength, false) : this.textBodyDetail.Text.LastIndexOf(starttext);
+            iStart = bregexs ? GrabUtil.FindRegEx(textBodyDetail.Text, starttext, iStart, ref iLength, false) : textBodyDetail.Text.LastIndexOf(starttext);
           }
           else if (bregexs) iStart = GrabUtil.FindRegEx(textBodyDetail.Text, starttext, iStart, ref iLength, true);
           else iStart = textBodyDetail.Text.IndexOf(starttext);
@@ -1924,7 +1921,7 @@ namespace Grabber_Interface
 
       switch (cb_ParamDetail.SelectedIndex)
       {
-        case 0: // Start/end Page
+        case 0: // Start/end page
           TextKeyStartD.Text = xmlConf.find(xmlConf.listDetail, TagName.KeyStartBody)._Value;
           TextKeyStopD.Text = xmlConf.find(xmlConf.listDetail, TagName.KeyEndBody)._Value;
           buttonPrevParamDetail.Visible = false;
@@ -2066,11 +2063,11 @@ namespace Grabber_Interface
           catch { textComplement.Text = string.Empty; }
           try { textMaxItems.Text = xmlConf.find(xmlConf.listDetail, TagName.KeyCreditsMaxItems)._Value; }
           catch { textMaxItems.Text = string.Empty; }
-          string strActorRoles = string.Empty;
+          string strActorRoles;
           try
           {
             strActorRoles = xmlConf.find(xmlConf.listDetail, TagName.KeyCreditsGrabActorRoles)._Value;
-            this.chkActorRoles.Checked = strActorRoles == "true";
+            chkActorRoles.Checked = strActorRoles == "true";
           }
           catch { chkActorRoles.Checked = false; }
           Index.Text = xmlConf.find(xmlConf.listDetail, TagName.KeyCreditsIndex)._Value;
@@ -2283,7 +2280,7 @@ namespace Grabber_Interface
           catch { textMaxItems.Text = string.Empty; }
           Index.Text = xmlConf.find(xmlConf.listDetail, TagName.KeyGeneric3Index)._Value;
           break;
-        case 26: // Link Secondary Details Base Page
+        case 26: // Link Secondary Details Base page
           lblEncodingSubPage.Visible = true;
           EncodingSubPage.Visible = true;
           URLpage.Text = xmlConf.find(xmlConf.listDetail, TagName.KeyDetails2Page)._Value;
@@ -2319,7 +2316,7 @@ namespace Grabber_Interface
           try { EncodingSubPage.Text = xmlConf.find(xmlConf.listDetail, TagName.KeyEncodingLinkGeneric2)._Value; }
           catch { EncodingSubPage.Text = string.Empty; }
           break;
-        case 29: // Link Coverart-Secondary Page
+        case 29: // Link Coverart-Secondary page
           lblEncodingSubPage.Visible = true;
           EncodingSubPage.Visible = true;
           URLpage.Text = xmlConf.find(xmlConf.listDetail, TagName.KeyLinkImgPage)._Value;
@@ -2331,7 +2328,7 @@ namespace Grabber_Interface
           try { EncodingSubPage.Text = xmlConf.find(xmlConf.listDetail, TagName.KeyEncodingLinkImg)._Value; }
           catch { EncodingSubPage.Text = string.Empty; }
           break;
-        case 30: // Link Persons Page
+        case 30: // Link Persons page
           lblEncodingSubPage.Visible = true;
           EncodingSubPage.Visible = true;
           URLpage.Text = xmlConf.find(xmlConf.listDetail, TagName.KeyLinkPersonsPage)._Value;
@@ -2343,7 +2340,7 @@ namespace Grabber_Interface
           try { EncodingSubPage.Text = xmlConf.find(xmlConf.listDetail, TagName.KeyEncodingLinkPersons)._Value; }
           catch { EncodingSubPage.Text = string.Empty; }
           break;
-        case 31: // Link Titles-Secondary Page
+        case 31: // Link Titles-Secondary page
           lblEncodingSubPage.Visible = true;
           EncodingSubPage.Visible = true;
           URLpage.Text = xmlConf.find(xmlConf.listDetail, TagName.KeyLinkTitlesPage)._Value;
@@ -2355,7 +2352,7 @@ namespace Grabber_Interface
           try { EncodingSubPage.Text = xmlConf.find(xmlConf.listDetail, TagName.KeyEncodingLinkTitles)._Value; }
           catch { EncodingSubPage.Text = string.Empty; }
           break;
-        case 32: // Link Certification-Secondary Page
+        case 32: // Link Certification-Secondary page
           lblEncodingSubPage.Visible = true;
           EncodingSubPage.Visible = true;
           URLpage.Text = xmlConf.find(xmlConf.listDetail, TagName.KeyLinkCertificationPage)._Value;
@@ -2367,7 +2364,7 @@ namespace Grabber_Interface
           try { EncodingSubPage.Text = xmlConf.find(xmlConf.listDetail, TagName.KeyEncodingLinkCertification)._Value; }
           catch { EncodingSubPage.Text = string.Empty; }
           break;
-        case 33: // Link Comment-Secondary Page
+        case 33: // Link Comment-Secondary page
           lblEncodingSubPage.Visible = true;
           EncodingSubPage.Visible = true;
           URLpage.Text = xmlConf.find(xmlConf.listDetail, TagName.KeyLinkCommentPage)._Value;
@@ -2379,7 +2376,7 @@ namespace Grabber_Interface
           try { EncodingSubPage.Text = xmlConf.find(xmlConf.listDetail, TagName.KeyEncodingLinkComment)._Value; }
           catch { EncodingSubPage.Text = string.Empty; }
           break;
-        case 34: // Link Synopsis/Description-Secondary Page
+        case 34: // Link Synopsis/Description-Secondary page
           lblEncodingSubPage.Visible = true;
           EncodingSubPage.Visible = true;
           URLpage.Text = xmlConf.find(xmlConf.listDetail, TagName.KeyLinkSynPage)._Value;
@@ -2391,7 +2388,7 @@ namespace Grabber_Interface
           try { EncodingSubPage.Text = xmlConf.find(xmlConf.listDetail, TagName.KeyEncodingLinkSyn)._Value; }
           catch { EncodingSubPage.Text = string.Empty; }
           break;
-        case 35: // Link MultiPosters - Secondary Page
+        case 35: // Link MultiPosters - Secondary page
           lblEncodingSubPage.Visible = true;
           EncodingSubPage.Visible = true;
           URLpage.Text = xmlConf.find(xmlConf.listDetail, TagName.KeyLinkMultiPostersPage)._Value;
@@ -2403,7 +2400,7 @@ namespace Grabber_Interface
           try { EncodingSubPage.Text = xmlConf.find(xmlConf.listDetail, TagName.KeyEncodingLinkMultiPosters)._Value; }
           catch { EncodingSubPage.Text = string.Empty; }
           break;
-        case 36: // Link Photos - Secondary Page
+        case 36: // Link Photos - Secondary page
           lblEncodingSubPage.Visible = true;
           EncodingSubPage.Visible = true;
           URLpage.Text = xmlConf.find(xmlConf.listDetail, TagName.KeyLinkPhotosPage)._Value;
@@ -2415,7 +2412,7 @@ namespace Grabber_Interface
           try { EncodingSubPage.Text = xmlConf.find(xmlConf.listDetail, TagName.KeyEncodingLinkPhotos)._Value; }
           catch { EncodingSubPage.Text = string.Empty; }
           break;
-        case 37: // Link PersonImages - Secondary Page
+        case 37: // Link PersonImages - Secondary page
           lblEncodingSubPage.Visible = true;
           EncodingSubPage.Visible = true;
           URLpage.Text = xmlConf.find(xmlConf.listDetail, TagName.KeyLinkPersonImagesPage)._Value;
@@ -2427,7 +2424,7 @@ namespace Grabber_Interface
           try { EncodingSubPage.Text = xmlConf.find(xmlConf.listDetail, TagName.KeyEncodingLinkPersonImages)._Value; }
           catch { EncodingSubPage.Text = string.Empty; }
           break;
-        case 38: // Link MultiFanart - Secondary Page
+        case 38: // Link MultiFanart - Secondary page
           lblEncodingSubPage.Visible = true;
           EncodingSubPage.Visible = true;
           URLpage.Text = xmlConf.find(xmlConf.listDetail, TagName.KeyLinkMultiFanartPage)._Value;
@@ -2439,7 +2436,7 @@ namespace Grabber_Interface
           try { EncodingSubPage.Text = xmlConf.find(xmlConf.listDetail, TagName.KeyEncodingLinkMultiFanart)._Value; }
           catch { EncodingSubPage.Text = string.Empty; }
           break;
-        case 39: // Link Trailer - Secondary Page
+        case 39: // Link Trailer - Secondary page
           lblEncodingSubPage.Visible = true;
           EncodingSubPage.Visible = true;
           URLpage.Text = xmlConf.find(xmlConf.listDetail, TagName.KeyLinkTrailerPage)._Value;
@@ -2593,7 +2590,7 @@ namespace Grabber_Interface
 
       }
 
-      if (lblComplement.Visible == true)
+      if (lblComplement.Visible)
       {
         chkActorRoles.Visible = true;
         chkActorRoles.Enabled = true;
@@ -2618,8 +2615,8 @@ namespace Grabber_Interface
         //btResetDetail.Visible = false;
       }
 
-      // load selected Page into webpage window
-      textBodyDetail.Text = this.LoadPage(URLpage.Text);
+      // load selected page into webpage window
+      textBodyDetail.Text = LoadPage(URLpage.Text);
 
       // Mark Selection, if it's valid
       if (cb_ParamDetail.SelectedIndex > 0 && TextKeyStopD.Text.Length > 0)
@@ -2829,7 +2826,7 @@ namespace Grabber_Interface
             if (iStart > 0)
             {
               //Si une clé de fin a été paramétrée, on l'utilise si non on prend le reste du body
-              iEnd = this.TextKeyStopD.Text != "" ? this.BodyDetail.IndexOf(this.TextKeyStopD.Text, iStart) : this.BodyDetail.Length;
+              iEnd = TextKeyStopD.Text != "" ? BodyDetail.IndexOf(TextKeyStopD.Text, iStart) : BodyDetail.Length;
 
               if (iEnd == -1)
                 iEnd = BodyDetail.Length;
@@ -3021,7 +3018,7 @@ namespace Grabber_Interface
 
     private void textBodyDetail_SelectionChanged(object sender, EventArgs e)
     {
-      if (GLbBlockSelect == true)
+      if (GLbBlockSelect)
         return;
 
       if (textBodyDetail.SelectedText.Trim().Length > 0)
@@ -3043,18 +3040,18 @@ namespace Grabber_Interface
 
     private void dataGridViewSearchResults_SelectionChanged(object sender, EventArgs e)
     {
-      int rowSelected = this.dataGridViewSearchResults.Rows.GetFirstRow(DataGridViewElementStates.Selected);
+      int rowSelected = dataGridViewSearchResults.Rows.GetFirstRow(DataGridViewElementStates.Selected);
       if (rowSelected == -1)
         return;
-      if (this.dataGridViewSearchResults["ResultColumn2", rowSelected].Value == null)
+      if (dataGridViewSearchResults["ResultColumn2", rowSelected].Value == null)
         return;
-      if (rowSelected >= 0 && this.dataGridViewSearchResults["ResultColumn2", rowSelected].Value.ToString() == "+++")
-        button_GoDetailPage.Text = "Display Next Page";
-      else if (rowSelected >= 0 && this.dataGridViewSearchResults["ResultColumn2", rowSelected].Value.ToString() == "---")
-        button_GoDetailPage.Text = "Display Previous Page";
+      if (rowSelected >= 0 && dataGridViewSearchResults["ResultColumn2", rowSelected].Value.ToString() == "+++")
+        button_GoDetailPage.Text = "Display Next page";
+      else if (rowSelected >= 0 && dataGridViewSearchResults["ResultColumn2", rowSelected].Value.ToString() == "---")
+        button_GoDetailPage.Text = "Display Previous page";
       else
-        button_GoDetailPage.Text = "Use with Detail Page";
-      this.button_GoDetailPage.Enabled = rowSelected >= 0;
+        button_GoDetailPage.Text = "Use with Detail page";
+      button_GoDetailPage.Enabled = rowSelected >= 0;
       //this.dataGridViewSearchResults.Rows[rowSelected].Selected = false;
       //this.dataGridViewSearchResults.Rows[rowSelected - 1].Selected = true;
     }
@@ -3066,38 +3063,35 @@ namespace Grabber_Interface
 
     private void button_GoDetailPage_Click(object sender, EventArgs e)
     {
-      int rowSelected = this.dataGridViewSearchResults.Rows.GetFirstRow(DataGridViewElementStates.Selected);
+      int rowSelected = dataGridViewSearchResults.Rows.GetFirstRow(DataGridViewElementStates.Selected);
       if (rowSelected >= 0)
       {
-        switch (this.dataGridViewSearchResults["ResultColumn2", rowSelected].Value.ToString())
+        switch (dataGridViewSearchResults["ResultColumn2", rowSelected].Value.ToString())
         {
           case "+++":
             {
-              this.textPage.Text = Convert.ToString(Convert.ToInt16(this.textPage.Text) + Convert.ToInt16(this.textStepPage.Text));
-              Grabber_URLClass.IMDBUrl wurl;
-              wurl = (Grabber_URLClass.IMDBUrl)this.listUrl[rowSelected];
-              this.Load_Preview(true); // always ask - was false in earlier versions ...
-              this.button_GoDetailPage.Enabled = false;
+              textPage.Text = Convert.ToString(Convert.ToInt16(this.textPage.Text) + Convert.ToInt16(this.textStepPage.Text));
+              Grabber_URLClass.IMDBUrl wurl = (Grabber_URLClass.IMDBUrl)listUrl[rowSelected];
+              Load_Preview(true); // always ask - was false in earlier versions ...
+              button_GoDetailPage.Enabled = false;
             }
             break;
           case "---":
             {
-              this.textPage.Text = Convert.ToString(Convert.ToInt16(this.textPage.Text) - Convert.ToInt16(this.textStepPage.Text));
-              Grabber_URLClass.IMDBUrl wurl;
-              wurl = (Grabber_URLClass.IMDBUrl)this.listUrl[rowSelected];
+              textPage.Text = Convert.ToString(Convert.ToInt16(textPage.Text) - Convert.ToInt16(textStepPage.Text));
+              Grabber_URLClass.IMDBUrl wurl = (Grabber_URLClass.IMDBUrl)listUrl[rowSelected];
               Load_Preview(true); // always ask - gives all results - was "false" in earlier versions
               button_GoDetailPage.Enabled = false;
             }
             break;
           default:
             {
-              System.IO.File.Delete(this.textConfig.Text + ".tmp");
-              Grabber_URLClass.IMDBUrl wurl;
-              wurl = (Grabber_URLClass.IMDBUrl)this.listUrl[rowSelected];
-              this.TextURLDetail.Text = wurl.URL;
+              File.Delete(textConfig.Text + ".tmp");
+              Grabber_URLClass.IMDBUrl wurl = (Grabber_URLClass.IMDBUrl)listUrl[rowSelected];
+              TextURLDetail.Text = wurl.URL;
               EventArgs ea = new EventArgs();
-              this.ButtonLoad_Click(this.Button_Load_URL, ea);
-              this.tabControl1.SelectTab(2);
+              ButtonLoad_Click(Button_Load_URL, ea);
+              tabControl1.SelectTab(2);
             }
             break;
         }
@@ -3132,13 +3126,13 @@ namespace Grabber_Interface
       catch (Exception ex)
       {
         DialogResult dlgResult = DialogResult.None;
-        dlgResult = MessageBox.Show("An error ocurred - check your definitions!\n Exception: " + ex.ToString() + ", Stacktrace: " + ex.StackTrace.ToString(), "Error", MessageBoxButtons.OK);
+        dlgResult = MessageBox.Show("An error ocurred - check your definitions!\n Exception: " + ex + ", Stacktrace: " + ex.StackTrace, "Error", MessageBoxButtons.OK);
         if (dlgResult == DialogResult.OK)
         {
         }
       }
       watch.Stop();
-      totalruntime = "Total Runtime: " + (watch.ElapsedMilliseconds).ToString() + " ms.";
+      totalruntime = "Total Runtime: " + watch.ElapsedMilliseconds + " ms.";
 
       string mapped;
       for (int i = 0; i < Result.Length; i++)
@@ -3149,7 +3143,7 @@ namespace Grabber_Interface
         switch (i)
         {
           case 0:
-            textPreview.SelectedText += "(" + i.ToString() + ") " + "Original Title" + mapped + Environment.NewLine;
+            textPreview.SelectedText += "(" + i + ") " + "Original Title" + mapped + Environment.NewLine;
             break;
           case 40:
             textPreview.SelectedText += Environment.NewLine;
@@ -3158,15 +3152,15 @@ namespace Grabber_Interface
             textPreview.SelectedText += "MAPPED OUTPUT FIELDS:" + Environment.NewLine;
             textPreview.SelectedText += Environment.NewLine;
             textPreview.SelectionFont = new Font("Arial", (float)9.75, FontStyle.Bold | FontStyle.Underline);
-            textPreview.SelectedText += "(" + i.ToString() + ") " + "Original Title" + mapped + Environment.NewLine;
+            textPreview.SelectedText += "(" + i + ") " + "Original Title" + mapped + Environment.NewLine;
             break;
           case 1:
           case 41:
-            textPreview.SelectedText += "(" + i.ToString() + ") " + "Translated Title" + mapped + Environment.NewLine;
+            textPreview.SelectedText += "(" + i + ") " + "Translated Title" + mapped + Environment.NewLine;
             break;
           case 2:
           case 42:
-            textPreview.SelectedText += "(" + i.ToString() + ") " + "Cover" + mapped + Environment.NewLine;
+            textPreview.SelectedText += "(" + i + ") " + "Cover" + mapped + Environment.NewLine;
             if (i > 39) // only show image once !
             {
               try
@@ -3177,7 +3171,7 @@ namespace Grabber_Interface
                 FileInfo f = new FileInfo(Result[i]);
                 //long s1 = f.Length;
                 //labelImageSize.Text = s1.ToString();
-                labelImageSize.Text = this.ByteString(f.Length);
+                labelImageSize.Text = ByteString(f.Length);
               }
               catch (Exception)
               {
@@ -3198,154 +3192,154 @@ namespace Grabber_Interface
             break;
           case 3:
           case 43:
-            textPreview.SelectedText += "(" + i.ToString() + ") " + "Description" + mapped + Environment.NewLine;
+            textPreview.SelectedText += "(" + i + ") " + "Description" + mapped + Environment.NewLine;
             break;
           case 4:
           case 44:
-            textPreview.SelectedText += "(" + i.ToString() + ") " + "Rating" + mapped + Environment.NewLine;
+            textPreview.SelectedText += "(" + i + ") " + "Rating" + mapped + Environment.NewLine;
             break;
           case 5:
           case 45:
-            textPreview.SelectedText += "(" + i.ToString() + ") " + "Actors" + mapped + Environment.NewLine;
+            textPreview.SelectedText += "(" + i + ") " + "Actors" + mapped + Environment.NewLine;
             break;
           case 6:
           case 46:
-            textPreview.SelectedText += "(" + i.ToString() + ") " + "Director" + mapped + Environment.NewLine;
+            textPreview.SelectedText += "(" + i + ") " + "Director" + mapped + Environment.NewLine;
             break;
           case 7:
           case 47:
-            textPreview.SelectedText += "(" + i.ToString() + ") " + "Producer" + mapped + Environment.NewLine;
+            textPreview.SelectedText += "(" + i + ") " + "Producer" + mapped + Environment.NewLine;
             break;
           case 8:
           case 48:
-            textPreview.SelectedText += "(" + i.ToString() + ") " + "Year" + mapped + Environment.NewLine;
+            textPreview.SelectedText += "(" + i + ") " + "Year" + mapped + Environment.NewLine;
             break;
           case 9:
           case 49:
-            textPreview.SelectedText += "(" + i.ToString() + ") " + "Country" + mapped + Environment.NewLine;
+            textPreview.SelectedText += "(" + i + ") " + "Country" + mapped + Environment.NewLine;
             break;
           case 10:
           case 50:
-            textPreview.SelectedText += "(" + i.ToString() + ") " + "Category" + mapped + Environment.NewLine;
+            textPreview.SelectedText += "(" + i + ") " + "Category" + mapped + Environment.NewLine;
             break;
           case 11:
           case 51:
-            textPreview.SelectedText += "(" + i.ToString() + ") " + "URL" + mapped + Environment.NewLine;
+            textPreview.SelectedText += "(" + i + ") " + "URL" + mapped + Environment.NewLine;
             break;
           case 12:
           case 52:
-            textPreview.SelectedText += "(" + i.ToString() + ") " + "Image" + mapped + Environment.NewLine;
+            textPreview.SelectedText += "(" + i + ") " + "Image" + mapped + Environment.NewLine;
             break;
           case 13:
           case 53:
-            textPreview.SelectedText += "(" + i.ToString() + ") " + "Writer" + mapped + Environment.NewLine;
+            textPreview.SelectedText += "(" + i + ") " + "Writer" + mapped + Environment.NewLine;
             break;
           case 14:
           case 54:
-            textPreview.SelectedText += "(" + i.ToString() + ") " + "Comment" + mapped + Environment.NewLine;
+            textPreview.SelectedText += "(" + i + ") " + "Comment" + mapped + Environment.NewLine;
             break;
           case 15:
           case 55:
-            textPreview.SelectedText += "(" + i.ToString() + ") " + "Language" + mapped + Environment.NewLine;
+            textPreview.SelectedText += "(" + i + ") " + "Language" + mapped + Environment.NewLine;
             break;
           case 16:
           case 56:
-            textPreview.SelectedText += "(" + i.ToString() + ") " + "Tagline" + mapped + Environment.NewLine;
+            textPreview.SelectedText += "(" + i + ") " + "Tagline" + mapped + Environment.NewLine;
             break;
           case 17:
           case 57:
-            textPreview.SelectedText += "(" + i.ToString() + ") " + "Certification" + mapped + Environment.NewLine;
+            textPreview.SelectedText += "(" + i + ") " + "Certification" + mapped + Environment.NewLine;
             break;
           case 18:
           case 58:
-            textPreview.SelectedText += "(" + i.ToString() + ") " + "IMDB_Id" + mapped + Environment.NewLine;
+            textPreview.SelectedText += "(" + i + ") " + "IMDB_Id" + mapped + Environment.NewLine;
             break;
           case 19:
           case 59:
-            textPreview.SelectedText += "(" + i.ToString() + ") " + "IMDB_Rank" + mapped + Environment.NewLine;
+            textPreview.SelectedText += "(" + i + ") " + "IMDB_Rank" + mapped + Environment.NewLine;
             break;
           case 20:
           case 60:
-            textPreview.SelectedText += "(" + i.ToString() + ") " + "Studio" + mapped + Environment.NewLine;
+            textPreview.SelectedText += "(" + i + ") " + "Studio" + mapped + Environment.NewLine;
             break;
           case 21:
           case 61:
-            textPreview.SelectedText += "(" + i.ToString() + ") " + "Edition" + mapped + Environment.NewLine;
+            textPreview.SelectedText += "(" + i + ") " + "Edition" + mapped + Environment.NewLine;
             break;
           case 22:
           case 62:
-            textPreview.SelectedText += "(" + i.ToString() + ") " + "Fanart" + mapped + Environment.NewLine;
+            textPreview.SelectedText += "(" + i + ") " + "Fanart" + mapped + Environment.NewLine;
             break;
           case 23:
           case 63:
-            textPreview.SelectedText += "(" + i.ToString() + ") " + "Generic 1" + mapped + Environment.NewLine;
+            textPreview.SelectedText += "(" + i + ") " + "Generic 1" + mapped + Environment.NewLine;
             break;
           case 24:
           case 64:
-            textPreview.SelectedText += "(" + i.ToString() + ") " + "Generic 2" + mapped + Environment.NewLine;
+            textPreview.SelectedText += "(" + i + ") " + "Generic 2" + mapped + Environment.NewLine;
             break;
           case 25:
           case 65:
-            textPreview.SelectedText += "(" + i.ToString() + ") " + "Generic 3" + mapped + Environment.NewLine;
+            textPreview.SelectedText += "(" + i + ") " + "Generic 3" + mapped + Environment.NewLine;
             break;
           case 26:
           case 66:
-            textPreview.SelectedText += "(" + i.ToString() + ") " + "Names: Countries for 'Translated Title'" + mapped + Environment.NewLine;
+            textPreview.SelectedText += "(" + i + ") " + "Names: Countries for 'Translated Title'" + mapped + Environment.NewLine;
             break;
           case 27:
           case 67:
-            textPreview.SelectedText += "(" + i.ToString() + ") " + "Values: Countries for 'Translated Title'" + mapped + Environment.NewLine;
+            textPreview.SelectedText += "(" + i + ") " + "Values: Countries for 'Translated Title'" + mapped + Environment.NewLine;
             break;
           case 28:
           case 68:
-            textPreview.SelectedText += "(" + i.ToString() + ") " + "Names: Countries for 'Certification'" + mapped + Environment.NewLine;
+            textPreview.SelectedText += "(" + i + ") " + "Names: Countries for 'Certification'" + mapped + Environment.NewLine;
             break;
           case 29:
           case 69:
-            textPreview.SelectedText += "(" + i.ToString() + ") " + "Values: Countries for 'Certification'" + mapped + Environment.NewLine;
+            textPreview.SelectedText += "(" + i + ") " + "Values: Countries for 'Certification'" + mapped + Environment.NewLine;
             break;
           case 30:
           case 70:
-            textPreview.SelectedText += "(" + i.ToString() + ") " + "Values: MultiPosters'" + mapped + Environment.NewLine;
+            textPreview.SelectedText += "(" + i + ") " + "Values: MultiPosters'" + mapped + Environment.NewLine;
             break;
           case 31:
           case 71:
-            textPreview.SelectedText += "(" + i.ToString() + ") " + "Values: Photos'" + mapped + Environment.NewLine;
+            textPreview.SelectedText += "(" + i + ") " + "Values: Photos'" + mapped + Environment.NewLine;
             break;
           case 32:
           case 72:
-            textPreview.SelectedText += "(" + i.ToString() + ") " + "Values: PersonImages'" + mapped + Environment.NewLine;
+            textPreview.SelectedText += "(" + i + ") " + "Values: PersonImages'" + mapped + Environment.NewLine;
             break;
           case 33:
           case 73:
-            textPreview.SelectedText += "(" + i.ToString() + ") " + "Values: MultiFanart'" + mapped + Environment.NewLine;
+            textPreview.SelectedText += "(" + i + ") " + "Values: MultiFanart'" + mapped + Environment.NewLine;
             break;
           case 34:
           case 74:
-            textPreview.SelectedText += "(" + i.ToString() + ") " + "Values: Trailer'" + mapped + Environment.NewLine;
+            textPreview.SelectedText += "(" + i + ") " + "Values: Trailer'" + mapped + Environment.NewLine;
             break;
           case 35:
           case 75:
-            textPreview.SelectedText += "(" + i.ToString() + ") " + "TMDB_Id'" + mapped + Environment.NewLine;
+            textPreview.SelectedText += "(" + i + ") " + "TMDB_Id'" + mapped + Environment.NewLine;
             break;
           case 36:
           case 76:
-            textPreview.SelectedText += "(" + i.ToString() + ") " + "Runtime'" + mapped + Environment.NewLine;
+            textPreview.SelectedText += "(" + i + ") " + "Runtime'" + mapped + Environment.NewLine;
             break;
           case 37:
           case 77:
-            textPreview.SelectedText += "(" + i.ToString() + ") " + "Collection'" + mapped + Environment.NewLine;
+            textPreview.SelectedText += "(" + i + ") " + "Collection'" + mapped + Environment.NewLine;
             break;
           case 38:
           case 78:
-            textPreview.SelectedText += "(" + i.ToString() + ") " + "CollectionImageURL'" + mapped + Environment.NewLine;
+            textPreview.SelectedText += "(" + i + ") " + "CollectionImageURL'" + mapped + Environment.NewLine;
             break;
           case 39:
           case 79:
-            textPreview.SelectedText += "(" + i.ToString() + ") " + "Picture URL'" + mapped + Environment.NewLine;
+            textPreview.SelectedText += "(" + i + ") " + "Picture URL'" + mapped + Environment.NewLine;
             break;
           default:
-            textPreview.SelectedText += "(" + (i).ToString() + ") " + "Mapping Output Field '" + (i - 40).ToString() + "'" + mapped + Environment.NewLine;
+            textPreview.SelectedText += "(" + i + ") " + "Mapping Output Field '" + (i - 40) + "'" + mapped + Environment.NewLine;
             break;
         }
         if (i <= 80) // Changed to support new fields...
@@ -3357,7 +3351,7 @@ namespace Grabber_Interface
       textPreview.SelectionFont = new Font("Arial", (float)9.75, FontStyle.Bold | FontStyle.Underline);
       textPreview.SelectedText += "*** Infos about used Grab Pages ***" + Environment.NewLine;
       textPreview.AppendText(Environment.NewLine);
-      textPreview.AppendText("Base Page:" + TimeBodyDetail + Environment.NewLine);
+      textPreview.AppendText("Base page:" + TimeBodyDetail + Environment.NewLine);
       textPreview.AppendText(URLBodyDetail + Environment.NewLine);
       textPreview.AppendText(Environment.NewLine);
       textPreview.AppendText("URL Gateway:" + TimeBodyDetail2 + Environment.NewLine);
@@ -3628,47 +3622,38 @@ namespace Grabber_Interface
 
       // Call SuspendLayout for Form and all fields derived from Control, so assignment of 
       //   localized text doesn't change layout immediately.
-      this.SuspendLayout();
-      for (int index = 0; index < fieldInfos.Length; index++)
+      SuspendLayout();
+      foreach (FieldInfo t in fieldInfos.Where(t => t.FieldType.IsSubclassOf(typeof(Control))))
       {
-        if (fieldInfos[index].FieldType.IsSubclassOf(typeof(Control)))
-        {
-          fieldInfos[index].FieldType.InvokeMember("SuspendLayout",
-              BindingFlags.InvokeMethod, null,
-              fieldInfos[index].GetValue(this), null);
-        }
+        t.FieldType.InvokeMember("SuspendLayout",
+          BindingFlags.InvokeMethod, null,
+          t.GetValue(this), null);
       }
 
       // If available, assign localized text to Form and fields with Text property.
       String text = resources.GetString("$this.Text");
       if (text != null)
-        this.Text = text;
-      for (int index = 0; index < fieldInfos.Length; index++)
+        Text = text;
+      foreach (FieldInfo t in fieldInfos.Where(t => t.FieldType.GetProperty("Text", typeof(String)) != null))
       {
-        if (fieldInfos[index].FieldType.GetProperty("Text", typeof(String)) != null)
+        text = resources.GetString(t.Name + ".Text");
+        if (text != null)
         {
-          text = resources.GetString(fieldInfos[index].Name + ".Text");
-          if (text != null)
-          {
-            fieldInfos[index].FieldType.InvokeMember("Text",
-                BindingFlags.SetProperty, null,
-                fieldInfos[index].GetValue(this), new object[] { text });
-          }
+          t.FieldType.InvokeMember("Text",
+            BindingFlags.SetProperty, null,
+            t.GetValue(this), new object[] { text });
         }
       }
 
       // Call ResumeLayout for Form and all fields derived from Control to resume layout logic.
       // Call PerformLayout, so layout changes due to assignment of localized text are performed.
-      for (int index = 0; index < fieldInfos.Length; index++)
+      foreach (FieldInfo t in fieldInfos.Where(t => t.FieldType.IsSubclassOf(typeof(Control))))
       {
-        if (fieldInfos[index].FieldType.IsSubclassOf(typeof(Control)))
-        {
-          fieldInfos[index].FieldType.InvokeMember("ResumeLayout",
-                  BindingFlags.InvokeMethod, null,
-                  fieldInfos[index].GetValue(this), new object[] { false });
-        }
+        t.FieldType.InvokeMember("ResumeLayout",
+          BindingFlags.InvokeMethod, null,
+          t.GetValue(this), new object[] { false });
       }
-      this.ResumeLayout(true);
+      ResumeLayout(true);
 
     }
 
@@ -4514,11 +4499,10 @@ namespace Grabber_Interface
 
       if (TextKeyStartD.Text.Length > 0 && TextKeyStopD.Text.Length > 0)
       {
-        string find;
         string allNames;
         string allRoles;
 
-        find = textDReplace.Text.Length > 0 ? GrabUtil.FindWithAction(this.textBodyDetail.Text, this.TextKeyStartD.Text, this.TextKeyStopD.Text, this.textDReplace.Text, this.textDReplaceWith.Text, this.textComplement.Text, this.textMaxItems.Text, this.textLanguages.Text, out allNames, out allRoles, this.chkActorRoles.Checked) : GrabUtil.Find(this.textBodyDetail.Text, this.TextKeyStartD.Text, this.TextKeyStopD.Text);
+        string find = textDReplace.Text.Length > 0 ? GrabUtil.FindWithAction(textBodyDetail.Text, TextKeyStartD.Text, TextKeyStopD.Text, textDReplace.Text, textDReplaceWith.Text, textComplement.Text, textMaxItems.Text, textLanguages.Text, out allNames, out allRoles, chkActorRoles.Checked) : GrabUtil.Find(textBodyDetail.Text, TextKeyStartD.Text, TextKeyStopD.Text);
 
         MessageBox.Show(find, "Preview", MessageBoxButtons.OK);
 
@@ -4537,18 +4521,18 @@ namespace Grabber_Interface
         {
           // Create new FileInfo object and get the Length.
           FileInfo f = new FileInfo(find);
-          labelImageSize.Text = this.ByteString(f.Length);
+          labelImageSize.Text = ByteString(f.Length);
         }
         catch
         {
           try
           {
             string strTemp = Environment.GetEnvironmentVariable("TEMP") + @"\MFgrabpreview.jpg";
-            try { System.IO.File.Delete(strTemp); }
+            try { File.Delete(strTemp); }
             catch (Exception) { }
             GrabUtil.DownloadImage(find, strTemp);
             FileInfo f = new FileInfo(strTemp);
-            labelImageSize.Text = this.ByteString(f.Length);
+            labelImageSize.Text = ByteString(f.Length);
             pictureBoxPreviewCover.ImageLocation = strTemp;
             //try { System.IO.File.Delete(strTemp); }
             //catch (Exception) { }
@@ -4690,7 +4674,7 @@ namespace Grabber_Interface
 
     private void linkLabelMFwiki_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
     {
-      System.Diagnostics.Process.Start("http://wiki.team-mediaportal.com/1_MEDIAPORTAL_1/17_Extensions/3_Plugins/My_Films");
+      Process.Start("http://wiki.team-mediaportal.com/1_MEDIAPORTAL_1/17_Extensions/3_Plugins/My_Films");
     }
 
     private void buttonExpertMode_Click(object sender, EventArgs e)
@@ -4833,12 +4817,14 @@ namespace Grabber_Interface
         {
           using (Process p = new Process())
           {
-            ProcessStartInfo psi = new ProcessStartInfo();
-            psi.FileName = "notepad.exe";
-            psi.UseShellExecute = true;
-            psi.WindowStyle = ProcessWindowStyle.Normal;
-            psi.Arguments = "\"" + textURLPreview.Text + "\"";
-            psi.ErrorDialog = true;
+            ProcessStartInfo psi = new ProcessStartInfo
+            {
+              FileName = "notepad.exe",
+              UseShellExecute = true,
+              WindowStyle = ProcessWindowStyle.Normal,
+              Arguments = "\"" + textURLPreview.Text + "\"",
+              ErrorDialog = true
+            };
             if (OSInfo.OSInfo.VistaOrLater()) psi.Verb = "runas";
             p.StartInfo = psi;
             p.Start();
@@ -4870,7 +4856,7 @@ namespace Grabber_Interface
         MessageBox.Show("Please, insert search keyword !", "Error");
         return;
       }
-      if (TextURL.Text.Contains("#Page#") && (textPage.Text.Length == 0))
+      if (TextURL.Text.Contains("#page#") && (textPage.Text.Length == 0))
       {
         MessageBox.Show("Please, give the page number to load !", "Error");
         return;
@@ -4884,7 +4870,7 @@ namespace Grabber_Interface
         strSearch = GrabUtil.CleanupSearch(strSearch, textSearchCleanup.Text);
         strSearch = GrabUtil.encodeSearch(strSearch, textEncoding.Text);
         string wurl = TextURL.Text.Replace("#Search#", strSearch);
-        wurl = wurl.Replace("#Page#", textPage.Text);
+        wurl = wurl.Replace("#page#", textPage.Text);
         try
         {
           //webBrowserPreview.Url = new Uri(wurl);
@@ -4910,21 +4896,23 @@ namespace Grabber_Interface
     {
       try
       {
-        if (e.ColumnIndex == this.dataGridViewSearchResults.Columns["ResultColumn6"].Index)
+        if (e.ColumnIndex == dataGridViewSearchResults.Columns["ResultColumn6"].Index)
         {
-          string Filepath = this.dataGridViewSearchResults["ResultColumn6", e.RowIndex].Value.ToString();
+          string Filepath = dataGridViewSearchResults["ResultColumn6", e.RowIndex].Value.ToString();
           if (!Filepath.Contains(".nfo"))
             Process.Start(Filepath);
           else
           {
             using (Process p = new Process())
             {
-              ProcessStartInfo psi = new ProcessStartInfo();
-              psi.FileName = "notepad.exe";
-              psi.UseShellExecute = true;
-              psi.WindowStyle = ProcessWindowStyle.Normal;
-              psi.Arguments = "\"" + Filepath + "\"";
-              psi.ErrorDialog = true;
+              ProcessStartInfo psi = new ProcessStartInfo
+              {
+                FileName = "notepad.exe",
+                UseShellExecute = true,
+                WindowStyle = ProcessWindowStyle.Normal,
+                Arguments = "\"" + Filepath + "\"",
+                ErrorDialog = true
+              };
               if (OSInfo.OSInfo.VistaOrLater()) psi.Verb = "runas";
               p.StartInfo = psi;
               p.Start();
@@ -4942,7 +4930,7 @@ namespace Grabber_Interface
 
     private void button_openMediafile_Click(object sender, EventArgs e)
     {
-      openFileDialog1.FileName = !string.IsNullOrEmpty(this.TextSearch.Text) ? this.TextSearch.Text : String.Empty;
+      openFileDialog1.FileName = !string.IsNullOrEmpty(TextSearch.Text) ? TextSearch.Text : String.Empty;
       if (TextSearch.Text.Contains("\\"))
         openFileDialog1.InitialDirectory = TextSearch.Text.Substring(0, TextSearch.Text.LastIndexOf("\\") + 1);
       openFileDialog1.RestoreDirectory = true;
@@ -5033,10 +5021,10 @@ namespace Grabber_Interface
       if (tabControl1.TabPages.Contains(tp1) == false || tabControl1.TabPages.Contains(tp2) == false)
         throw new ArgumentException("TabPages must be in the TabControls TabPageCollection.");
 
-      int Index1 = tabControl1.TabPages.IndexOf(tp1);
-      int Index2 = tabControl1.TabPages.IndexOf(tp2);
-      tabControl1.TabPages[Index1] = tp2;
-      tabControl1.TabPages[Index2] = tp1;
+      int index1 = tabControl1.TabPages.IndexOf(tp1);
+      int index2 = tabControl1.TabPages.IndexOf(tp2);
+      tabControl1.TabPages[index1] = tp2;
+      tabControl1.TabPages[index2] = tp1;
 
       //Uncomment the following section to overcome bugs in the Compact Framework
       //tabControl1.SelectedIndex = tabControl1.SelectedIndex; 
@@ -5135,14 +5123,14 @@ namespace Grabber_Interface
       try
       {
         // Make a DataObject.
-        DataObject data_object = new DataObject();
+        DataObject dataObject = new DataObject();
 
         // Add the data in various formats.
-        data_object.SetData(DataFormats.Rtf, textBodyDetail.Rtf);
-        data_object.SetData(DataFormats.Text, textBodyDetail.Text);
+        dataObject.SetData(DataFormats.Rtf, textBodyDetail.Rtf);
+        dataObject.SetData(DataFormats.Text, textBodyDetail.Text);
 
         // Copy data to the Clipboard
-        Clipboard.SetDataObject(data_object);
+        Clipboard.SetDataObject(dataObject);
       }
       catch (Exception) { }
     }

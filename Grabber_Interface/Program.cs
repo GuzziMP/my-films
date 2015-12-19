@@ -1,14 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Windows.Forms;
 
 namespace Grabber_Interface
 {
-  using System.IO;
-
-  using MediaPortal.Configuration;
-  using MediaPortal.Services;
-
   //using NLog;
   //using NLog.Config;
   //using NLog.Targets;

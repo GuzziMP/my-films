@@ -446,7 +446,7 @@ namespace Grabber
             break;
           case "rating":
           case "score":
-            float rating = 0;
+            float rating;
             if (float.TryParse(value, out rating))
               movie.Score = rating;
             break;
@@ -460,7 +460,7 @@ namespace Grabber
             }
             break;
           case "runtime":
-            int runtime = 0;
+            int runtime;
             if (int.TryParse(value, out runtime))
               movie.Runtime = runtime;
             break;

@@ -27,7 +27,6 @@ namespace Grabber.Importer
   using System.Collections.Generic;
   using System.IO;
   using System.Threading;
-  using Grabber;
 
   /// <summary>
   /// Device Manager - needs proper description

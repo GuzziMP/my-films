@@ -35,7 +35,7 @@ namespace Grabber
       Timeout = 5000;
       MaxRetries = 3;
       requestUrl = url;
-      this.Request = (HttpWebRequest)WebRequest.Create(requestUrl);
+      Request = (HttpWebRequest)WebRequest.Create(requestUrl);
     }
 
     public WebGrabber(Uri uri)
@@ -48,16 +48,16 @@ namespace Grabber
       Timeout = 5000;
       MaxRetries = 3;
       requestUrl = uri.OriginalString;
-      this.Request = (HttpWebRequest)WebRequest.Create(uri);
+      Request = (HttpWebRequest)WebRequest.Create(uri);
     }
 
     ~WebGrabber()
     {
-      this.Request = null;
-      if (this.Response != null)
+      Request = null;
+      if (Response != null)
       {
-        this.Response.Close();
-        this.Response = null;
+        Response.Close();
+        Response = null;
       }
     }
     #endregion
@@ -87,22 +87,22 @@ namespace Grabber
         int tryCount = 0;
 
         // enable unsafe header parsing if needed
-        if (this.AllowUnsafeHeader) SetAllowUnsafeHeaderParsing(true);
+        if (AllowUnsafeHeader) SetAllowUnsafeHeaderParsing(true);
 
         // setup some request properties
-        this.Request.Proxy = WebRequest.DefaultWebProxy;
-        this.Request.Proxy.Credentials = CredentialCache.DefaultCredentials;
-        this.Request.UserAgent = this.UserAgent;
-        this.Request.Method = this.Method;
-        this.Request.CookieContainer = new CookieContainer();
+        Request.Proxy = WebRequest.DefaultWebProxy;
+        Request.Proxy.Credentials = CredentialCache.DefaultCredentials;
+        Request.UserAgent = UserAgent;
+        Request.Method = Method;
+        Request.CookieContainer = new CookieContainer();
 
         while (!completed)
         {
           tryCount++;
 
-          this.Request.Timeout = this.Timeout + (this.TimeoutIncrement * tryCount);
-          if (this.CookieHeader != null)
-            this.Request.CookieContainer.SetCookies(this.Request.RequestUri, this.CookieHeader.Replace(';', ','));
+          Request.Timeout = Timeout + TimeoutIncrement * tryCount;
+          if (CookieHeader != null)
+            Request.CookieContainer.SetCookies(Request.RequestUri, CookieHeader.Replace(';', ','));
 
           try
           {
@@ -131,9 +131,9 @@ namespace Grabber
             }
 
             // Return when hitting maximum retries.
-            if (tryCount == this.MaxRetries)
+            if (tryCount == MaxRetries)
             {
-              LogMyFilms.Warn("Connection failed: Reached retry limit of " + this.MaxRetries + ". URL=" + requestUrl);
+              LogMyFilms.Warn("Connection failed: Reached retry limit of " + MaxRetries + ". URL=" + requestUrl);
               return false;
             }
 
@@ -141,7 +141,7 @@ namespace Grabber
             // use the timeout value as a pause between retries
             if (e.Status != WebExceptionStatus.Timeout)
             {
-              Thread.Sleep(this.Timeout + (this.TimeoutIncrement * tryCount));
+              Thread.Sleep(Timeout + TimeoutIncrement * tryCount);
             }
           }
           catch (NotSupportedException e)
@@ -162,18 +162,18 @@ namespace Grabber
           finally
           {
             // disable unsafe header parsing if it was enabled
-            if (this.AllowUnsafeHeader) SetAllowUnsafeHeaderParsing(false);
+            if (AllowUnsafeHeader) SetAllowUnsafeHeaderParsing(false);
           }
         }
 
         // persist the cookie header
-        this.CookieHeader = this.Request.CookieContainer.GetCookieHeader(this.Request.RequestUri);
+        CookieHeader = Request.CookieContainer.GetCookieHeader(Request.RequestUri);
 
         // Debug
-        if (this.Debug) LogMyFilms.Debug("GetResponse: URL={0}, UserAgent={1}, CookieHeader={3}", requestUrl, this.UserAgent, this.CookieHeader);
+        if (Debug) LogMyFilms.Debug("GetResponse: URL={0}, UserAgent={1}, CookieHeader={3}", requestUrl, UserAgent, CookieHeader);
 
         // disable unsafe header parsing if it was enabled
-        if (this.AllowUnsafeHeader) SetAllowUnsafeHeaderParsing(false);
+        if (AllowUnsafeHeader) SetAllowUnsafeHeaderParsing(false);
 
         return true;
       }
@@ -186,37 +186,37 @@ namespace Grabber
 
     public string GetString()
     {
-      if (this.Response == null)
+      if (Response == null)
         return null;
 
       // If encoding was not set manually try to detect it
-      if (this.Encoding == null)
+      if (Encoding == null)
       {
         try
         {
           // Try to get the encoding using the characterset
-          this.Encoding = Encoding.GetEncoding(this.Response.CharacterSet);
+          Encoding = Encoding.GetEncoding(Response.CharacterSet);
         }
         catch (Exception e)
         {
           // If this fails default to the system's default encoding
           LogMyFilms.DebugException("Encoding could not be determined, using default.", e);
-          this.Encoding = Encoding.Default;
+          Encoding = Encoding.Default;
         }
       }
 
       // Debug
-      if (this.Debug) LogMyFilms.Debug("GetString: Encoding={2}", this.Encoding.EncodingName);
+      if (Debug) LogMyFilms.Debug("GetString: Encoding={2}", Encoding.EncodingName);
 
       // Converts the stream to a string
       try
       {
-        Stream stream = this.Response.GetResponseStream();
-        StreamReader reader = new StreamReader(stream, this.Encoding, true);
+        Stream stream = Response.GetResponseStream();
+        StreamReader reader = new StreamReader(stream, Encoding, true);
         string data = reader.ReadToEnd();
         reader.Close();
         stream.Close();
-        this.Response.Close();
+        Response.Close();
 
         // return the string data
         return data;
@@ -288,7 +288,7 @@ namespace Grabber
         {
           // update our counter of the number of requests needing 
           // unsafe header processing
-          if (setState == true) unsafeHeaderUserCount++;
+          if (setState) unsafeHeaderUserCount++;
           else unsafeHeaderUserCount--;
 
           // if there was already a request using unsafe heaser processing, we
