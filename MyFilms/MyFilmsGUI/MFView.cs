@@ -1,14 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using GUILocalizeStrings = MyFilmsPlugin.MyFilms.Utils.GUILocalizeStrings;
 
 
 namespace MyFilmsPlugin.MyFilmsGUI
 {
-  using MediaPortal.GUI.Library;
-
   using MyFilmsPlugin.MyFilms.MyFilmsGUI;
 
   public class MFView
@@ -82,37 +76,36 @@ namespace MyFilmsPlugin.MyFilmsGUI
 
     public void InitDefaults()
     {
-      this.ID = -1;
-      this.ViewContext = MyFilms.ViewContext.Menu;
-      this.ViewDisplayName = "Films";
-      this.ViewDBItem = "OriginalTitle";
-      this.ViewDBItemValue = "";
-      this.ViewLayout = MyFilms.Layout.List;
-      this.ViewSortType = MyFilms.ViewSortType.Name;
-      this.ViewSortDirection = " ASC";
-      this.ViewFilter = string.Empty;
-      this.PersonsLayout = MyFilms.Layout.List;
-      this.PersonsSortType = MyFilms.ViewSortType.Name;
-      this.PersonsSortItemFriendlyName = string.Empty;
-      this.PersonsSortDirection = " ASC";
-      this.HierarchyLayout = MyFilms.Layout.List;
-      this.HierarchySortItem = "OriginalTitle";
-      this.HierarchySortItemFriendlyName = string.Empty;
-      this.HierarchySortDirection = " ASC";
-      this.FilmsLayout = MyFilms.Layout.List;
-      this.FilmsSortItem = "SortTitle";
-      this.FilmsSortItemFriendlyName = string.Empty;
-      this.FilmsSortDirection = " ASC";
+      ID = -1;
+      ViewContext = MyFilms.ViewContext.Menu;
+      ViewDisplayName = "Films";
+      ViewDBItem = "OriginalTitle";
+      ViewDBItemValue = "";
+      ViewLayout = MyFilms.Layout.List;
+      ViewSortType = MyFilms.ViewSortType.Name;
+      ViewSortDirection = " ASC";
+      ViewFilter = string.Empty;
+      PersonsLayout = MyFilms.Layout.List;
+      PersonsSortType = MyFilms.ViewSortType.Name;
+      PersonsSortItemFriendlyName = string.Empty;
+      PersonsSortDirection = " ASC";
+      HierarchyLayout = MyFilms.Layout.List;
+      HierarchySortItem = "OriginalTitle";
+      HierarchySortItemFriendlyName = string.Empty;
+      HierarchySortDirection = " ASC";
+      FilmsLayout = MyFilms.Layout.List;
+      FilmsSortItem = "SortTitle";
+      FilmsSortItemFriendlyName = string.Empty;
+      FilmsSortDirection = " ASC";
     }
 
     public string SaveToString()
     {
-      string savestring = "";
-      savestring = ID + "|" + ViewDisplayName + "|" + ViewDBItem + "|" + ViewDBItemValue + "|" +
-                   Enum.GetName(typeof(MyFilms.Layout), ViewLayout) + "|" + Enum.GetName(typeof(MyFilms.ViewSortType), ViewSortType) + "|" + ViewSortDirection + "|" + ViewFilter + "|" + 
-                   Enum.GetName(typeof(MyFilms.Layout), PersonsLayout) + "|" + Enum.GetName(typeof(MyFilms.ViewSortType), PersonsSortType) + "|" + PersonsSortItemFriendlyName + "|" + PersonsSortDirection + "|" +
-                   Enum.GetName(typeof(MyFilms.Layout), HierarchyLayout) + "|" + HierarchySortItem + "|" + HierarchySortItemFriendlyName + "|" + HierarchySortDirection + "|" +
-                   Enum.GetName(typeof(MyFilms.Layout), FilmsLayout) + "|" + FilmsSortItem + "|" + FilmsSortItemFriendlyName + "|" + FilmsSortDirection;
+      string savestring = ID + "|" + ViewDisplayName + "|" + ViewDBItem + "|" + ViewDBItemValue + "|" +
+                          Enum.GetName(typeof(MyFilms.Layout), ViewLayout) + "|" + Enum.GetName(typeof(MyFilms.ViewSortType), ViewSortType) + "|" + ViewSortDirection + "|" + ViewFilter + "|" + 
+                          Enum.GetName(typeof(MyFilms.Layout), PersonsLayout) + "|" + Enum.GetName(typeof(MyFilms.ViewSortType), PersonsSortType) + "|" + PersonsSortItemFriendlyName + "|" + PersonsSortDirection + "|" +
+                          Enum.GetName(typeof(MyFilms.Layout), HierarchyLayout) + "|" + HierarchySortItem + "|" + HierarchySortItemFriendlyName + "|" + HierarchySortDirection + "|" +
+                          Enum.GetName(typeof(MyFilms.Layout), FilmsLayout) + "|" + FilmsSortItem + "|" + FilmsSortItemFriendlyName + "|" + FilmsSortDirection;
       LogMyFilms.Debug("SaveToString() - output = '" + savestring + "'");
       return savestring;
     }
@@ -241,65 +234,65 @@ namespace MyFilmsPlugin.MyFilmsGUI
 
     public void InitDefaults()
     {
-      this.StrSelect = string.Empty;
-      this.StrPersons = string.Empty;
-      this.StrTitleSelect = string.Empty;
-      this.StrFilmSelect = string.Empty;
-      this.ViewContext = MyFilms.ViewContext.Menu;
-      this.StrTxtView = string.Empty;
-      this.StrTxtSelect = string.Empty;
-      this.Boolselect = false;
-      this.Boolreturn = false;
-      this.Boolcollection = false;
-      this.Boolindexed = false;
-      this.Boolindexedreturn = false;
-      this.IndexedChars = 0;
-      this.BoolReverseNames = false;
-      this.BoolVirtualPathBrowsing = false;
-      this.BoolShowEmptyValuesInViews = false;
-      this.Wselectedlabel = string.Empty;
-      this.WStrSort = string.Empty;
-      this.WStrSortSensCount = string.Empty;
-      this.BoolSortCountinViews = false;
-      this.Wstar = string.Empty;
-      this.StrLayOut = 0;
-      this.WStrLayOut = 0;
-      this.StrLayOutInHierarchies = 0;
-      this.LastID = 0;
-      this.IndexItem = 0;
-      this.TitleItem = string.Empty;
+      StrSelect = string.Empty;
+      StrPersons = string.Empty;
+      StrTitleSelect = string.Empty;
+      StrFilmSelect = string.Empty;
+      ViewContext = MyFilms.ViewContext.Menu;
+      StrTxtView = string.Empty;
+      StrTxtSelect = string.Empty;
+      Boolselect = false;
+      Boolreturn = false;
+      Boolcollection = false;
+      Boolindexed = false;
+      Boolindexedreturn = false;
+      IndexedChars = 0;
+      BoolReverseNames = false;
+      BoolVirtualPathBrowsing = false;
+      BoolShowEmptyValuesInViews = false;
+      Wselectedlabel = string.Empty;
+      WStrSort = string.Empty;
+      WStrSortSensCount = string.Empty;
+      BoolSortCountinViews = false;
+      Wstar = string.Empty;
+      StrLayOut = 0;
+      WStrLayOut = 0;
+      StrLayOutInHierarchies = 0;
+      LastID = 0;
+      IndexItem = 0;
+      TitleItem = string.Empty;
     }
 
     public string SaveToString()
     {
       string savestring =
-        this.StrSelect + "|" +
-        this.StrPersons + "|" +
-        this.StrTitleSelect + "|" +
-        this.StrFilmSelect + "|" +
-        Enum.GetName(typeof(MyFilms.Layout), this.ViewContext) + "|" +
-        this.StrTxtView + "|" +
-        this.StrTxtSelect + "|" +
-        this.Boolselect.ToString() + "|" +
-        this.Boolreturn.ToString() + "|" +
-        this.Boolcollection.ToString() + "|" +
-        this.Boolindexed.ToString() + "|" +
-        this.Boolindexedreturn.ToString() + "|" +
-        this.IndexedChars.ToString() + "|" +
-        this.BoolReverseNames.ToString() + "|" +
-        this.BoolShowEmptyValuesInViews.ToString() + "|" +
-        this.Wselectedlabel + "|" +
-        this.WStrSort + "|" +
-        this.WStrSortSensCount + "|" +
-        this.BoolSortCountinViews.ToString() + "|" +
-        this.Wstar + "|" +
-        this.StrLayOut.ToString() + "|" +
-        this.WStrLayOut.ToString() + "|" +
-        this.StrLayOutInHierarchies.ToString() + "|" +
-        this.LastID.ToString() + "|" +
-        this.IndexItem.ToString() + "|" +
-        this.TitleItem + "|" +
-        this.BoolVirtualPathBrowsing.ToString() ;
+        StrSelect + "|" +
+        StrPersons + "|" +
+        StrTitleSelect + "|" +
+        StrFilmSelect + "|" +
+        Enum.GetName(typeof(MyFilms.Layout), ViewContext) + "|" +
+        StrTxtView + "|" +
+        StrTxtSelect + "|" +
+        Boolselect + "|" +
+        Boolreturn + "|" +
+        Boolcollection + "|" +
+        Boolindexed + "|" +
+        Boolindexedreturn + "|" +
+        IndexedChars + "|" +
+        BoolReverseNames + "|" +
+        BoolShowEmptyValuesInViews + "|" +
+        Wselectedlabel + "|" +
+        WStrSort + "|" +
+        WStrSortSensCount + "|" +
+        BoolSortCountinViews + "|" +
+        Wstar + "|" +
+        StrLayOut + "|" +
+        WStrLayOut + "|" +
+        StrLayOutInHierarchies + "|" +
+        LastID + "|" +
+        IndexItem + "|" +
+        TitleItem + "|" +
+        BoolVirtualPathBrowsing ;
       LogMyFilms.Debug("SaveToString() - output = '" + savestring + "'");
       return savestring;
     }
@@ -307,40 +300,40 @@ namespace MyFilmsPlugin.MyFilmsGUI
     public void LoadFromString(string inputstring)
     {
       int i = 0;
-      string[] split = inputstring.Split(new char[] { '|' }, StringSplitOptions.None);
+      string[] split = inputstring.Split(new[] { '|' }, StringSplitOptions.None);
       LogMyFilms.Debug("LoadFromString() - parsed '" + split.Length + "' elements from inputstring = '" + inputstring + "'");
       foreach (string s in split)
       {
         LogMyFilms.Debug("LoadFromString() - Parsed Value [" + i + "] = '" + s + "'");
         i++;
       }
-      this.StrSelect = split[0];
-      this.StrPersons = split[1];
-      this.StrTitleSelect = split[2];
-      this.StrFilmSelect = split[3];
-      this.ViewContext = (MyFilms.ViewContext)Enum.Parse(typeof(MyFilms.ViewContext), split[4], true); // MyFilms.ViewContext.Menu;
-      this.StrTxtView = split[5];
-      this.StrTxtSelect = split[6];
-      this.Boolselect = bool.Parse(split[7]);
-      this.Boolreturn = bool.Parse(split[8]);
-      this.Boolcollection = bool.Parse(split[9]);
-      this.Boolindexed = bool.Parse(split[10]);
-      this.Boolindexedreturn = bool.Parse(split[11]);
-      this.IndexedChars = int.Parse(split[12]);
-      this.BoolReverseNames = bool.Parse(split[13]);
-      this.BoolShowEmptyValuesInViews = bool.Parse(split[14]);
-      this.Wselectedlabel = split[15];
-      this.WStrSort = split[16];
-      this.WStrSortSensCount = split[17];
-      this.BoolSortCountinViews = bool.Parse(split[18]);
-      this.Wstar = split[19];
-      this.StrLayOut = int.Parse(split[20]);
-      this.WStrLayOut = int.Parse(split[21]);
-      this.StrLayOutInHierarchies = int.Parse(split[22]);
-      this.LastID = int.Parse(split[23]);
-      this.IndexItem = int.Parse(split[24]);
-      this.TitleItem = split[25];
-      this.BoolVirtualPathBrowsing = bool.Parse(split[26]);
+      StrSelect = split[0];
+      StrPersons = split[1];
+      StrTitleSelect = split[2];
+      StrFilmSelect = split[3];
+      ViewContext = (MyFilms.ViewContext)Enum.Parse(typeof(MyFilms.ViewContext), split[4], true); // MyFilms.ViewContext.Menu;
+      StrTxtView = split[5];
+      StrTxtSelect = split[6];
+      Boolselect = bool.Parse(split[7]);
+      Boolreturn = bool.Parse(split[8]);
+      Boolcollection = bool.Parse(split[9]);
+      Boolindexed = bool.Parse(split[10]);
+      Boolindexedreturn = bool.Parse(split[11]);
+      IndexedChars = int.Parse(split[12]);
+      BoolReverseNames = bool.Parse(split[13]);
+      BoolShowEmptyValuesInViews = bool.Parse(split[14]);
+      Wselectedlabel = split[15];
+      WStrSort = split[16];
+      WStrSortSensCount = split[17];
+      BoolSortCountinViews = bool.Parse(split[18]);
+      Wstar = split[19];
+      StrLayOut = int.Parse(split[20]);
+      WStrLayOut = int.Parse(split[21]);
+      StrLayOutInHierarchies = int.Parse(split[22]);
+      LastID = int.Parse(split[23]);
+      IndexItem = int.Parse(split[24]);
+      TitleItem = split[25];
+      BoolVirtualPathBrowsing = bool.Parse(split[26]);
     }
   }
 
@@ -374,7 +367,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
     public void LoadFromString(string inputstring)
     {
       int i = 0;
-      string[] split = inputstring.Split(new char[] { '|' }, StringSplitOptions.None);
+      string[] split = inputstring.Split(new[] { '|' }, StringSplitOptions.None);
       LogMyFilms.Debug("LoadFromString() - parsed '" + split.Length + "' elements from inputstring = '" + inputstring + "'");
       foreach (string s in split)
       {

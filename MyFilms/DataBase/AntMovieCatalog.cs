@@ -22,12 +22,12 @@ namespace MyFilmsPlugin.DataBase
 
     private void InitializeComponent()
     {
-        ((System.ComponentModel.ISupportInitialize)(this)).BeginInit();
+        ((System.ComponentModel.ISupportInitialize)this).BeginInit();
         // 
         // AntMovieCatalog
         // 
         Locale = new System.Globalization.CultureInfo(string.Empty);
-        ((System.ComponentModel.ISupportInitialize)(this)).EndInit();
+        ((System.ComponentModel.ISupportInitialize)this).EndInit();
 
     }
     }

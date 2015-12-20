@@ -905,19 +905,18 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
             dlg_error.Reset();
             // dlg_error.SetImage();
             dlg_error.SetHeading(GUIUtils.PluginName());
-            if (_CurrentTaskSuccess.HasValue)
-              dlg_error.SetText(string.Format("{0} {1}", "Error", _CurrentTaskDescription));
-            else
-              dlg_error.SetText(string.Format("{0} {1}", "Timeout", _CurrentTaskDescription));
+            dlg_error.SetText(_CurrentTaskSuccess.HasValue
+              ? string.Format("{0} {1}", "Error", _CurrentTaskDescription)
+              : string.Format("{0} {1}", "Timeout", _CurrentTaskDescription));
             if (!abortedByUser) dlg_error.DoModal(GUIWindowManager.ActiveWindow);
           }
         }
       }
 
       // store info needed to invoke the result handler
-      bool stored_TaskSuccess = _CurrentTaskSuccess == true;
-      var stored_Handler = _CurrentResultHandler;
-      object stored_ResultObject = _CurrentResult;
+      bool storedTaskSuccess = _CurrentTaskSuccess == true;
+      Action<bool, object> storedHandler = _CurrentResultHandler;
+      object storedResultObject = _CurrentResult;
 
       // clear all fields and allow execution of another background task 
       // before actually executing the result handler -> this way a result handler can also inovke another background task)
@@ -932,7 +931,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
       Monitor.Exit(this);
 
       // execute the result handler
-      if (stored_Handler != null) stored_Handler.Invoke(stored_TaskSuccess, stored_ResultObject);
+      if (storedHandler != null) storedHandler.Invoke(storedTaskSuccess, storedResultObject);
     }
   }
 

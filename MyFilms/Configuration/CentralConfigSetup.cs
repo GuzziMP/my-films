@@ -1,17 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 
 namespace MyFilmsPlugin.Configuration
 {
   using MediaPortal.Configuration;
 
-  using MyFilmsPlugin.MyFilms.Utils;
+  using MyFilms.Utils;
 
   public partial class CentralConfigSetup : Form
   {
@@ -22,9 +16,9 @@ namespace MyFilmsPlugin.Configuration
 
     private void CentralConfigSetup_Load(object sender, EventArgs e)
     {
-      XmlConfig MyFilmsServer = new XmlConfig();
-      MyFilmsCentralConfigDir.Text = MyFilmsServer.ReadXmlConfig("MyFilmsServer", "MyFilmsServerConfig", "MyFilmsCentralConfigFile", "");
-      cbSyncFromServerOnStartup.Checked = MyFilmsServer.ReadXmlConfig("MyFilmsServer", "MyFilmsServerConfig", "SyncOnStartup", false);
+      XmlConfig myFilmsServer = new XmlConfig();
+      MyFilmsCentralConfigDir.Text = myFilmsServer.ReadXmlConfig("MyFilmsServer", "MyFilmsServerConfig", "MyFilmsCentralConfigFile", "");
+      cbSyncFromServerOnStartup.Checked = myFilmsServer.ReadXmlConfig("MyFilmsServer", "MyFilmsServerConfig", "SyncOnStartup", false);
     }
 
     private void cbSyncFromServerOnStartup_CheckedChanged(object sender, EventArgs e)
@@ -74,10 +68,10 @@ namespace MyFilmsPlugin.Configuration
 
     private void SaveCentralConfig()
     {
-      XmlConfig MyFilmsServer = new XmlConfig();
-      MyFilmsServer.WriteXmlConfig("MyFilmsServer", "MyFilmsServerConfig", "MyFilmsCentralConfigFile", MyFilmsCentralConfigDir.Text);
-      MyFilmsServer.WriteXmlConfig("MyFilmsServer", "MyFilmsServerConfig", "SyncOnStartup", cbSyncFromServerOnStartup.Checked);
-      MyFilmsServer.Save();
+      XmlConfig myFilmsServer = new XmlConfig();
+      myFilmsServer.WriteXmlConfig("MyFilmsServer", "MyFilmsServerConfig", "MyFilmsCentralConfigFile", MyFilmsCentralConfigDir.Text);
+      myFilmsServer.WriteXmlConfig("MyFilmsServer", "MyFilmsServerConfig", "SyncOnStartup", cbSyncFromServerOnStartup.Checked);
+      myFilmsServer.Save();
     }
 
     private void btnSyncToServer_Click(object sender, EventArgs e)
@@ -86,8 +80,7 @@ namespace MyFilmsPlugin.Configuration
       string localConfigFile = Config.GetFolder(Config.Dir.Config) + @"\MyFilms.xml";
       if (!System.IO.Directory.Exists(MyFilmsCentralConfigDir.Text))
       {
-        MessageBox.Show(
-          "Your remote directory does not exist - cannot continue !\nPlease make sure the path is existing and accessible.", "MyFilms Server Setup", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        MessageBox.Show("Your remote directory does not exist - cannot continue !\nPlease make sure the path is existing and accessible.", "MyFilms Server Setup", MessageBoxButtons.OK, MessageBoxIcon.Error);
         return;
       }
       if (!System.IO.File.Exists(localConfigFile))
@@ -142,7 +135,7 @@ namespace MyFilmsPlugin.Configuration
       {
         try
         {
-          System.IO.File.Copy(localConfigFile, localConfigFile + "_" + System.DateTime.Now.ToString("yyyy-mm-dd hh_mm"), true);
+          System.IO.File.Copy(localConfigFile, localConfigFile + "_" + DateTime.Now.ToString("yyyy-mm-dd hh_mm"), true);
         }
         catch (Exception)
         {
@@ -155,8 +148,8 @@ namespace MyFilmsPlugin.Configuration
         System.IO.File.Copy(serverConfigFile, localConfigFile, true);
         MessageBox.Show("Successfully copied remote config to local directory !", "MyFilms Server Setup", MessageBoxButtons.OK, MessageBoxIcon.Information);
         MessageBox.Show("MyFilms Setup will now reload the updated local MyFilms.xml config file !", "MyFilms Server Setup", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-        this.DialogResult = DialogResult.OK;
-        this.Close();
+        DialogResult = DialogResult.OK;
+        Close();
       }
       catch (Exception)
       {
@@ -182,25 +175,25 @@ namespace MyFilmsPlugin.Configuration
           folderBrowserDialog1.SelectedPath = folderBrowserDialog1.SelectedPath + "\\";
         MyFilmsCentralConfigDir.Text = folderBrowserDialog1.SelectedPath;
       }
-      this.SaveCentralConfig();
+      SaveCentralConfig();
     }
 
     private void btnQuit_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.Abort;
-      this.Close();
+      DialogResult = DialogResult.Abort;
+      Close();
     }
 
     private void CentralConfigSetup_Leave(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.Abort;
-      this.Close();
+      DialogResult = DialogResult.Abort;
+      Close();
     }
 
     private void btnResetRemotePath_Click(object sender, EventArgs e)
     {
       MyFilmsCentralConfigDir.Text = "";
-      this.SaveCentralConfig();
+      SaveCentralConfig();
     }
 
   }

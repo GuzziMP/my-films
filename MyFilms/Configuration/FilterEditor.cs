@@ -1,16 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 
 namespace MyFilmsPlugin.Configuration
 {
-  using MyFilmsPlugin.DataBase;
-  using MyFilmsPlugin.MyFilms.MyFilmsGUI;
+  using DataBase;
 
   public partial class FilterEditor : Form
   {
@@ -23,9 +17,9 @@ namespace MyFilmsPlugin.Configuration
         AntFilterItem2.Items.Add("(none)");
         foreach (DataColumn dc in ds.Movie.Columns)
         {
-          if ((dc.ColumnName != "Contents_Id" && dc.ColumnName != "Movie_Id" && dc.ColumnName != "IsOnline" &&
-               dc.ColumnName != "IsOnlineTrailer" && dc.ColumnName != "LastPosition" && dc.ColumnName != "Picture" &&
-               dc.ColumnName != "Fanart") &&
+          if (dc.ColumnName != "Contents_Id" && dc.ColumnName != "Movie_Id" && dc.ColumnName != "IsOnline" &&
+              dc.ColumnName != "IsOnlineTrailer" && dc.ColumnName != "LastPosition" && dc.ColumnName != "Picture" &&
+              dc.ColumnName != "Fanart" &&
               (ExtendedFields ||
                (dc.ColumnName != "IMDB_Id" && dc.ColumnName != "TMDB_Id" && dc.ColumnName != "Watched" &&
                 dc.ColumnName != "Certification" && dc.ColumnName != "Writer" && dc.ColumnName != "SourceTrailer" &&
@@ -140,103 +134,103 @@ namespace MyFilmsPlugin.Configuration
 
     private void Selected_Enreg_TextChanged()
     {
-      this.StrViewFilterSelect = "";
+      StrViewFilterSelect = "";
       string wAntFilterSign;
-      wAntFilterSign = this.AntFilterSign1.Text == "#" ? "<>" : this.AntFilterSign1.Text;
+      wAntFilterSign = AntFilterSign1.Text == "#" ? "<>" : AntFilterSign1.Text;
       if ((AntFilterItem1.Text.Length > 0) && AntFilterItem1.Text != "(none)")
         if (AntFilterItem1.Text == "DateAdded")
-          switch (this.AntFilterSign1.Text)
+          switch (AntFilterSign1.Text)
           {
             case "not like":
             case "#":
-              this.StrViewFilterSelect = "(" + this.AntFilterItem1.Text + " " + wAntFilterSign + " #" + Convert.ToDateTime(this.AntFilterText1.Text) + "# or " + this.AntFilterItem1.Text + " is null) ";
+              this.StrViewFilterSelect = "(" + AntFilterItem1.Text + " " + wAntFilterSign + " #" + Convert.ToDateTime(AntFilterText1.Text) + "# or " + AntFilterItem1.Text + " is null) ";
               break;
             case "not in":
             case "in":
-              this.StrViewFilterSelect = "(" + this.AntFilterItem1.Text + " " + wAntFilterSign + " (" + this.DBitemList(this.AntFilterText1.Text, true) + ")) ";
+              this.StrViewFilterSelect = "(" + AntFilterItem1.Text + " " + wAntFilterSign + " (" + DBitemList(AntFilterText1.Text, true) + ")) ";
               break;
             case "like in":
-              this.StrViewFilterSelect = "(" + this.TransformedLikeIn(this.AntFilterItem1.Text, this.AntFilterText1.Text, true) + ") ";
+              StrViewFilterSelect = "(" + TransformedLikeIn(AntFilterItem1.Text, AntFilterText1.Text, true) + ") ";
               break;
             default:
-              this.StrViewFilterSelect = "(" + this.AntFilterItem1.Text + " " + wAntFilterSign + " #" + Convert.ToDateTime(this.AntFilterText1.Text) + "# ) ";
+              StrViewFilterSelect = "(" + AntFilterItem1.Text + " " + wAntFilterSign + " #" + Convert.ToDateTime(AntFilterText1.Text) + "# ) ";
               break;
           }
         else
-          switch (this.AntFilterSign1.Text)
+          switch (AntFilterSign1.Text)
           {
             case "not like":
             case "#":
-              this.StrViewFilterSelect = "(" + this.AntFilterItem1.Text + " " + wAntFilterSign + " '" + this.AntFilterText1.Text + "' or " + this.AntFilterItem1.Text + " is null) ";
+              StrViewFilterSelect = "(" + AntFilterItem1.Text + " " + wAntFilterSign + " '" + AntFilterText1.Text + "' or " + AntFilterItem1.Text + " is null) ";
               break;
             case "not in":
             case "in":
-              this.StrViewFilterSelect = "(" + this.AntFilterItem1.Text + " " + wAntFilterSign + " (" + this.DBitemList(this.AntFilterText1.Text, false) + ")) ";
+              StrViewFilterSelect = "(" + AntFilterItem1.Text + " " + wAntFilterSign + " (" + DBitemList(AntFilterText1.Text, false) + ")) ";
               break;
             case "like in":
-              this.StrViewFilterSelect = "(" + this.TransformedLikeIn(this.AntFilterItem1.Text, this.AntFilterText1.Text, false) + ") ";
+              StrViewFilterSelect = "(" + TransformedLikeIn(AntFilterItem1.Text, AntFilterText1.Text, false) + ") ";
               break;
             default:
-              this.StrViewFilterSelect = "(" + this.AntFilterItem1.Text + " " + wAntFilterSign + " '" + this.AntFilterText1.Text + "') ";
+              StrViewFilterSelect = "(" + AntFilterItem1.Text + " " + wAntFilterSign + " '" + AntFilterText1.Text + "') ";
               break;
           }
-      if ((AntFilterComb.Text == "or") && (this.StrViewFilterSelect.Length > 0))
-        this.StrViewFilterSelect = this.StrViewFilterSelect + " OR ";
+      if ((AntFilterComb.Text == "or") && (StrViewFilterSelect.Length > 0))
+        StrViewFilterSelect = StrViewFilterSelect + " OR ";
       else
-        if (this.StrViewFilterSelect.Length > 0)
-          this.StrViewFilterSelect = this.StrViewFilterSelect + " AND ";
+        if (StrViewFilterSelect.Length > 0)
+          StrViewFilterSelect = StrViewFilterSelect + " AND ";
 
-      wAntFilterSign = this.AntFilterSign2.Text == "#" ? "<>" : this.AntFilterSign2.Text;
+      wAntFilterSign = AntFilterSign2.Text == "#" ? "<>" : AntFilterSign2.Text;
 
       if ((AntFilterItem2.Text.Length > 0) && AntFilterItem2.Text != "(none)")
         if (AntFilterItem2.Text == "DateAdded")
-          switch (this.AntFilterSign2.Text)
+          switch (AntFilterSign2.Text)
           {
             case "not like":
             case "#":
-              this.StrViewFilterSelect = "(" + this.StrViewFilterSelect + "(" + this.AntFilterItem2.Text + " " + wAntFilterSign + " #" + Convert.ToDateTime(this.AntFilterText2.Text) + "# or " + this.AntFilterItem2.Text + " is null)) AND ";
+              StrViewFilterSelect = "(" + StrViewFilterSelect + "(" + AntFilterItem2.Text + " " + wAntFilterSign + " #" + Convert.ToDateTime(AntFilterText2.Text) + "# or " + AntFilterItem2.Text + " is null)) AND ";
               break;
             case "not in":
             case "in":
-              this.StrViewFilterSelect = "(" + this.AntFilterItem2.Text + " " + wAntFilterSign + " (" + this.DBitemList(this.AntFilterText2.Text, true) + ")) AND ";
+              StrViewFilterSelect = "(" + AntFilterItem2.Text + " " + wAntFilterSign + " (" + DBitemList(AntFilterText2.Text, true) + ")) AND ";
               break;
             case "like in":
-              this.StrViewFilterSelect = "(" + this.TransformedLikeIn(this.AntFilterItem2.Text, this.AntFilterText2.Text, true) + ") AND ";
+              StrViewFilterSelect = "(" + TransformedLikeIn(AntFilterItem2.Text, AntFilterText2.Text, true) + ") AND ";
               break;
             default:
-              this.StrViewFilterSelect = "(" + this.StrViewFilterSelect + "(" + this.AntFilterItem2.Text + " " + wAntFilterSign + " #" + Convert.ToDateTime(this.AntFilterText2.Text) + "# )) AND ";
+              StrViewFilterSelect = "(" + StrViewFilterSelect + "(" + AntFilterItem2.Text + " " + wAntFilterSign + " #" + Convert.ToDateTime(AntFilterText2.Text) + "# )) AND ";
               break;
           }
         else
-          switch (this.AntFilterSign2.Text)
+          switch (AntFilterSign2.Text)
           {
             case "not like":
             case "#":
-              this.StrViewFilterSelect = "(" + this.StrViewFilterSelect + "(" + this.AntFilterItem2.Text + " " + wAntFilterSign + " '" + this.AntFilterText2.Text + "' or " + this.AntFilterItem2.Text + " is null)) AND ";
+              StrViewFilterSelect = "(" + StrViewFilterSelect + "(" + AntFilterItem2.Text + " " + wAntFilterSign + " '" + AntFilterText2.Text + "' or " + AntFilterItem2.Text + " is null)) AND ";
               break;
             case "not in":
             case "in":
-              this.StrViewFilterSelect = "(" + this.AntFilterItem2.Text + " " + wAntFilterSign + " (" + this.DBitemList(this.AntFilterText2.Text, false) + ")) AND ";
+              StrViewFilterSelect = "(" + AntFilterItem2.Text + " " + wAntFilterSign + " (" + this.DBitemList(AntFilterText2.Text, false) + ")) AND ";
               break;
             case "like in":
-              this.StrViewFilterSelect = "(" + this.TransformedLikeIn(this.AntFilterItem2.Text, this.AntFilterText2.Text, true) + ") AND ";
+              StrViewFilterSelect = "(" + TransformedLikeIn(AntFilterItem2.Text, AntFilterText2.Text, true) + ") AND ";
               break;
             default:
-              this.StrViewFilterSelect = "(" + this.StrViewFilterSelect + "(" + this.AntFilterItem2.Text + " " + wAntFilterSign + " '" + this.AntFilterText2.Text + "' )) AND ";
+              StrViewFilterSelect = "(" + StrViewFilterSelect + "(" + AntFilterItem2.Text + " " + wAntFilterSign + " '" + AntFilterText2.Text + "' )) AND ";
               break;
           }
       if (!string.IsNullOrEmpty(AntFilterFreeText.Text))
-        this.StrViewFilterSelect = this.StrViewFilterSelect + AntFilterFreeText.Text + " AND ";
-      this.StrDfltSelect = StrViewFilterSelect; // this is for config filters, inlcuding the "AND" at the end ...
+        StrViewFilterSelect = StrViewFilterSelect + AntFilterFreeText.Text + " AND ";
+      StrDfltSelect = StrViewFilterSelect; // this is for config filters, inlcuding the "AND" at the end ...
       if (StrViewFilterSelect.EndsWith(" AND ")) StrViewFilterSelect = StrViewFilterSelect.Substring(0, StrViewFilterSelect.Length - 5);
-      ExpressionPreview.Text = this.StrViewFilterSelect; //ExpressionPreview.Text = this.StrViewFilterSelect + masterTitle + " not like ''" + " AND ";
+      ExpressionPreview.Text = StrViewFilterSelect; //ExpressionPreview.Text = this.StrViewFilterSelect + masterTitle + " not like ''" + " AND ";
       LogMyFilms.Debug("MyFilms (Build Selected Enreg) - Selected_Enreg: '" + ExpressionPreview.Text + "'");
       ConfigString = ExpressionPreview.Text;
     }
 
     private string DBitemList(string inputstring, bool isdate)
     {
-      string returnValue = "";
+      string returnValue = string.Empty;
       string[] split = inputstring.Split(new Char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
       foreach (string s in split)
       {
@@ -337,14 +331,14 @@ namespace MyFilmsPlugin.Configuration
     {
       Selected_Enreg_TextChanged();
       CheckExpression();
-      this.DialogResult = DialogResult.OK;
-      this.Close();
+      DialogResult = DialogResult.OK;
+      Close();
     }
 
     private void btnCancel_Click(object sender, EventArgs e)
     {
-      this.DialogResult = DialogResult.Cancel;
-      this.Close();
+      DialogResult = DialogResult.Cancel;
+      Close();
     }
 
 

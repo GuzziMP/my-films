@@ -21,16 +21,11 @@
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #endregion
 
-using System.Diagnostics;
-using System.Xml;
-using MyFilmsPlugin.Utils;
-
 namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
 {
   using System;
   using System.Collections.Generic;
   using System.Data;
-  using System.IO;
   using System.Linq;
 
   using MediaPortal.Configuration;
@@ -75,7 +70,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
 
     private bool IsExternalCatalog(CatalogType type)
     {
-      return (StrFileType != CatalogType.AntMovieCatalog3 && StrFileType != CatalogType.AntMovieCatalog4Xtended);
+      return StrFileType != CatalogType.AntMovieCatalog3 && StrFileType != CatalogType.AntMovieCatalog4Xtended;
     }
 
     public Configuration(string currentConfig, bool setcurrentconfig, bool createTemp, LoadParameterInfo loadParams)
@@ -83,9 +78,9 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
       #region init variables
       CustomViews = new MFview();
       CurrentView = string.Empty;
-      DbSelection = new string[] { string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty };
-      ListSeparator = new string[] { string.Empty, string.Empty, string.Empty, string.Empty, string.Empty };
-      RoleSeparator = new string[] { string.Empty, string.Empty, string.Empty, string.Empty, string.Empty };
+      DbSelection = new[] { string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty };
+      ListSeparator = new[] { string.Empty, string.Empty, string.Empty, string.Empty, string.Empty };
+      RoleSeparator = new[] { string.Empty, string.Empty, string.Empty, string.Empty, string.Empty };
       StrGlobalFilterString = string.Empty;
       WStrSortSensCount = string.Empty;
       WStrSortSens = string.Empty;
@@ -343,18 +338,17 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
           case CatalogType.DVDProfiler:
             if (createTemp)
             {
-              string WStrPath = System.IO.Path.GetDirectoryName(StrFileXml);
-              string destFile = WStrPath + "\\" + StrFileXml.Substring(StrFileXml.LastIndexOf(@"\") + 1, StrFileXml.Length - StrFileXml.LastIndexOf(@"\") - 5) + "_tmp.xml";
-              if ((System.IO.File.Exists(destFile) && (System.IO.File.GetLastWriteTime(destFile) > System.IO.File.GetLastWriteTime(StrFileXml))))
+              string wStrPath = System.IO.Path.GetDirectoryName(StrFileXml);
+              string destFile = wStrPath + "\\" + StrFileXml.Substring(StrFileXml.LastIndexOf(@"\") + 1, StrFileXml.Length - StrFileXml.LastIndexOf(@"\") - 5) + "_tmp.xml";
+              if (System.IO.File.Exists(destFile) && (System.IO.File.GetLastWriteTime(destFile) > System.IO.File.GetLastWriteTime(StrFileXml)))
               {
                 StrFileXml = destFile;
                 break;
               }
-              bool OnlyFile = false;
-              OnlyFile = xmlConfig.ReadXmlConfig("MyFilms", currentConfig, "OnlyFile", false);
-              string TagField = xmlConfig.ReadXmlConfig("MyFilms", currentConfig, "DVDPTagField", string.Empty);
-              DvdProfiler cv = new DvdProfiler(TagField);
-              StrFileXml = cv.ConvertProfiler(StrFileXml, StrPathImg, destinationTagline, destinationTags, destinationCertification, destinationWriter, TagField, OnlyFile);
+              bool onlyFile = xmlConfig.ReadXmlConfig("MyFilms", currentConfig, "OnlyFile", false);
+              string tagField = xmlConfig.ReadXmlConfig("MyFilms", currentConfig, "DVDPTagField", string.Empty);
+              DvdProfiler cv = new DvdProfiler(tagField);
+              StrFileXml = cv.ConvertProfiler(StrFileXml, StrPathImg, destinationTagline, destinationTags, destinationCertification, destinationWriter, tagField, onlyFile);
             }
             else
               StrFileXml = xmlConfig.ReadXmlConfig("MyFilms", currentConfig, "AntCatalogTemp", string.Empty);
@@ -362,17 +356,16 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
           case CatalogType.MovieCollector:
             if (createTemp)
             {
-              string WStrPath = System.IO.Path.GetDirectoryName(StrFileXml);
-              string destFile = WStrPath + "\\" + StrFileXml.Substring(StrFileXml.LastIndexOf(@"\") + 1, StrFileXml.Length - StrFileXml.LastIndexOf(@"\") - 5) + "_tmp.xml";
-              if ((System.IO.File.Exists(destFile) && (System.IO.File.GetLastWriteTime(destFile) > System.IO.File.GetLastWriteTime(StrFileXml))))
+              string wStrPath = System.IO.Path.GetDirectoryName(StrFileXml);
+              string destFile = wStrPath + "\\" + StrFileXml.Substring(StrFileXml.LastIndexOf(@"\") + 1, StrFileXml.Length - StrFileXml.LastIndexOf(@"\") - 5) + "_tmp.xml";
+              if (System.IO.File.Exists(destFile) && (System.IO.File.GetLastWriteTime(destFile) > System.IO.File.GetLastWriteTime(StrFileXml)))
               {
                 StrFileXml = destFile;
                 break;
               }
-              bool OnlyFile = false;
-              OnlyFile = xmlConfig.ReadXmlConfig("MyFilms", currentConfig, "OnlyFile", false);
+              bool onlyFile = xmlConfig.ReadXmlConfig("MyFilms", currentConfig, "OnlyFile", false);
               MovieCollector mc = new MovieCollector();
-              StrFileXml = mc.ConvertMovieCollector(StrFileXml, StrPathImg, destinationTagline, destinationTags, destinationCertification, destinationWriter, OnlyFile, TitleDelim);
+              StrFileXml = mc.ConvertMovieCollector(StrFileXml, StrPathImg, destinationTagline, destinationTags, destinationCertification, destinationWriter, onlyFile, TitleDelim);
             }
             else
               StrFileXml = xmlConfig.ReadXmlConfig("MyFilms", currentConfig, "AntCatalogTemp", string.Empty);
@@ -380,17 +373,16 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
           case CatalogType.MyMovies:
             if (createTemp)
             {
-              string WStrPath = System.IO.Path.GetDirectoryName(StrFileXml);
-              string destFile = WStrPath + "\\" + StrFileXml.Substring(StrFileXml.LastIndexOf(@"\") + 1, StrFileXml.Length - StrFileXml.LastIndexOf(@"\") - 5) + "_tmp.xml";
-              if ((System.IO.File.Exists(destFile) && (System.IO.File.GetLastWriteTime(destFile) > System.IO.File.GetLastWriteTime(StrFileXml))))
+              string wStrPath = System.IO.Path.GetDirectoryName(StrFileXml);
+              string destFile = wStrPath + "\\" + StrFileXml.Substring(StrFileXml.LastIndexOf(@"\") + 1, StrFileXml.Length - StrFileXml.LastIndexOf(@"\") - 5) + "_tmp.xml";
+              if (System.IO.File.Exists(destFile) && (System.IO.File.GetLastWriteTime(destFile) > System.IO.File.GetLastWriteTime(StrFileXml)))
               {
                 StrFileXml = destFile;
                 break;
               }
-              bool OnlyFile = false;
-              OnlyFile = xmlConfig.ReadXmlConfig("MyFilms", currentConfig, "OnlyFile", false);
+              bool onlyFile = xmlConfig.ReadXmlConfig("MyFilms", currentConfig, "OnlyFile", false);
               MyMovies mm = new MyMovies();
-              StrFileXml = mm.ConvertMyMovies(StrFileXml, StrPathImg, destinationTagline, destinationTags, destinationCertification, destinationWriter, OnlyFile);
+              StrFileXml = mm.ConvertMyMovies(StrFileXml, StrPathImg, destinationTagline, destinationTags, destinationCertification, destinationWriter, onlyFile);
             }
             else
               StrFileXml = xmlConfig.ReadXmlConfig("MyFilms", currentConfig, "AntCatalogTemp", string.Empty);
@@ -398,17 +390,16 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
           case CatalogType.EaxMovieCatalog2:
             if (createTemp)
             {
-              string WStrPath = System.IO.Path.GetDirectoryName(StrFileXml);
-              string destFile = WStrPath + "\\" + StrFileXml.Substring(StrFileXml.LastIndexOf(@"\") + 1, StrFileXml.Length - StrFileXml.LastIndexOf(@"\") - 5) + "_tmp.xml";
-              if ((System.IO.File.Exists(destFile) && (System.IO.File.GetLastWriteTime(destFile) > System.IO.File.GetLastWriteTime(StrFileXml))))
+              string wStrPath = System.IO.Path.GetDirectoryName(StrFileXml);
+              string destFile = wStrPath + "\\" + StrFileXml.Substring(StrFileXml.LastIndexOf(@"\") + 1, StrFileXml.Length - StrFileXml.LastIndexOf(@"\") - 5) + "_tmp.xml";
+              if (System.IO.File.Exists(destFile) && (System.IO.File.GetLastWriteTime(destFile) > System.IO.File.GetLastWriteTime(StrFileXml)))
               {
                 StrFileXml = destFile;
                 break;
               }
-              bool OnlyFile = false;
-              OnlyFile = xmlConfig.ReadXmlConfig("MyFilms", currentConfig, "OnlyFile", false);
+              bool onlyFile = xmlConfig.ReadXmlConfig("MyFilms", currentConfig, "OnlyFile", false);
               EaxMovieCatalog emc = new EaxMovieCatalog();
-              StrFileXml = emc.ConvertEaxMovieCatalog(StrFileXml, StrPathImg, destinationTagline, destinationTags, destinationCertification, destinationWriter, OnlyFile, TitleDelim);
+              StrFileXml = emc.ConvertEaxMovieCatalog(StrFileXml, StrPathImg, destinationTagline, destinationTags, destinationCertification, destinationWriter, onlyFile, TitleDelim);
             }
             else
               StrFileXml = xmlConfig.ReadXmlConfig("MyFilms", currentConfig, "AntCatalogTemp", string.Empty);
@@ -416,17 +407,16 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
           case CatalogType.EaxMovieCatalog3:
             if (createTemp)
             {
-              string WStrPath = System.IO.Path.GetDirectoryName(StrFileXml);
-              string destFile = WStrPath + "\\" + StrFileXml.Substring(StrFileXml.LastIndexOf(@"\") + 1, StrFileXml.Length - StrFileXml.LastIndexOf(@"\") - 5) + "_tmp.xml";
-              if ((System.IO.File.Exists(destFile) && (System.IO.File.GetLastWriteTime(destFile) > System.IO.File.GetLastWriteTime(StrFileXml))))
+              string wStrPath = System.IO.Path.GetDirectoryName(StrFileXml);
+              string destFile = wStrPath + "\\" + StrFileXml.Substring(StrFileXml.LastIndexOf(@"\") + 1, StrFileXml.Length - StrFileXml.LastIndexOf(@"\") - 5) + "_tmp.xml";
+              if (System.IO.File.Exists(destFile) && (System.IO.File.GetLastWriteTime(destFile) > System.IO.File.GetLastWriteTime(StrFileXml)))
               {
                 StrFileXml = destFile;
                 break;
               }
-              bool OnlyFile = false;
-              OnlyFile = xmlConfig.ReadXmlConfig("MyFilms", currentConfig, "OnlyFile", false);
+              bool onlyFile = xmlConfig.ReadXmlConfig("MyFilms", currentConfig, "OnlyFile", false);
               EaxMovieCatalog3 emc3 = new EaxMovieCatalog3();
-              StrFileXml = emc3.ConvertEaxMovieCatalog3(StrFileXml, StrPathImg, destinationTagline, destinationTags, destinationCertification, destinationWriter, OnlyFile, TitleDelim);
+              StrFileXml = emc3.ConvertEaxMovieCatalog3(StrFileXml, StrPathImg, destinationTagline, destinationTags, destinationCertification, destinationWriter, onlyFile, TitleDelim);
             }
             else
               StrFileXml = xmlConfig.ReadXmlConfig("MyFilms", currentConfig, "AntCatalogTemp", string.Empty);
@@ -434,17 +424,16 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
           case CatalogType.PersonalVideoDatabase:
             if (createTemp)
             {
-              string WStrPath = System.IO.Path.GetDirectoryName(StrFileXml);
-              string destFile = WStrPath + "\\" + StrFileXml.Substring(StrFileXml.LastIndexOf(@"\") + 1, StrFileXml.Length - StrFileXml.LastIndexOf(@"\") - 5) + "_tmp.xml";
-              if ((System.IO.File.Exists(destFile) && (System.IO.File.GetLastWriteTime(destFile) > System.IO.File.GetLastWriteTime(StrFileXml))))
+              string wStrPath = System.IO.Path.GetDirectoryName(StrFileXml);
+              string destFile = wStrPath + "\\" + StrFileXml.Substring(StrFileXml.LastIndexOf(@"\") + 1, StrFileXml.Length - StrFileXml.LastIndexOf(@"\") - 5) + "_tmp.xml";
+              if (System.IO.File.Exists(destFile) && (System.IO.File.GetLastWriteTime(destFile) > System.IO.File.GetLastWriteTime(StrFileXml)))
               {
                 StrFileXml = destFile;
                 break;
               }
-              bool OnlyFile = false;
-              OnlyFile = xmlConfig.ReadXmlConfig("MyFilms", currentConfig, "OnlyFile", false);
+              bool onlyFile = xmlConfig.ReadXmlConfig("MyFilms", currentConfig, "OnlyFile", false);
               PersonalVideoDatabase pvd = new PersonalVideoDatabase();
-              StrFileXml = pvd.ConvertPersonalVideoDatabase(StrFileXml, StrPathImg, destinationTagline, destinationTags, destinationCertification, destinationWriter, OnlyFile, TitleDelim, StrECoptionStoreTaglineInDescription);
+              StrFileXml = pvd.ConvertPersonalVideoDatabase(StrFileXml, StrPathImg, destinationTagline, destinationTags, destinationCertification, destinationWriter, onlyFile, TitleDelim, StrECoptionStoreTaglineInDescription);
             }
             else
               StrFileXml = xmlConfig.ReadXmlConfig("MyFilms", currentConfig, "AntCatalogTemp", string.Empty);
@@ -452,17 +441,16 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
           case CatalogType.eXtremeMovieManager:
             if (createTemp)
             {
-              string WStrPath = System.IO.Path.GetDirectoryName(StrFileXml);
-              string destFile = WStrPath + "\\" + StrFileXml.Substring(StrFileXml.LastIndexOf(@"\") + 1, StrFileXml.Length - StrFileXml.LastIndexOf(@"\") - 5) + "_tmp.xml";
-              if ((System.IO.File.Exists(destFile) && (System.IO.File.GetLastWriteTime(destFile) > System.IO.File.GetLastWriteTime(StrFileXml))))
+              string wStrPath = System.IO.Path.GetDirectoryName(StrFileXml);
+              string destFile = wStrPath + "\\" + StrFileXml.Substring(StrFileXml.LastIndexOf(@"\") + 1, StrFileXml.Length - StrFileXml.LastIndexOf(@"\") - 5) + "_tmp.xml";
+              if (System.IO.File.Exists(destFile) && (System.IO.File.GetLastWriteTime(destFile) > System.IO.File.GetLastWriteTime(StrFileXml)))
               {
                 StrFileXml = destFile;
                 break;
               }
-              bool OnlyFile = false;
-              OnlyFile = xmlConfig.ReadXmlConfig("MyFilms", currentConfig, "OnlyFile", false);
+              bool onlyFile = xmlConfig.ReadXmlConfig("MyFilms", currentConfig, "OnlyFile", false);
               XMM xmm = new XMM();
-              StrFileXml = xmm.ConvertXMM(StrFileXml, StrPathImg, destinationTagline, destinationTags, destinationCertification, destinationWriter, OnlyFile);
+              StrFileXml = xmm.ConvertXMM(StrFileXml, StrPathImg, destinationTagline, destinationTags, destinationCertification, destinationWriter, onlyFile);
             }
             else
               StrFileXml = xmlConfig.ReadXmlConfig("MyFilms", currentConfig, "AntCatalogTemp", string.Empty);
@@ -470,17 +458,16 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
           case CatalogType.XBMC: // XBMC fulldb export (all movies in one DB)
             if (createTemp)
             {
-              string WStrPath = System.IO.Path.GetDirectoryName(StrFileXml);
-              string destFile = WStrPath + "\\" + StrFileXml.Substring(StrFileXml.LastIndexOf(@"\") + 1, StrFileXml.Length - StrFileXml.LastIndexOf(@"\") - 5) + "_tmp.xml";
-              if ((System.IO.File.Exists(destFile) && (System.IO.File.GetLastWriteTime(destFile) > System.IO.File.GetLastWriteTime(StrFileXml))))
+              string wStrPath = System.IO.Path.GetDirectoryName(StrFileXml);
+              string destFile = wStrPath + "\\" + StrFileXml.Substring(StrFileXml.LastIndexOf(@"\") + 1, StrFileXml.Length - StrFileXml.LastIndexOf(@"\") - 5) + "_tmp.xml";
+              if (System.IO.File.Exists(destFile) && (System.IO.File.GetLastWriteTime(destFile) > System.IO.File.GetLastWriteTime(StrFileXml)))
               {
                 StrFileXml = destFile;
                 break;
               }
-              bool OnlyFile = false;
-              OnlyFile = xmlConfig.ReadXmlConfig("MyFilms", currentConfig, "OnlyFile", false);
+              bool onlyFile = xmlConfig.ReadXmlConfig("MyFilms", currentConfig, "OnlyFile", false);
               XbmcNfo nfo = new XbmcNfo();
-              StrFileXml = nfo.ConvertXbmcNfo(StrFileXml, StrPathImg, destinationTagline, destinationTags, destinationCertification, destinationWriter, StrStorage, OnlyFile, TitleDelim);
+              StrFileXml = nfo.ConvertXbmcNfo(StrFileXml, StrPathImg, destinationTagline, destinationTags, destinationCertification, destinationWriter, StrStorage, onlyFile, TitleDelim);
             }
             else
               StrFileXml = xmlConfig.ReadXmlConfig("MyFilms", currentConfig, "AntCatalogTemp", string.Empty);
@@ -488,17 +475,16 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
           case CatalogType.MovingPicturesXML:
             if (createTemp)
             {
-              string WStrPath = System.IO.Path.GetDirectoryName(StrFileXml);
-              string destFile = WStrPath + "\\" + StrFileXml.Substring(StrFileXml.LastIndexOf(@"\") + 1, StrFileXml.Length - StrFileXml.LastIndexOf(@"\") - 5) + "_tmp.xml";
-              if ((System.IO.File.Exists(destFile) && (System.IO.File.GetLastWriteTime(destFile) > System.IO.File.GetLastWriteTime(StrFileXml))))
+              string wStrPath = System.IO.Path.GetDirectoryName(StrFileXml);
+              string destFile = wStrPath + "\\" + StrFileXml.Substring(StrFileXml.LastIndexOf(@"\") + 1, StrFileXml.Length - StrFileXml.LastIndexOf(@"\") - 5) + "_tmp.xml";
+              if (System.IO.File.Exists(destFile) && (System.IO.File.GetLastWriteTime(destFile) > System.IO.File.GetLastWriteTime(StrFileXml)))
               {
                 StrFileXml = destFile;
                 break;
               }
-              bool OnlyFile = false;
-              OnlyFile = xmlConfig.ReadXmlConfig("MyFilms", currentConfig, "OnlyFile", false);
+              bool onlyFile = xmlConfig.ReadXmlConfig("MyFilms", currentConfig, "OnlyFile", false);
               MovingPicturesXML mopi = new MovingPicturesXML();
-              StrFileXml = mopi.ConvertMovingPicturesXML(StrFileXml, StrPathImg, destinationTagline, destinationTags, destinationCertification, destinationWriter, OnlyFile);
+              StrFileXml = mopi.ConvertMovingPicturesXML(StrFileXml, StrPathImg, destinationTagline, destinationTags, destinationCertification, destinationWriter, onlyFile);
             }
             else
               StrFileXml = xmlConfig.ReadXmlConfig("MyFilms", currentConfig, "AntCatalogTemp", string.Empty);
@@ -1001,8 +987,8 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
         xmlConfig.WriteXmlConfig("MyFilms", currentConfig, "ViewContext", Enum.GetName(typeof(MyFilms.ViewContext), MyFilms.conf.ViewContext));
         xmlConfig.WriteXmlConfig("MyFilms", currentConfig, "View", MyFilms.conf.StrTxtView);
         xmlConfig.WriteXmlConfig("MyFilms", currentConfig, "Selection", MyFilms.conf.StrTxtSelect);
-        xmlConfig.WriteXmlConfig("MyFilms", currentConfig, "IndexItem", (selectedItem > -1) ? (selectedItem.ToString()) : "-1"); //may need to check if there is no item selected and so save -1
-        xmlConfig.WriteXmlConfig("MyFilms", currentConfig, "TitleItem", (selectedItem > -1) ? ((MyFilms.conf.Boolselect) ? selectedItem.ToString() : selectedItemLabel) : string.Empty); //may need to check if there is no item selected and so save ""
+        xmlConfig.WriteXmlConfig("MyFilms", currentConfig, "IndexItem", selectedItem > -1 ? selectedItem.ToString() : "-1"); //may need to check if there is no item selected and so save -1
+        xmlConfig.WriteXmlConfig("MyFilms", currentConfig, "TitleItem", selectedItem > -1 ? (MyFilms.conf.Boolselect ? selectedItem.ToString() : selectedItemLabel) : string.Empty); //may need to check if there is no item selected and so save ""
 
         xmlConfig.WriteXmlConfig("MyFilms", currentConfig, "Boolselect", MyFilms.conf.Boolselect);
         xmlConfig.WriteXmlConfig("MyFilms", currentConfig, "Boolreturn", MyFilms.conf.Boolreturn);
@@ -1054,15 +1040,15 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
     //--------------------------------------------------------------------------------------------
     //  Control Acces to asked configuration
     //--------------------------------------------------------------------------------------------
-    public static string ControlAccessConfig(string configname, int GetID)
+    public static string ControlAccessConfig(string configname, int getId)
     {
       if (configname.Length == 0)
         return "";
 
       using (var xmlConfig = new XmlSettings(Config.GetFile(Config.Dir.Config, "MyFilms.xml")))
       {
-        string Dwp = xmlConfig.ReadXmlConfig("MyFilms", configname, "Dwp", string.Empty);
-        if (Dwp.Length == 0)
+        string dwp = xmlConfig.ReadXmlConfig("MyFilms", configname, "Dwp", string.Empty);
+        if (dwp.Length == 0)
         {
           return configname;
         }
@@ -1075,11 +1061,11 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
         keyboard.SetLabelAsInitialText(false); // set to false, otherwise our intial text is cleared
         keyboard.Text = string.Empty;
         keyboard.Password = true;
-        keyboard.DoModal(GetID);
-        if ((keyboard.IsConfirmed) && (keyboard.Text.Length > 0))
+        keyboard.DoModal(getId);
+        if (keyboard.IsConfirmed && (keyboard.Text.Length > 0))
         {
           var crypto = new Crypto();
-          if (crypto.Decrypter(Dwp) == keyboard.Text) return configname;
+          if (crypto.Decrypter(dwp) == keyboard.Text) return configname;
         }
         return string.Empty;
       }
@@ -1088,7 +1074,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
     //--------------------------------------------------------------------------------------------
     //  Choice Configuration
     //--------------------------------------------------------------------------------------------
-    public static string ChoiceConfig(int GetID)
+    public static string ChoiceConfig(int getId)
     {
       var dlg = (MediaPortal.Dialogs.GUIDialogMenu)MediaPortal.GUI.Library.GUIWindowManager.GetWindow((int)MediaPortal.GUI.Library.GUIWindow.Window.WINDOW_DIALOG_MENU);
       if (dlg == null)
@@ -1105,7 +1091,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
         int mesFilmsNbConfig = xmlConfig.ReadXmlConfig("MyFilms", "MyFilms", "NbConfig", -1);
         for (int i = 0; i < mesFilmsNbConfig; i++) dlg.Add(xmlConfig.ReadXmlConfig("MyFilms", "MyFilms", "ConfigName" + i, string.Empty));
 
-        dlg.DoModal(GetID);
+        dlg.DoModal(getId);
         if (dlg.SelectedLabel == -1)
         {
           try
@@ -1123,11 +1109,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
           string catalog = xmlConfig.ReadXmlConfig("MyFilms", dlg.SelectedLabelText, "AntCatalog", string.Empty);
           if (!System.IO.File.Exists(catalog))
           {
-            GUIUtils.ShowOKDialog(
-              "Cannot load Configuration:",
-              "'" + dlg.SelectedLabelText + "'",
-              "Verify your settings !",
-              "");
+            GUIUtils.ShowOKDialog("Cannot load Configuration:", "'" + dlg.SelectedLabelText + "'", "Verify your settings !", "");
             return string.Empty;
           }
           else
@@ -1164,7 +1146,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
         if (CurrentConfig == null)
           CurrentConfig = xmlConfig.ReadXmlConfig("MyFilms", "MyFilms", "Current_Config", string.Empty).Length > 0 ? xmlConfig.ReadXmlConfig("MyFilms", "MyFilms", "Current_Config", string.Empty) : string.Empty;
 
-        if (!(xmlConfig.ReadXmlConfig("MyFilms", "MyFilms", "Menu_Config", false)) &&
+        if (!xmlConfig.ReadXmlConfig("MyFilms", "MyFilms", "Menu_Config", false) &&
             (xmlConfig.ReadXmlConfig("MyFilms", "MyFilms", "Default_Config", string.Empty).Length > 0))
         {
           CurrentConfig = xmlConfig.ReadXmlConfig("MyFilms", "MyFilms", "Default_Config", string.Empty);
@@ -1172,14 +1154,14 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
         }
         if (showmenu)
         {
-          if (CurrentConfig == string.Empty || (xmlConfig.ReadXmlConfig("MyFilms", "MyFilms", "Menu_Config", true)))
+          if (CurrentConfig == string.Empty || xmlConfig.ReadXmlConfig("MyFilms", "MyFilms", "Menu_Config", true))
           {
             boolchoice = false;
             CurrentConfig = Configuration.ChoiceConfig(MyFilms.ID_MyFilms);
             // "" => user esc's dialog on plugin startup so exit plugin unchanged
           }
           CurrentConfig = Configuration.ControlAccessConfig(CurrentConfig, MyFilms.ID_MyFilms);
-          if ((CurrentConfig == "") && (NbConfig > 1) && (boolchoice)) //error password ? so if many config => choice config menu
+          if ((CurrentConfig == "") && (NbConfig > 1) && boolchoice) //error password ? so if many config => choice config menu
             CurrentConfig = Configuration.ChoiceConfig(MyFilms.ID_MyFilms);
         }
       }

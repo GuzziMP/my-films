@@ -25,7 +25,6 @@
 
 namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
 {
-  using System.Globalization;
   using MediaPortal.GUI.Library;
   //using MediaPortal.Dialogs;
   //using Action = MediaPortal.GUI.Library.Action;
@@ -95,26 +94,26 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
       return Load(GUIGraphicsContext.Skin + @"\MyFilmsDialogRating.xml");
     }
 
-    protected override void OnClicked(int controlId, GUIControl control, MediaPortal.GUI.Library.Action.ActionType actionType)
+    protected override void OnClicked(int controlId, GUIControl control, Action.ActionType actionType)
     {
       base.OnClicked(controlId, control, actionType);
-      if (control == this.BtnOk)
+      if (control == BtnOk)
       {
         PageDestroy();
         this.Result = ResultCode.Close;
         return;
       }
-      if (control == this.BtnMin)
+      if (control == BtnMin)
       {
-        if (this.Rating >= (decimal)0.1)
-          this.Rating = this.Rating - (decimal)0.1;
+        if (Rating >= (decimal)0.1)
+          Rating = Rating - (decimal)0.1;
         UpdateRating();
         return;
       }
-      if (control == this.BtnPlus)
+      if (control == BtnPlus)
       {
-        if (this.Rating < 10)
-          this.Rating = this.Rating + (decimal)0.1;
+        if (Rating < 10)
+          Rating = Rating + (decimal)0.1;
         UpdateRating();
       }
     }
@@ -125,14 +124,14 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
       {
         case GUIMessage.MessageType.GUI_MSG_WINDOW_INIT:
           {
-            this.Result = ResultCode.Close;
+            Result = ResultCode.Close;
             base.OnMessage(message);
             UpdateRating();
           }
           return true;
         case GUIMessage.MessageType.GUI_MSG_WINDOW_DEINIT:
           {
-            this.Result = ResultCode.Cancel;
+            Result = ResultCode.Cancel;
             base.OnMessage(message);
           }
           return true;

@@ -3,7 +3,7 @@
   using System;
   using System.Windows.Forms;
 
-  using MyFilmsPlugin.MyFilms.Utils;
+  using Utils;
 
   public partial class MyFilmsInputBox : Form
     {
@@ -53,10 +53,10 @@
           set
           {
             hideNfoCheckBox = value;
-            this.cbUseNfoGrabber.Enabled = !this.hideNfoCheckBox;
+            cbUseNfoGrabber.Enabled = !hideNfoCheckBox;
           }
         }
-        private bool hideNfoCheckBox = false;
+        private bool hideNfoCheckBox;
 
         public bool ShowOnlyName
         {
@@ -82,7 +82,7 @@
             }
           }
         }
-        private bool showOnlyName = false;
+        private bool showOnlyName;
 
         public bool TestMode
         {
@@ -94,7 +94,7 @@
             cbSetupType.Visible = testMode;
           }
         }
-        private bool testMode = false;
+        private bool testMode;
 
         private void textBoxNewName_TextChanged(object sender, EventArgs e)
         {
@@ -107,11 +107,11 @@
           {
             if (e.KeyCode == Keys.Enter)
             {
-              this.Close();
+              Close();
             }
             if (e.KeyCode == Keys.Escape)
             {
-              this.Close();
+              Close();
             }
           }
 
@@ -163,8 +163,6 @@
               cbUseNfoGrabber.Visible = false;
               textBoxNewName.Visible = false;
               lblNetworkClientInfo.Visible = true;
-              break;
-            default:
               break;
           }
         }

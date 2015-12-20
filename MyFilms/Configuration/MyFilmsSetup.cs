@@ -36,7 +36,6 @@ namespace MyFilmsPlugin.MyFilms.Configuration
   using System.Reflection;
   using System.Threading;
   using System.Windows.Forms;
-  using System.Windows.Data;
   using System.Xml;
 
   using Grabber;
@@ -63,7 +62,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
 
     private static NLog.Logger LogMyFilms = NLog.LogManager.GetCurrentClassLogger();  //log
 
-    static ScheduledTasks st = null;
+    static ScheduledTasks st;
 
     private OpenFileDialog openFileDialog1;
     private FolderBrowserDialog folderBrowserDialog1;
@@ -88,7 +87,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
     public MyFilmsSetup()
     {
       InitializeComponent();
-      System.Reflection.Assembly asm = System.Reflection.Assembly.GetExecutingAssembly();
+      Assembly asm = Assembly.GetExecutingAssembly();
       label_VersionNumber.Text = "Version " + asm.GetName().Version;
     }
 
@@ -137,9 +136,9 @@ namespace MyFilmsPlugin.MyFilms.Configuration
         buttonOpenTmpFileAMC.Visible = false; // disable Launch Button to start AMC with Catalogs externally
         // chkVirtualPathBrowsing.Visible = false; // disable global option to use virtual path browsing
         
-        // Remove unused Catalog types -- also changes index, so doesn't work with existing code !
+        // Remove unused catalog types -- also changes index, so doesn't work with existing code !
         //CatalogType.Items.Remove("MovingPicturesXML (V1.2 process plugin)");
-        //CatalogType.Items.Remove("Ant Movie Catalog Xtended (V4.1)");
+        //CatalogType.Items.Remove("Ant Movie catalog Xtended (V4.1)");
         CatalogType.Items.Remove("Mediabrowser 3");
         CatalogType.Items.Remove("XBMC nfo reader");
         //CatalogType.Items.Remove(CatalogType.Items[7]); // MF internal DB
@@ -188,7 +187,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
       //}
       if (MesFilms_nb_config > 0)
       {
-        Config_Menu.Checked = (XmlConfig.ReadXmlConfig("MyFilms", "MyFilms", "Menu_Config", false));
+        Config_Menu.Checked = XmlConfig.ReadXmlConfig("MyFilms", "MyFilms", "Menu_Config", false);
       }
       for (int i = 0; i < MesFilms_nb_config; i++)
       {
@@ -220,9 +219,9 @@ namespace MyFilmsPlugin.MyFilms.Configuration
       #region add dropdown content for AMC3
       foreach (DataColumn dc in ds.Movie.Columns)
       {
-        if ((dc.ColumnName != "Contents_Id" && dc.ColumnName != "Movie_Id" && dc.ColumnName != "IsOnline" && dc.ColumnName != "IsOnlineTrailer" &&
-             dc.ColumnName != "LastPosition" && dc.ColumnName != "Picture" && dc.ColumnName != "Fanart" && dc.ColumnName != "MultiUserState" &&
-             dc.ColumnName != "AlternateTitles" && dc.ColumnName != "VirtualPathTitle" && dc.ColumnName != "CollectionImage")
+        if (dc.ColumnName != "Contents_Id" && dc.ColumnName != "Movie_Id" && dc.ColumnName != "IsOnline" && dc.ColumnName != "IsOnlineTrailer" &&
+            dc.ColumnName != "LastPosition" && dc.ColumnName != "Picture" && dc.ColumnName != "Fanart" && dc.ColumnName != "MultiUserState" &&
+            dc.ColumnName != "AlternateTitles" && dc.ColumnName != "VirtualPathTitle" && dc.ColumnName != "CollectionImage"
             && (CatalogType.SelectedIndex != 0 ||
             (dc.ColumnName != "IMDB_Id" && dc.ColumnName != "TMDB_Id" && dc.ColumnName != "Watched" && dc.ColumnName != "Certification" &&
              dc.ColumnName != "Writer" && dc.ColumnName != "SourceTrailer" && dc.ColumnName != "TagLine" && dc.ColumnName != "Tags" &&
@@ -270,14 +269,14 @@ namespace MyFilmsPlugin.MyFilms.Configuration
             AntItemDetails6.Items.Add(dc.ColumnName);
           }
           if (dc.ColumnName != "OriginalTitle" && dc.ColumnName != "TranslatedTitle" && dc.ColumnName != "FormattedTitle" && dc.ColumnName != "IndexedTitle" && dc.ColumnName != "AlternateTitles" &&
-              dc.ColumnName != "Comments" && dc.ColumnName != "Description" &&
+              dc.ColumnName != "Comments" && dc.ColumnName != "description" &&
               dc.ColumnName != "Date" && dc.ColumnName != "DateAdded" && dc.ColumnName != "Rating" &&
               dc.ColumnName != "URL" && dc.ColumnName != "RecentlyAdded" && dc.ColumnName != "DateWatched" && dc.ColumnName != "DateReleased")
           {
             SField1.Items.Add(dc.ColumnName);
             SField2.Items.Add(dc.ColumnName);
           }
-          if (dc.ColumnName != "Description" && dc.ColumnName != "Comments") //  && dc.ColumnName != "Number" && dc.ColumnName != "TranslatedTitle" && dc.ColumnName != "OriginalTitle" && dc.ColumnName != "FormattedTitle"  && dc.ColumnName != "AlternateTitles" && dc.ColumnName != "DateWatched"
+          if (dc.ColumnName != "description" && dc.ColumnName != "Comments") //  && dc.ColumnName != "Number" && dc.ColumnName != "TranslatedTitle" && dc.ColumnName != "OriginalTitle" && dc.ColumnName != "FormattedTitle"  && dc.ColumnName != "AlternateTitles" && dc.ColumnName != "DateWatched"
           {
             AntViewItem.Items.Add(dc.ColumnName);
           }
@@ -317,14 +316,14 @@ namespace MyFilmsPlugin.MyFilms.Configuration
       }
       try { t = st.OpenTask("MyFilms_AMCUpdater_" + name); }
       catch (ArgumentException) { }
-      scheduleAMCUpdater.Checked = (t != null);
+      scheduleAMCUpdater.Checked = t != null;
       load = false;
       // Now start SetupWizard, if it's a clean new install
       if (RunWizardAfterInstall)
       {
         WizardActive = true;
         Thread.Sleep(100);
-        newCatalogWizard();
+        NewCatalogWizard();
         RunWizardAfterInstall = false;
         WizardActive = false;
       }
@@ -369,15 +368,15 @@ namespace MyFilmsPlugin.MyFilms.Configuration
       ButDelet.Enabled = visibility;
     }
 
-    private void ButCat_Click(object sender, System.EventArgs e)
+    private void ButCat_Click(object sender, EventArgs e)
     {
       if (!string.IsNullOrEmpty(MesFilmsCat.Text))
         openFileDialog1.FileName = MesFilmsCat.Text;
       else
       {
         openFileDialog1.FileName = String.Empty;
-        //if (System.IO.Directory.Exists(MyFilmsSettings.GetPath(MyFilmsSettings.Path.MyFilmsPath) + @"\Catalog\"))
-        //  openFileDialog1.InitialDirectory = MyFilmsSettings.GetPath(MyFilmsSettings.Path.MyFilmsPath) + @"\Catalog\";
+        //if (System.IO.Directory.Exists(MyFilmsSettings.GetPath(MyFilmsSettings.Path.MyFilmsPath) + @"\catalog\"))
+        //  openFileDialog1.InitialDirectory = MyFilmsSettings.GetPath(MyFilmsSettings.Path.MyFilmsPath) + @"\catalog\";
         //else
         // openFileDialog1.InitialDirectory = Config.GetDirectoryInfo(Config.Dir.Config) + @"\";
         openFileDialog1.InitialDirectory = "";
@@ -389,7 +388,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
       openFileDialog1.RestoreDirectory = true;
       openFileDialog1.DefaultExt = "xml";
       openFileDialog1.Filter = "XML Files|*.xml";
-      openFileDialog1.Title = "Select Movie Catalog File (xml)";
+      openFileDialog1.Title = "Select Movie catalog File (xml)";
       openFileDialog1.CheckFileExists = false;
       if (openFileDialog1.ShowDialog(this) == DialogResult.OK)
       {
@@ -400,11 +399,11 @@ namespace MyFilmsPlugin.MyFilms.Configuration
     {
       if (!System.IO.File.Exists(filename))
       {
-        //Ant Movie Catalog (V3.5.1.2)
+        //Ant Movie catalog (V3.5.1.2)
         //DVD Profiler
         //Movie Collector
         //MyMovies
-        //Eax Movie Catalog
+        //Eax Movie catalog
         //eXtreme Movie Manager (V7.1.0.2)
         //XBMC (V10.0)
         //MyFilms DB (ANT with extended Database Fields)
@@ -412,11 +411,10 @@ namespace MyFilmsPlugin.MyFilms.Configuration
         {
           if (MessageBox.Show("That File doesn't exists, do you want to create it ?", "Configuration", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
           {
-            var destXml = new XmlTextWriter(filename, System.Text.Encoding.Default);
-            destXml.Formatting = Formatting.Indented;
+            var destXml = new XmlTextWriter(filename, System.Text.Encoding.Default) {Formatting = Formatting.Indented};
             destXml.WriteStartDocument();
             destXml.WriteStartElement("AntMovieCatalog");
-            destXml.WriteStartElement("Catalog");
+            destXml.WriteStartElement("catalog");
             destXml.WriteElementString("Properties", string.Empty);
             destXml.WriteStartElement("Contents");
             destXml.Close();
@@ -489,7 +487,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
     {
       // update AMCupdater config with latest MyFilms settings
       // Read_XML_AMCconfig(Config_Name.Text); // read current (or create new default) config file // reading already done in "load MF settings)
-      CreateMyFilmsDefaultsForAMCconfig(Config_Name.Text); //create MF defaults
+      CreateMyFilmsDefaultsForAmCconfig(Config_Name.Text); //create MF defaults
       Save_XML_AMCconfig(Config_Name.Text); // save new config
 
       // Save MF config
@@ -532,7 +530,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
         AntTitle1.Focus();
         return;
       }
-      if ((SearchFileName.Checked) && ItemSearchFileName.Text.Length == 0)
+      if (SearchFileName.Checked && ItemSearchFileName.Text.Length == 0)
       {
         MessageBox.Show("The Field used for searching by Movie's File Name is mandatory  !", "Configuration", MessageBoxButtons.OK, MessageBoxIcon.Stop);
         ItemSearchFileName.Focus();
@@ -668,7 +666,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
           cbSuppressPlayStopFieldToUpdate.Focus();
           return;
         }
-      if ((chkFanart.Checked) && (MesFilmsFanart.Text.Length == 0))
+      if (chkFanart.Checked && (MesFilmsFanart.Text.Length == 0))
       {
         MessageBox.Show("Fanart path must be fill for using !", "Configuration", MessageBoxButtons.OK, MessageBoxIcon.Stop);
         MesFilmsFanart.Focus();
@@ -708,14 +706,14 @@ namespace MyFilmsPlugin.MyFilms.Configuration
       string destFile = string.Empty;
       switch (CatalogType.SelectedIndex)
       {
-        case 0: // ANT Movie Catalog
+        case 0: // ANT Movie catalog
         case 10:// Starter Settings ANT extended DB
           break;
         case 1: //DVD Profiler
         case 2: // Movie Collector V7.1.4
         case 3: // MyMovies
-        case 4: // EAX Movie Catalog 2.5.0
-        case 5: // EAX Movie Catalog 3.0.9 (beta5)
+        case 4: // EAX Movie catalog 2.5.0
+        case 5: // EAX Movie catalog 3.0.9 (beta5)
         case 6: // PVD PersonalVideoDatabase V0.9.9.21
         case 7: // eXtreme Movie Manager
         case 8: // XBMC fulldb export (all movies in one DB)
@@ -1080,7 +1078,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
       // XmlConfig.RemoveEntry("MyFilms", Config_Name.Text, "EnhancedWatchedStatusHandling"); // ToDo: can be removed in later release, when we don't support nonEnhanced/AMC3 anymore
     }
 
-    internal int GetLayoutFromName(string layoutname)
+    private int GetLayoutFromName(string layoutname)
     {
       int wLayout = 0;
       if (layoutname == "List") wLayout = 0;
@@ -1092,7 +1090,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
       return wLayout;
     }
 
-    internal string GetLayoutFromInt(int layoutnumber)
+    private string GetLayoutFromInt(int layoutnumber)
     {
       string layoutname = "List";
       if (layoutnumber == 0) layoutname = "List";
@@ -1131,10 +1129,10 @@ namespace MyFilmsPlugin.MyFilms.Configuration
       XmlConfig.WriteXmlConfig(wfile, "ID0000", "Spacing", comboBoxLogoSpacing.Text); // Added Spacing to Logo Config
       XmlConfig.WriteXmlConfig(wfile, "ID0000", "Country", txtCountry.Text); // Added Country to Logo Config
 
-      int iID2001 = 0;
-      int iID2002 = 0;
-      int iID2003 = 0;
-      for (int i = 0; i < (int)LogoView.Items.Count; i++)
+      int iId2001 = 0;
+      int iId2002 = 0;
+      int iId2003 = 0;
+      for (int i = 0; i < LogoView.Items.Count; i++)
       {
         string wline = LogoView.Items[i].SubItems[1].Text + ";";
         wline = wline + LogoView.Items[i].SubItems[2].Text.ToLower() + ";";
@@ -1143,23 +1141,23 @@ namespace MyFilmsPlugin.MyFilms.Configuration
         wline = wline + LogoView.Items[i].SubItems[5].Text + ";";
         wline = wline + LogoView.Items[i].SubItems[6].Text.ToLower() + ";";
         wline = wline + LogoView.Items[i].SubItems[7].Text + ";";
-        if ((LogoView.Items[i].SubItems[9].Text.Length > 0) && (StoreFullLogoPath))
+        if ((LogoView.Items[i].SubItems[9].Text.Length > 0) && StoreFullLogoPath)
           wline = wline + LogoView.Items[i].SubItems[9].Text + "\\" + LogoView.Items[i].SubItems[8].Text;
         else
           wline = wline + LogoView.Items[i].SubItems[8].Text;
         switch (LogoView.Items[i].SubItems[0].Text)
         {
           case "ID2001":
-            XmlConfig.WriteXmlConfig(wfile, LogoView.Items[i].SubItems[0].Text, LogoView.Items[i].SubItems[0].Text + "_" + iID2001, wline);
-            iID2001++;
+            XmlConfig.WriteXmlConfig(wfile, LogoView.Items[i].SubItems[0].Text, LogoView.Items[i].SubItems[0].Text + "_" + iId2001, wline);
+            iId2001++;
             break;
           case "ID2002":
-            XmlConfig.WriteXmlConfig(wfile, LogoView.Items[i].SubItems[0].Text, LogoView.Items[i].SubItems[0].Text + "_" + iID2002, wline);
-            iID2002++;
+            XmlConfig.WriteXmlConfig(wfile, LogoView.Items[i].SubItems[0].Text, LogoView.Items[i].SubItems[0].Text + "_" + iId2002, wline);
+            iId2002++;
             break;
           case "ID2003":
-            XmlConfig.WriteXmlConfig(wfile, LogoView.Items[i].SubItems[0].Text, LogoView.Items[i].SubItems[0].Text + "_" + iID2003, wline);
-            iID2003++;
+            XmlConfig.WriteXmlConfig(wfile, LogoView.Items[i].SubItems[0].Text, LogoView.Items[i].SubItems[0].Text + "_" + iId2003, wline);
+            iId2003++;
             break;
         }
       }
@@ -1169,7 +1167,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
     {
       if (!String.IsNullOrEmpty(PathStorage.Text))
       {
-        this.folderBrowserDialog1.SelectedPath = this.PathStorage.Text.Contains(";") ? this.PathStorage.Text.Substring(this.PathStorage.Text.LastIndexOf(";") + 1).Trim() : this.PathStorage.Text;
+        folderBrowserDialog1.SelectedPath = PathStorage.Text.Contains(";") ? PathStorage.Text.Substring(PathStorage.Text.LastIndexOf(";") + 1).Trim() : PathStorage.Text;
         if (folderBrowserDialog1.SelectedPath.LastIndexOf("\\") == folderBrowserDialog1.SelectedPath.Length)
           folderBrowserDialog1.SelectedPath = folderBrowserDialog1.SelectedPath.Substring(folderBrowserDialog1.SelectedPath.Length - 1);
       }
@@ -1178,7 +1176,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
       folderBrowserDialog1.Description = "Path for Movies File Search";
       if (folderBrowserDialog1.ShowDialog(this) == DialogResult.OK)
       {
-        if (this.folderBrowserDialog1.SelectedPath.LastIndexOf(@"\") != this.folderBrowserDialog1.SelectedPath.Length - 1)
+        if (folderBrowserDialog1.SelectedPath.LastIndexOf(@"\") != folderBrowserDialog1.SelectedPath.Length - 1)
           folderBrowserDialog1.SelectedPath = folderBrowserDialog1.SelectedPath + "\\";
 
         if (PathStorage.Text.Length == 0)
@@ -1190,7 +1188,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
       }
     }
 
-    public void ButQuit_Click(object sender, EventArgs e)
+    private void ButQuit_Click(object sender, EventArgs e)
     {
       Close();
     }
@@ -1213,7 +1211,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
       personBindingSource.ResumeBinding();
 
       // views
-      viewBindingSource.DataSource = this.MyCustomViews;
+      viewBindingSource.DataSource = MyCustomViews;
       viewBindingSource.ResumeBinding();
     }
 
@@ -1280,7 +1278,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
       while (true) // for (int i = 1; i < iCustomViews + 1; i++)
       {
         if (string.IsNullOrEmpty(XmlConfig.ReadXmlConfig("MyFilms", Config_Name.Text, string.Format("AntViewText{0}", index), string.Empty))) break; // stop loading, if no View name is given
-        MFview.ViewRow view = this.MyCustomViews.View.NewViewRow();
+        MFview.ViewRow view = MyCustomViews.View.NewViewRow();
         view.DBfield = XmlConfig.ReadXmlConfig("MyFilms", Config_Name.Text, string.Format("AntViewItem{0}", index), string.Empty);
         view.ViewEnabled = XmlConfig.ReadXmlConfig("MyFilms", Config_Name.Text, string.Format("AntViewEnabled{0}", index), true);
         view.ImagePath = XmlConfig.ReadXmlConfig("MyFilms", Config_Name.Text, string.Format("AntViewImagePath{0}", index), string.Empty);
@@ -1293,8 +1291,8 @@ namespace MyFilmsPlugin.MyFilms.Configuration
         view.SortFieldViewType = XmlConfig.ReadXmlConfig("MyFilms", Config_Name.Text, string.Format("AntViewSortFieldViewType{0}", index), "Name");
         view.SortDirectionView = XmlConfig.ReadXmlConfig("MyFilms", Config_Name.Text, string.Format("AntViewSortDirectionView{0}", index), " ASC");
         view.SortDirectionView = view.SortDirectionView.Contains("ASC") ? " ASC" : " DESC";
-        view.LayoutView = this.GetLayoutFromInt(XmlConfig.ReadXmlConfig("MyFilms", Config_Name.Text, string.Format("AntViewLayoutView{0}", index), 0));
-        this.MyCustomViews.View.AddViewRow(view);
+        view.LayoutView = GetLayoutFromInt(XmlConfig.ReadXmlConfig("MyFilms", Config_Name.Text, string.Format("AntViewLayoutView{0}", index), 0));
+        MyCustomViews.View.AddViewRow(view);
         index++;
       }
       if (iCustomViews == -1) // Customviews not yet present ... ToDo: Remove in later Version - only "migration code"
@@ -1399,7 +1397,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
       check_WOL_Userdialog.Checked = XmlConfig.ReadXmlConfig("MyFilms", Config_Name.Text, "WOL-Userdialog", false);
 
       chkDVDprofilerMergeWithGenreField.Checked = false;
-      chkDVDprofilerMergeWithGenreField.Checked = XmlConfig.ReadXmlConfig("MyFilms", this.Config_Name.Text, "DVDPTagField", "") == "Category";
+      chkDVDprofilerMergeWithGenreField.Checked = XmlConfig.ReadXmlConfig("MyFilms", Config_Name.Text, "DVDPTagField", "") == "Category";
       CheckWatched.Checked = XmlConfig.ReadXmlConfig("MyFilms", Config_Name.Text, "CheckWatched", false);
       CheckWatchedPlayerStopped.Checked = XmlConfig.ReadXmlConfig("MyFilms", Config_Name.Text, "CheckWatchedPlayerStopped", false);
       AlwaysDefaultView.Checked = XmlConfig.ReadXmlConfig("MyFilms", Config_Name.Text, "AlwaysDefaultView", false);
@@ -1446,13 +1444,13 @@ namespace MyFilmsPlugin.MyFilms.Configuration
       View_Dflt_Item.Items.Add(View_Dflt_Item.Text);
       View_Dflt_Item.Text = XmlConfig.ReadXmlConfig("MyFilms", Config_Name.Text, "ViewDfltItem", "(none)");
       View_Dflt_Text.Text = XmlConfig.ReadXmlConfig("MyFilms", Config_Name.Text, "ViewDfltText", "");
-      Config_Dflt.Checked = (Config_Name.Text) == XmlConfig.ReadXmlConfig("MyFilms", "MyFilms", "Default_Config", "");
+      Config_Dflt.Checked = Config_Name.Text == XmlConfig.ReadXmlConfig("MyFilms", "MyFilms", "Default_Config", "");
       Config_EnablePreload.Checked = XmlConfig.ReadXmlConfig("MyFilms", "MyFilms", "PreCaching", false);
 
       AntViewText_Change();
       AntSort_Change();
 
-      chkLogos.Enabled = (Config_Name.Text.Length > 0);
+      chkLogos.Enabled = Config_Name.Text.Length > 0;
 
       if (chkAMCUpd.Checked)
       {
@@ -1550,7 +1548,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
             AntItemDetails6.Text = tmpValue;
           }
           if (dc.ColumnName != "OriginalTitle" && dc.ColumnName != "TranslatedTitle" && dc.ColumnName != "FormattedTitle" && dc.ColumnName != "IndexedTitle" &&
-              dc.ColumnName != "Comments" && dc.ColumnName != "Description" && dc.ColumnName != "Date" && dc.ColumnName != "DateAdded" && dc.ColumnName != "Rating" &&
+              dc.ColumnName != "Comments" && dc.ColumnName != "description" && dc.ColumnName != "Date" && dc.ColumnName != "DateAdded" && dc.ColumnName != "Rating" &&
               dc.ColumnName != "URL" && dc.ColumnName != "AgeAdded"  && dc.ColumnName != "RecentlyAdded")
           {
             tmpValue = SField1.Text;
@@ -1565,7 +1563,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
           }
 
           if (dc.ColumnName != "TranslatedTitle" && dc.ColumnName != "OriginalTitle" && dc.ColumnName != "FormattedTitle" &&
-              dc.ColumnName != "Description" && dc.ColumnName != "Comments" && dc.ColumnName != "Number")
+              dc.ColumnName != "description" && dc.ColumnName != "Comments" && dc.ColumnName != "Number")
           {
             tmpValue = AntViewItem.Text;
             if (AntViewItem.Items.Contains(dc.ColumnName)) AntViewItem.Items.Remove(dc.ColumnName);
@@ -1627,16 +1625,13 @@ namespace MyFilmsPlugin.MyFilms.Configuration
       list.Insert(0, obj);
     }
 
-    private bool IsExtendedField(string DbField)
+    private bool IsExtendedField(string dbField)
     {
-      if (DbField == "IMDB_Id" || DbField == "TMDB_Id" || DbField == "Watched" || DbField == "Certification" ||
-           DbField == "Writer" || DbField == "SourceTrailer" || DbField == "TagLine" || DbField == "Tags" ||
-           DbField == "RatingUser" || DbField == "Studio" || DbField == "IMDB_Rank" || DbField == "Edition" ||
-           DbField == "Aspectratio" || DbField == "CategoryTrakt" || DbField == "Favorite" ||
-           DbField == "CustomField1" || DbField == "CustomField2" || DbField == "CustomField3")
-        return true;
-      else
-        return false;
+      return dbField == "IMDB_Id" || dbField == "TMDB_Id" || dbField == "Watched" || dbField == "Certification" ||
+             dbField == "Writer" || dbField == "SourceTrailer" || dbField == "TagLine" || dbField == "Tags" ||
+             dbField == "RatingUser" || dbField == "Studio" || dbField == "IMDB_Rank" || dbField == "Edition" ||
+             dbField == "Aspectratio" || dbField == "CategoryTrakt" || dbField == "Favorite" ||
+             dbField == "CustomField1" || dbField == "CustomField2" || dbField == "CustomField3";
     }
 
     private void Refresh_Tabs(bool enable)
@@ -1902,8 +1897,8 @@ namespace MyFilmsPlugin.MyFilms.Configuration
       {
         string DeleteName = Config_Name.Text;
         Remove_Config();
-        if ((Config_Name.Text) == XmlConfig.ReadXmlConfig("MyFilms", "MyFilms", "Default_Config", "")) XmlConfig.RemoveEntry("MyFilms", "MyFilms", "Default_Config");
-        if ((Config_Name.Text) == XmlConfig.ReadXmlConfig("MyFilms", "MyFilms", "Current_Config", "")) XmlConfig.RemoveEntry("MyFilms", "MyFilms", "Current_Config");
+        if (Config_Name.Text == XmlConfig.ReadXmlConfig("MyFilms", "MyFilms", "Default_Config", "")) XmlConfig.RemoveEntry("MyFilms", "MyFilms", "Default_Config");
+        if (Config_Name.Text == XmlConfig.ReadXmlConfig("MyFilms", "MyFilms", "Current_Config", "")) XmlConfig.RemoveEntry("MyFilms", "MyFilms", "Current_Config");
         Config_Name.Items.Remove(Config_Name.Text);
         Refresh_Items(true);
         Config_Name.ResetText();
@@ -1924,29 +1919,35 @@ namespace MyFilmsPlugin.MyFilms.Configuration
 
     private void ButCopy_Click(object sender, EventArgs e)
     {
-      MyFilmsInputBox input = new MyFilmsInputBox();
-      input.Text = "MyFilms - Copy Config";
-      input.CatalogTypeSelectedIndex = CatalogType.SelectedIndex; // preset to currently chosen catalog type 
-      input.CatalogType = CatalogType.Text; // preset to currently chosen catalog name
-      input.Country = cbGrabberOverrideLanguage.Text; // to preset country to alredy existing setting ...
-      input.ShowOnlyName = true; // to disable selection of country and year
+      MyFilmsInputBox input = new MyFilmsInputBox
+      {
+        Text = "MyFilms - Copy Config",
+        CatalogTypeSelectedIndex = CatalogType.SelectedIndex,
+        CatalogType = CatalogType.Text,
+        Country = cbGrabberOverrideLanguage.Text,
+        ShowOnlyName = true
+      };
+      // preset to currently chosen catalog type 
+      // preset to currently chosen catalog name
+      // to preset country to alredy existing setting ...
+      // to disable selection of country and year
       input.ShowDialog(this);
       string newCatalogType = input.CatalogType;
       int newCatalogSelectedIndex = input.CatalogTypeSelectedIndex;
-      string newConfig_Name = input.ConfigName;
-      if (newConfig_Name == Config_Name.Text)
+      string newConfigName = input.ConfigName;
+      if (newConfigName == Config_Name.Text)
       {
         MessageBox.Show("New Config Name must be different from the existing one !", "Control Configuration", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
       }
       else
       {
-        Config_Name.Text = newConfig_Name;
+        Config_Name.Text = newConfigName;
         MessageBox.Show("Created a copy of current Configuration !", "Control Configuration", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
         CatalogType.SelectedIndex = newCatalogSelectedIndex; // set to selected catalog type 
         Save_Config();
         // Create matching AMCupdater config
         Read_XML_AMCconfig(Config_Name.Text); // read current (or create new default) config file
-        CreateMyFilmsDefaultsForAMCconfig(Config_Name.Text); //create MF defaults
+        CreateMyFilmsDefaultsForAmCconfig(Config_Name.Text); //create MF defaults
         Save_XML_AMCconfig(Config_Name.Text); // save new config
         Read_XML_AMCconfig(Config_Name.Text); // reread config file with new defaults
 
@@ -1982,11 +1983,11 @@ namespace MyFilmsPlugin.MyFilms.Configuration
         }
       }
       MesFilms_nb_config = XmlConfig.ReadXmlConfig("MyFilms", "MyFilms", "NbConfig", -1);
-      for (int i = 0; i < (int)MesFilms_nb_config; i++)
+      for (int i = 0; i < MesFilms_nb_config; i++)
       {
         XmlConfig.RemoveEntry("MyFilms", "MyFilms", "ConfigName" + i);
       }
-      for (int i = 0; i < (int)Config_Name.Items.Count; i++)
+      for (int i = 0; i < Config_Name.Items.Count; i++)
       {
         XmlConfig.WriteXmlConfig("MyFilms", "MyFilms", "ConfigName" + i, Config_Name.Items[i].ToString());
         if (Config_Name.Items.Count == 1)
@@ -2076,7 +2077,6 @@ namespace MyFilmsPlugin.MyFilms.Configuration
       AntMovieCatalog.CustomFieldsPropertiesRow[] cfpCollection = myCatalog.Catalog[0].GetCustomFieldsPropertiesRows();
       if (cfpCollection.Length == 0) return false;
       var customFieldTagList = BaseMesFilms.CustomFieldDefinitions.Select(stringse => stringse[0]).ToList();
-      var cFields = new ArrayList();
       AntMovieCatalog.CustomFieldRow[] cfrCollection = myCatalog.CustomFieldsProperties[0].GetCustomFieldRows();
       return cfrCollection.Any(fieldRow => !customFieldTagList.Contains(fieldRow.Tag));
     }
@@ -2084,43 +2084,42 @@ namespace MyFilmsPlugin.MyFilms.Configuration
     private void Selected_Enreg_TextChanged()
     {
       StrDfltSelect = "";
-      string wAntFilterSign;
-      wAntFilterSign = this.AntFilterSign1.Text == "#" ? "<>" : this.AntFilterSign1.Text;
+      var wAntFilterSign = AntFilterSign1.Text == "#" ? "<>" : AntFilterSign1.Text;
       if ((AntFilterItem1.Text.Length > 0) && AntFilterItem1.Text != "(none)")
         if (AntFilterItem1.Text == "DateAdded")
-          switch (this.AntFilterSign1.Text)
+          switch (AntFilterSign1.Text)
           {
             case "not like":
             case "#":
-              this.StrDfltSelect = "(" + this.AntFilterItem1.Text + " " + wAntFilterSign + " #" + Convert.ToDateTime(this.AntFilterText1.Text) + "# or " + this.AntFilterItem1.Text + " is null) ";
+              StrDfltSelect = "(" + AntFilterItem1.Text + " " + wAntFilterSign + " #" + Convert.ToDateTime(AntFilterText1.Text) + "# or " + AntFilterItem1.Text + " is null) ";
               break;
             case "not in":
             case "in":
-              this.StrDfltSelect = "(" + this.AntFilterItem1.Text + " " + wAntFilterSign + " (" + this.DBitemList(this.AntFilterText1.Text, true) + ")) ";
+              StrDfltSelect = "(" + AntFilterItem1.Text + " " + wAntFilterSign + " (" + DBitemList(AntFilterText1.Text, true) + ")) ";
               break;
             case "like in":
-              this.StrDfltSelect = "(" + this.TransformedLikeIn(this.AntFilterItem1.Text, this.AntFilterText1.Text, true) + ") ";
+              StrDfltSelect = "(" + TransformedLikeIn(AntFilterItem1.Text, AntFilterText1.Text, true) + ") ";
               break;
             default:
-              this.StrDfltSelect = "(" + this.AntFilterItem1.Text + " " + wAntFilterSign + " #" + Convert.ToDateTime(this.AntFilterText1.Text) + "# ) ";
+              StrDfltSelect = "(" + AntFilterItem1.Text + " " + wAntFilterSign + " #" + Convert.ToDateTime(AntFilterText1.Text) + "# ) ";
               break;
           }
         else
-          switch (this.AntFilterSign1.Text)
+          switch (AntFilterSign1.Text)
           {
             case "not like":
             case "#":
-              this.StrDfltSelect = "(" + this.AntFilterItem1.Text + " " + wAntFilterSign + " '" + this.AntFilterText1.Text + "' or " + this.AntFilterItem1.Text + " is null) ";
+              StrDfltSelect = "(" + AntFilterItem1.Text + " " + wAntFilterSign + " '" + AntFilterText1.Text + "' or " + AntFilterItem1.Text + " is null) ";
               break;
             case "not in":
             case "in":
-              this.StrDfltSelect = "(" + this.AntFilterItem1.Text + " " + wAntFilterSign + " (" + this.DBitemList(this.AntFilterText1.Text, false) + ")) ";
+              StrDfltSelect = "(" + AntFilterItem1.Text + " " + wAntFilterSign + " (" + DBitemList(AntFilterText1.Text, false) + ")) ";
               break;
             case "like in":
-              this.StrDfltSelect = "(" + this.TransformedLikeIn(this.AntFilterItem1.Text, this.AntFilterText1.Text, false) + ") ";
+              StrDfltSelect = "(" + TransformedLikeIn(AntFilterItem1.Text, AntFilterText1.Text, false) + ") ";
               break;
             default:
-              this.StrDfltSelect = "(" + this.AntFilterItem1.Text + " " + wAntFilterSign + " '" + this.AntFilterText1.Text + "') ";
+              StrDfltSelect = "(" + AntFilterItem1.Text + " " + wAntFilterSign + " '" + AntFilterText1.Text + "') ";
               break;
           }
       if ((AntFilterComb.Text == "or") && (StrDfltSelect.Length > 0))
@@ -2128,42 +2127,42 @@ namespace MyFilmsPlugin.MyFilms.Configuration
       else
         if (StrDfltSelect.Length > 0)
           StrDfltSelect = StrDfltSelect + " AND ";
-      wAntFilterSign = this.AntFilterSign2.Text == "#" ? "<>" : this.AntFilterSign2.Text;
+      wAntFilterSign = AntFilterSign2.Text == "#" ? "<>" : AntFilterSign2.Text;
       if ((AntFilterItem2.Text.Length > 0) && AntFilterItem2.Text != "(none)")
         if (AntFilterItem2.Text == "DateAdded")
-          switch (this.AntFilterSign2.Text)
+          switch (AntFilterSign2.Text)
           {
             case "not like":
             case "#":
-              this.StrDfltSelect = "(" + this.StrDfltSelect + "(" + this.AntFilterItem2.Text + " " + wAntFilterSign + " #" + Convert.ToDateTime(this.AntFilterText2.Text) + "# or " + this.AntFilterItem2.Text + " is null)) AND ";
+              StrDfltSelect = "(" + StrDfltSelect + "(" + AntFilterItem2.Text + " " + wAntFilterSign + " #" + Convert.ToDateTime(AntFilterText2.Text) + "# or " + AntFilterItem2.Text + " is null)) AND ";
               break;
             case "not in":
             case "in":
-              this.StrDfltSelect = "(" + this.AntFilterItem2.Text + " " + wAntFilterSign + " (" + this.DBitemList(this.AntFilterText2.Text, true) + ")) AND ";
+              StrDfltSelect = "(" + AntFilterItem2.Text + " " + wAntFilterSign + " (" + DBitemList(AntFilterText2.Text, true) + ")) AND ";
               break;
             case "like in":
-              this.StrDfltSelect = "(" + this.TransformedLikeIn(this.AntFilterItem2.Text, this.AntFilterText2.Text, true) + ") AND ";
+              StrDfltSelect = "(" + TransformedLikeIn(AntFilterItem2.Text, AntFilterText2.Text, true) + ") AND ";
               break;
             default:
-              this.StrDfltSelect = "(" + this.StrDfltSelect + "(" + this.AntFilterItem2.Text + " " + wAntFilterSign + " #" + Convert.ToDateTime(this.AntFilterText2.Text) + "# )) AND ";
+              StrDfltSelect = "(" + StrDfltSelect + "(" + AntFilterItem2.Text + " " + wAntFilterSign + " #" + Convert.ToDateTime(AntFilterText2.Text) + "# )) AND ";
               break;
           }
         else
-          switch (this.AntFilterSign2.Text)
+          switch (AntFilterSign2.Text)
           {
             case "not like":
             case "#":
-              this.StrDfltSelect = "(" + this.StrDfltSelect + "(" + this.AntFilterItem2.Text + " " + wAntFilterSign + " '" + this.AntFilterText2.Text + "' or " + this.AntFilterItem2.Text + " is null)) AND ";
+              StrDfltSelect = "(" + StrDfltSelect + "(" + AntFilterItem2.Text + " " + wAntFilterSign + " '" + AntFilterText2.Text + "' or " + AntFilterItem2.Text + " is null)) AND ";
               break;
             case "not in":
             case "in":
-              this.StrDfltSelect = "(" + this.AntFilterItem2.Text + " " + wAntFilterSign + " (" + this.DBitemList(this.AntFilterText2.Text, false) + ")) AND ";
+              StrDfltSelect = "(" + AntFilterItem2.Text + " " + wAntFilterSign + " (" + DBitemList(AntFilterText2.Text, false) + ")) AND ";
               break;
             case "like in":
-              this.StrDfltSelect = "(" + this.TransformedLikeIn(this.AntFilterItem2.Text, this.AntFilterText2.Text, true) + ") AND ";
+              StrDfltSelect = "(" + TransformedLikeIn(AntFilterItem2.Text, AntFilterText2.Text, true) + ") AND ";
               break;
             default:
-              this.StrDfltSelect = "(" + this.StrDfltSelect + "(" + this.AntFilterItem2.Text + " " + wAntFilterSign + " '" + this.AntFilterText2.Text + "' )) AND ";
+              StrDfltSelect = "(" + StrDfltSelect + "(" + AntFilterItem2.Text + " " + wAntFilterSign + " '" + AntFilterText2.Text + "' )) AND ";
               break;
           }
       if (!string.IsNullOrEmpty(AntFilterFreeText.Text))
@@ -2209,7 +2208,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
 
     private bool IsAMCcatalogType(int selectedindex)
     {
-      return (selectedindex == 0 || selectedindex == 10);
+      return selectedindex == 0 || selectedindex == 10;
     }
 
     private void CatalogType_SelectedIndexChanged(object sender, EventArgs e)
@@ -2278,12 +2277,12 @@ namespace MyFilmsPlugin.MyFilms.Configuration
       groupBox_DVDprofiler.Enabled = false; // deaktivates DVDprofiler options as default...
       switch (CatalogType.SelectedIndex)
       #region catalog specific settings
-      //0	Ant Movie Catalog (V3.5.1.2)
+      //0	Ant Movie catalog (V3.5.1.2)
       //1	DVD Profiler (V3.7.2)
       //2	Movie Collector (V7.1.4)
       //3	MyMovies (V3.18)
-      //4	Eax Movie Catalog (2.5.0)
-      //5	Eax Movie Catalog (3.0.9 b5)
+      //4	Eax Movie catalog (2.5.0)
+      //5	Eax Movie catalog (3.0.9 b5)
       //6	PVD - Personal Video Database (0.9.9.21)
       //7	eXtreme Movie Manager (V7.1.1.1)
       //8	XBMC (V10.0)
@@ -2318,7 +2317,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
             //MesFilmsFanart.Text = MesFilmsCat.Text.Substring(0, MesFilmsCat.Text.LastIndexOf("\\")); // fanart path
           }
           chkAddTagline.Checked = true;
-          ECMergeDestinationFieldTagline.Text = "Description";
+          ECMergeDestinationFieldTagline.Text = "description";
           break;
         case 4: // EAX MC 2.5.0
           AntStorage.Text = "Source";
@@ -2340,9 +2339,9 @@ namespace MyFilmsPlugin.MyFilms.Configuration
             MesFilmsImg.Text = MesFilmsCat.Text.Substring(0, MesFilmsCat.Text.LastIndexOf("\\")) + "\\Pictures"; // cover path
             MesFilmsImgArtist.Text = MesFilmsCat.Text.Substring(0, MesFilmsCat.Text.LastIndexOf("\\")) + "\\NamePictures"; // person thumb path
             // Did Work! MesFilmsFanart.Text = MesFilmsCat.Text.Substring(0, MesFilmsCat.Text.LastIndexOf("\\")) + "\\Thumbnails"; // fanart path
-            //a.	Cover image folder = D:My Documents\Data\Eax Movie Catalog \Pictures
-            //b.	Person Thumbs = D:My Documents\Data\Eax Movie Catalog\NamePictures
-            //c.	Fanart = D:My Documents\Eax Movie Catalog\Thumbnails – depends on the script i.e. grabs photos, but TMDB scrip grabs fanart but if users have fanart in EAX this folder is where it will be stored.
+            //a.	Cover image folder = D:My Documents\Data\Eax Movie catalog \Pictures
+            //b.	Person Thumbs = D:My Documents\Data\Eax Movie catalog\NamePictures
+            //c.	Fanart = D:My Documents\Eax Movie catalog\Thumbnails – depends on the script i.e. grabs photos, but TMDB scrip grabs fanart but if users have fanart in EAX this folder is where it will be stored.
           }
           cbWatched.Text = "Checked";
           break;
@@ -2363,7 +2362,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
           }
           cbWatched.Text = "Checked";
           chkAddTagline.Checked = true;
-          ECMergeDestinationFieldTagline.Text = "Description";
+          ECMergeDestinationFieldTagline.Text = "description";
           break;
 
         case 7: // XMM Extreme Movie Manager
@@ -2432,7 +2431,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
               //MesFilmsFanart.Text = MesFilmsCat.Text.Substring(0, MesFilmsCat.Text.LastIndexOf("\\")); // fanart path
             }
             chkAddTagline.Checked = true;
-            ECMergeDestinationFieldTagline.Text = "Description";
+            ECMergeDestinationFieldTagline.Text = "description";
           }
           break;
 
@@ -2448,7 +2447,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
           cbWatched.Text = "Checked";
           break;
 
-        case 10: // MyFilms DB (currently same as ANT Movie Catalog, but possible to extend DB fields in the future
+        case 10: // MyFilms DB (currently same as ANT Movie catalog, but possible to extend DB fields in the future
           break;
 
         default:
@@ -2460,13 +2459,13 @@ namespace MyFilmsPlugin.MyFilms.Configuration
       }
       #endregion
 
-      chkEnhancedWatchedStatusHandling.Checked = (CatalogType.SelectedIndex != 0); // autoset this by catalog type
-      groupBoxMultiUserState.Enabled = (CatalogType.SelectedIndex != 0);
+      chkEnhancedWatchedStatusHandling.Checked = CatalogType.SelectedIndex != 0; // autoset this by catalog type
+      groupBoxMultiUserState.Enabled = CatalogType.SelectedIndex != 0;
     }
 
     private void AddDefaultViews()
     {
-      MFview.ViewRow newRow = null;
+      MFview.ViewRow newRow;
 
       //Films (mastertitle)
       newRow = MyCustomViews.View.NewViewRow();
@@ -2565,7 +2564,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
     private void UpdateOldHardcodedViews()
     {
       // upgrade old custom views to new image locations ...
-      foreach (MFview.ViewRow customView in this.MyCustomViews.View.Rows.Cast<MFview.ViewRow>().Where(customView => customView.DBfield == "Producer"))
+      foreach (MFview.ViewRow customView in MyCustomViews.View.Rows.Cast<MFview.ViewRow>().Where(customView => customView.DBfield == "Producer"))
       {
         customView.ImagePath = MyFilmsSettings.GetPath(MyFilmsSettings.Path.DefaultImages) + @"\Persons.jpg";
       }
@@ -2766,7 +2765,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
       }
       if ((SField1.Text.Length == 0) || (SOp1.Text.Length == 0) || (SValue1.Text.Length == 0))
       {
-        if ((SField1.Text.Length == 0 || SOp1.Text.Length == 0) && (SOp1.Text != "filled" && SOp1.Text != "not filled"))
+        if ((SField1.Text.Length == 0 || SOp1.Text.Length == 0) && SOp1.Text != "filled" && SOp1.Text != "not filled")
         {
           MessageBox.Show("The three Fields for comparison must be defined !", "Configuration", MessageBoxButtons.OK, MessageBoxIcon.Stop);
           SField1.Focus();
@@ -2775,7 +2774,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
       }
       if ((SAnd_Or.Text.Length > 0) && ((SField2.Text.Length == 0) || (SOp2.Text.Length == 0) || (SValue2.Text.Length == 0)))
       {
-        if ((SField2.Text.Length == 0 || SOp2.Text.Length == 0) && (SOp2.Text != "filled" && SOp2.Text != "not filled"))
+        if ((SField2.Text.Length == 0 || SOp2.Text.Length == 0) && SOp2.Text != "filled" && SOp2.Text != "not filled")
         {
           MessageBox.Show("The three Fields for comparison must be defined !", "Configuration", MessageBoxButtons.OK, MessageBoxIcon.Stop);
           SField2.Focus();
@@ -2809,8 +2808,8 @@ namespace MyFilmsPlugin.MyFilms.Configuration
       LogoView.Items[LogoView.Items.Count - 1].SubItems.Add(SField2.Text);
       LogoView.Items[LogoView.Items.Count - 1].SubItems.Add(SField2.Text.ToLower());
       LogoView.Items[LogoView.Items.Count - 1].SubItems.Add(SValue2.Text.ToLower());
-      LogoView.Items[LogoView.Items.Count - 1].SubItems.Add(System.IO.Path.GetFileName(SFilePicture.Text));
-      LogoView.Items[LogoView.Items.Count - 1].SubItems.Add(System.IO.Path.GetDirectoryName(SFilePicture.Text));
+      LogoView.Items[LogoView.Items.Count - 1].SubItems.Add(Path.GetFileName(SFilePicture.Text));
+      LogoView.Items[LogoView.Items.Count - 1].SubItems.Add(Path.GetDirectoryName(SFilePicture.Text));
       //}
       SField1.Text = string.Empty;
       SOp1.Text = string.Empty;
@@ -2898,26 +2897,26 @@ namespace MyFilmsPlugin.MyFilms.Configuration
           Select_Item(LogoView.SelectedItems[0].Index, true);
     }
 
-    private void Select_Item(int select_item, bool select)
+    private void Select_Item(int selectItem, bool select)
     {
-      SLogo_Type.Text = LogoView.Items[select_item].SubItems[0].Text;
-      SField1.Text = LogoView.Items[select_item].SubItems[1].Text;
-      SOp1.Text = LogoView.Items[select_item].SubItems[2].Text;
-      SValue1.Text = LogoView.Items[select_item].SubItems[3].Text;
-      SAnd_Or.Text = LogoView.Items[select_item].SubItems[4].Text;
-      SField2.Text = LogoView.Items[select_item].SubItems[5].Text;
-      SOp2.Text = LogoView.Items[select_item].SubItems[6].Text;
-      SValue2.Text = LogoView.Items[select_item].SubItems[7].Text;
+      SLogo_Type.Text = LogoView.Items[selectItem].SubItems[0].Text;
+      SField1.Text = LogoView.Items[selectItem].SubItems[1].Text;
+      SOp1.Text = LogoView.Items[selectItem].SubItems[2].Text;
+      SValue1.Text = LogoView.Items[selectItem].SubItems[3].Text;
+      SAnd_Or.Text = LogoView.Items[selectItem].SubItems[4].Text;
+      SField2.Text = LogoView.Items[selectItem].SubItems[5].Text;
+      SOp2.Text = LogoView.Items[selectItem].SubItems[6].Text;
+      SValue2.Text = LogoView.Items[selectItem].SubItems[7].Text;
 
       // Search logo file according settings, rule and active skin
       //textBoxActiveLogoPath.Text = "";
-      //if (System.IO.Directory.Exists(System.IO.Path.GetDirectoryName(LogoView.Items[select_item].SubItems[7].Text)))
-      //  textBoxActiveLogoPath.Text = System.IO.Path.GetDirectoryName(LogoView.Items[select_item].SubItems[7].Text);
-      //else if (System.IO.Directory.Exists(System.IO.Path.GetDirectoryName(ActiveLogoPath + @"\" + LogoView.Items[select_item].SubItems[7].Text))) // Check if Logofile exists in default media directory of current skin and add it, if found
-      //  textBoxActiveLogoPath.Text = System.IO.Path.GetDirectoryName(ActiveLogoPath + @"\" + LogoView.Items[select_item].SubItems[7].Text);
-      //else if (!LogoView.Items[select_item].SubItems[7].Text.Contains("\\")) // Check, if logo file is present in subdirectories of logo directory of current skin - only if not already full path defined !
+      //if (System.IO.Directory.Exists(System.IO.Path.GetDirectoryName(LogoView.Items[selectItem].SubItems[7].Text)))
+      //  textBoxActiveLogoPath.Text = System.IO.Path.GetDirectoryName(LogoView.Items[selectItem].SubItems[7].Text);
+      //else if (System.IO.Directory.Exists(System.IO.Path.GetDirectoryName(ActiveLogoPath + @"\" + LogoView.Items[selectItem].SubItems[7].Text))) // Check if Logofile exists in default media directory of current skin and add it, if found
+      //  textBoxActiveLogoPath.Text = System.IO.Path.GetDirectoryName(ActiveLogoPath + @"\" + LogoView.Items[selectItem].SubItems[7].Text);
+      //else if (!LogoView.Items[selectItem].SubItems[7].Text.Contains("\\")) // Check, if logo file is present in subdirectories of logo directory of current skin - only if not already full path defined !
       //  {
-      //    string[] filePathsLogoSearch = System.IO.Directory.GetFiles(ActiveLogoPath + @"\", LogoView.Items[select_item].SubItems[7].Text, System.IO.SearchOption.AllDirectories);
+      //    string[] filePathsLogoSearch = System.IO.Directory.GetFiles(ActiveLogoPath + @"\", LogoView.Items[selectItem].SubItems[7].Text, System.IO.SearchOption.AllDirectories);
       //    if (filePathsLogoSearch.Length > 0)
       //    {
       //      textBoxActiveLogoPath.Text = System.IO.Path.GetDirectoryName(filePathsLogoSearch[0]);
@@ -2930,11 +2929,11 @@ namespace MyFilmsPlugin.MyFilms.Configuration
       //  LogoView.Items[LogoView.Items.Count - 1].SubItems.Add(string.Empty); // Add empty field, if logofile istn't found anywhere
 
 
-      string wfile = string.Empty;
-      if (LogoView.Items[select_item].SubItems[9].Text.Length > 0)
-        wfile = LogoView.Items[select_item].SubItems[9].Text + "\\" + LogoView.Items[select_item].SubItems[8].Text;
+      string wfile;
+      if (LogoView.Items[selectItem].SubItems[9].Text.Length > 0)
+        wfile = LogoView.Items[selectItem].SubItems[9].Text + "\\" + LogoView.Items[selectItem].SubItems[8].Text;
       else
-        wfile = LogoView.Items[select_item].SubItems[8].Text;
+        wfile = LogoView.Items[selectItem].SubItems[8].Text;
       SFilePicture.Text = wfile;
       if (System.IO.File.Exists(wfile))
       {
@@ -2950,37 +2949,37 @@ namespace MyFilmsPlugin.MyFilms.Configuration
       }
       if (select)
       {
-        selected_Logo_Item = select_item;
+        selected_Logo_Item = selectItem;
       }
     }
-    private void Move_Item(int select_item, int dest_item)
+    private void Move_Item(int selectItem, int destItem)
     {
-      LogoView.Items[dest_item].SubItems[0].Text = LogoView.Items[select_item].SubItems[0].Text;
-      LogoView.Items[dest_item].SubItems[1].Text = LogoView.Items[select_item].SubItems[1].Text;
-      LogoView.Items[dest_item].SubItems[2].Text = LogoView.Items[select_item].SubItems[2].Text;
-      LogoView.Items[dest_item].SubItems[3].Text = LogoView.Items[select_item].SubItems[3].Text;
-      LogoView.Items[dest_item].SubItems[4].Text = LogoView.Items[select_item].SubItems[4].Text;
-      LogoView.Items[dest_item].SubItems[5].Text = LogoView.Items[select_item].SubItems[5].Text;
-      LogoView.Items[dest_item].SubItems[6].Text = LogoView.Items[select_item].SubItems[6].Text;
-      LogoView.Items[dest_item].SubItems[7].Text = LogoView.Items[select_item].SubItems[7].Text;
-      LogoView.Items[dest_item].SubItems[8].Text = LogoView.Items[select_item].SubItems[8].Text;
-      LogoView.Items[dest_item].SubItems[9].Text = LogoView.Items[select_item].SubItems[9].Text;
+      LogoView.Items[destItem].SubItems[0].Text = LogoView.Items[selectItem].SubItems[0].Text;
+      LogoView.Items[destItem].SubItems[1].Text = LogoView.Items[selectItem].SubItems[1].Text;
+      LogoView.Items[destItem].SubItems[2].Text = LogoView.Items[selectItem].SubItems[2].Text;
+      LogoView.Items[destItem].SubItems[3].Text = LogoView.Items[selectItem].SubItems[3].Text;
+      LogoView.Items[destItem].SubItems[4].Text = LogoView.Items[selectItem].SubItems[4].Text;
+      LogoView.Items[destItem].SubItems[5].Text = LogoView.Items[selectItem].SubItems[5].Text;
+      LogoView.Items[destItem].SubItems[6].Text = LogoView.Items[selectItem].SubItems[6].Text;
+      LogoView.Items[destItem].SubItems[7].Text = LogoView.Items[selectItem].SubItems[7].Text;
+      LogoView.Items[destItem].SubItems[8].Text = LogoView.Items[selectItem].SubItems[8].Text;
+      LogoView.Items[destItem].SubItems[9].Text = LogoView.Items[selectItem].SubItems[9].Text;
     }
-    private void Edit_Item(int dest_item)
+    private void Edit_Item(int destItem)
     {
-      LogoView.Items[dest_item].SubItems[0].Text = SLogo_Type.Text;
-      LogoView.Items[dest_item].SubItems[1].Text = SField1.Text;
-      LogoView.Items[dest_item].SubItems[2].Text = SOp1.Text.ToLower();
-      LogoView.Items[dest_item].SubItems[3].Text = SValue1.Text.ToLower();
-      LogoView.Items[dest_item].SubItems[4].Text = SAnd_Or.Text.ToLower();
-      LogoView.Items[dest_item].SubItems[5].Text = SField2.Text;
-      LogoView.Items[dest_item].SubItems[6].Text = SOp2.Text.ToLower();
-      LogoView.Items[dest_item].SubItems[7].Text = SValue2.Text.ToLower();
+      LogoView.Items[destItem].SubItems[0].Text = SLogo_Type.Text;
+      LogoView.Items[destItem].SubItems[1].Text = SField1.Text;
+      LogoView.Items[destItem].SubItems[2].Text = SOp1.Text.ToLower();
+      LogoView.Items[destItem].SubItems[3].Text = SValue1.Text.ToLower();
+      LogoView.Items[destItem].SubItems[4].Text = SAnd_Or.Text.ToLower();
+      LogoView.Items[destItem].SubItems[5].Text = SField2.Text;
+      LogoView.Items[destItem].SubItems[6].Text = SOp2.Text.ToLower();
+      LogoView.Items[destItem].SubItems[7].Text = SValue2.Text.ToLower();
 
-      LogoView.Items[dest_item].SubItems[8].Text = System.IO.Path.GetFileName(SFilePicture.Text);
-      LogoView.Items[dest_item].SubItems[9].Text = System.IO.Path.GetDirectoryName(SFilePicture.Text);
-      selected_Logo_Item = dest_item;
-      LogoView.Items[dest_item].Checked = true;
+      LogoView.Items[destItem].SubItems[8].Text = Path.GetFileName(SFilePicture.Text);
+      LogoView.Items[destItem].SubItems[9].Text = Path.GetDirectoryName(SFilePicture.Text);
+      selected_Logo_Item = destItem;
+      LogoView.Items[destItem].Checked = true;
       SField1.Text = string.Empty;
       SOp1.Text = string.Empty;
       SValue1.Text = string.Empty;
@@ -3049,7 +3048,8 @@ namespace MyFilmsPlugin.MyFilms.Configuration
         }
       }
     }
-    public AntMovieCatalog ReadXml()
+
+    private AntMovieCatalog ReadXml()
     {
       var reader = new XmlTextReader(MesFilmsCat.Text);
       try
@@ -3060,7 +3060,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
         if (reader != null)
         {
           reader.Close();
-          string destFile = "";
+          string destFile;
           // ec options
           string destinationTagline = "";
           string destinationTags = "";
@@ -3077,13 +3077,13 @@ namespace MyFilmsPlugin.MyFilms.Configuration
 
           switch (CatalogType.SelectedIndex)
           {
-            case 0: // ANT Movie Catalog
+            case 0: // ANT Movie catalog
             case 10: // Starter Settings ANT DB
               mydivx.ReadXml(MesFilmsCat.Text);
               break;
             case 1: //DVD Profiler
               destFile = MesFilmsCat.Text.Substring(0, MesFilmsCat.Text.Length - 4) + "_tmp.xml";
-              if ((System.IO.File.Exists(destFile) && (System.IO.File.GetLastWriteTime(destFile) > System.IO.File.GetLastWriteTime(MesFilmsCat.Text))))
+              if (System.IO.File.Exists(destFile) && (System.IO.File.GetLastWriteTime(destFile) > System.IO.File.GetLastWriteTime(MesFilmsCat.Text)))
               {
                 mydivx.ReadXml(destFile);
                 break;
@@ -3093,7 +3093,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
               break;
             case 2: // Movie Collector V7.1.4
               destFile = MesFilmsCat.Text.Substring(0, MesFilmsCat.Text.Length - 4) + "_tmp.xml";
-              if ((System.IO.File.Exists(destFile) && (System.IO.File.GetLastWriteTime(destFile) > System.IO.File.GetLastWriteTime(MesFilmsCat.Text))))
+              if (System.IO.File.Exists(destFile) && (System.IO.File.GetLastWriteTime(destFile) > System.IO.File.GetLastWriteTime(MesFilmsCat.Text)))
               {
                 mydivx.ReadXml(destFile);
                 break;
@@ -3103,7 +3103,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
               break;
             case 3: // MyMovies
               destFile = MesFilmsCat.Text.Substring(0, MesFilmsCat.Text.Length - 4) + "_tmp.xml";
-              if ((System.IO.File.Exists(destFile) && (System.IO.File.GetLastWriteTime(destFile) > System.IO.File.GetLastWriteTime(MesFilmsCat.Text))))
+              if (System.IO.File.Exists(destFile) && (System.IO.File.GetLastWriteTime(destFile) > System.IO.File.GetLastWriteTime(MesFilmsCat.Text)))
               {
                 mydivx.ReadXml(destFile);
                 break;
@@ -3111,9 +3111,9 @@ namespace MyFilmsPlugin.MyFilms.Configuration
               var mm = new MyMovies();
               mydivx.ReadXml(mm.ConvertMyMovies(MesFilmsCat.Text, MesFilmsImg.Text, destinationTagline, destinationTags, destinationCertification, destinationWriter, chkDVDprofilerOnlyFile.Checked));
               break;
-            case 4: // EAX Movie Catalog 2.5.0
+            case 4: // EAX Movie catalog 2.5.0
               destFile = MesFilmsCat.Text.Substring(0, MesFilmsCat.Text.Length - 4) + "_tmp.xml";
-              if ((System.IO.File.Exists(destFile) && (System.IO.File.GetLastWriteTime(destFile) > System.IO.File.GetLastWriteTime(MesFilmsCat.Text))))
+              if (System.IO.File.Exists(destFile) && (System.IO.File.GetLastWriteTime(destFile) > System.IO.File.GetLastWriteTime(MesFilmsCat.Text)))
               {
                 mydivx.ReadXml(destFile);
                 break;
@@ -3121,9 +3121,9 @@ namespace MyFilmsPlugin.MyFilms.Configuration
               var emc = new EaxMovieCatalog();
               mydivx.ReadXml(emc.ConvertEaxMovieCatalog(MesFilmsCat.Text, MesFilmsImg.Text, destinationTagline, destinationTags, destinationCertification, destinationWriter, chkDVDprofilerOnlyFile.Checked, TitleDelim.Text));
               break;
-            case 5: // EAX Movie Catalog 3.0.9 (beta5)
+            case 5: // EAX Movie catalog 3.0.9 (beta5)
               destFile = MesFilmsCat.Text.Substring(0, MesFilmsCat.Text.Length - 4) + "_tmp.xml";
-              if ((System.IO.File.Exists(destFile) && (System.IO.File.GetLastWriteTime(destFile) > System.IO.File.GetLastWriteTime(MesFilmsCat.Text))))
+              if (System.IO.File.Exists(destFile) && (System.IO.File.GetLastWriteTime(destFile) > System.IO.File.GetLastWriteTime(MesFilmsCat.Text)))
               {
                 mydivx.ReadXml(destFile);
                 break;
@@ -3133,17 +3133,17 @@ namespace MyFilmsPlugin.MyFilms.Configuration
               break;
             case 6: // PVD PersonalVideoDatabase V0.9.9.21
               destFile = MesFilmsCat.Text.Substring(0, MesFilmsCat.Text.Length - 4) + "_tmp.xml";
-              if ((System.IO.File.Exists(destFile) && (System.IO.File.GetLastWriteTime(destFile) > System.IO.File.GetLastWriteTime(MesFilmsCat.Text))))
+              if (System.IO.File.Exists(destFile) && (System.IO.File.GetLastWriteTime(destFile) > System.IO.File.GetLastWriteTime(MesFilmsCat.Text)))
               {
                 mydivx.ReadXml(destFile);
                 break;
               }
               var pvd = new PersonalVideoDatabase();
-              mydivx.ReadXml(pvd.ConvertPersonalVideoDatabase(MesFilmsCat.Text, MesFilmsImg.Text, destinationTagline, destinationTags, destinationCertification, destinationWriter, chkDVDprofilerOnlyFile.Checked, TitleDelim.Text, this.chkAddTagline.Checked));
+              mydivx.ReadXml(pvd.ConvertPersonalVideoDatabase(MesFilmsCat.Text, MesFilmsImg.Text, destinationTagline, destinationTags, destinationCertification, destinationWriter, chkDVDprofilerOnlyFile.Checked, TitleDelim.Text, chkAddTagline.Checked));
               break;
             case 7: //eXtreme Movie Manager
               destFile = MesFilmsCat.Text.Substring(0, MesFilmsCat.Text.Length - 4) + "_tmp.xml";
-              if ((System.IO.File.Exists(destFile) && (System.IO.File.GetLastWriteTime(destFile) > System.IO.File.GetLastWriteTime(MesFilmsCat.Text))))
+              if (System.IO.File.Exists(destFile) && (System.IO.File.GetLastWriteTime(destFile) > System.IO.File.GetLastWriteTime(MesFilmsCat.Text)))
               {
                 mydivx.ReadXml(destFile);
                 break;
@@ -3160,7 +3160,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
                 if (size == 0)
                   System.IO.File.Delete(destFile);
               }
-              if ((System.IO.File.Exists(destFile) && (System.IO.File.GetLastWriteTime(destFile) > System.IO.File.GetLastWriteTime(MesFilmsCat.Text))))
+              if (System.IO.File.Exists(destFile) && (System.IO.File.GetLastWriteTime(destFile) > System.IO.File.GetLastWriteTime(MesFilmsCat.Text)))
               {
                 mydivx.ReadXml(destFile);
                 break;
@@ -3170,7 +3170,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
               break;
             case 9: // MovingPicturesXML
               destFile = MesFilmsCat.Text.Substring(0, MesFilmsCat.Text.Length - 4) + "_tmp.xml";
-              if ((System.IO.File.Exists(destFile) && (System.IO.File.GetLastWriteTime(destFile) > System.IO.File.GetLastWriteTime(MesFilmsCat.Text))))
+              if (System.IO.File.Exists(destFile) && (System.IO.File.GetLastWriteTime(destFile) > System.IO.File.GetLastWriteTime(MesFilmsCat.Text)))
               {
                 mydivx.ReadXml(destFile);
                 break;
@@ -3180,7 +3180,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
               break;
             case 11: // XBMC Nfo (separate nfo files, to scan dirs - MovingPictures or XBMC)
               destFile = MesFilmsCat.Text;
-              if ((System.IO.File.Exists(destFile) && (System.IO.File.GetLastWriteTime(destFile) > System.IO.File.GetLastWriteTime(MesFilmsCat.Text))))
+              if (System.IO.File.Exists(destFile) && (System.IO.File.GetLastWriteTime(destFile) > System.IO.File.GetLastWriteTime(MesFilmsCat.Text)))
               {
                 mydivx.ReadXml(destFile);
                 break;
@@ -3213,33 +3213,33 @@ namespace MyFilmsPlugin.MyFilms.Configuration
     }
 
 
-    private bool WriteXml(AntMovieCatalog dataset, string Catalog)
+    private bool WriteXml(AntMovieCatalog dataset, string catalog)
     {
-      if (dataset == null || string.IsNullOrEmpty(Catalog)) return false;
+      if (dataset == null || string.IsNullOrEmpty(catalog)) return false;
       if (!IsAMCcatalogType(CatalogType.SelectedIndex)) return false; // only write AMC type catalogs
 
       try
       {
-        using (var fs = new FileStream(Catalog, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None)) // lock the file for any other use, as we do write to it now !
+        using (var fs = new FileStream(catalog, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None)) // lock the file for any other use, as we do write to it now !
         {
-          LogMyFilms.Debug("Commit()- opening '" + Catalog + "' as FileStream with FileMode.OpenOrCreate, FileAccess.Write, FileShare.None");
+          LogMyFilms.Debug("Commit()- opening '" + catalog + "' as FileStream with FileMode.OpenOrCreate, FileAccess.Write, FileShare.None");
           fs.SetLength(0);
           using (var myXmlTextWriter = new XmlTextWriter(fs, System.Text.Encoding.Default))
           {
-            LogMyFilms.Debug("Commit()- writing '" + Catalog + "' as MyXmlTextWriter in FileStream");
-            myXmlTextWriter.Formatting = System.Xml.Formatting.Indented;
+            LogMyFilms.Debug("Commit()- writing '" + catalog + "' as MyXmlTextWriter in FileStream");
+            myXmlTextWriter.Formatting = Formatting.Indented;
             myXmlTextWriter.WriteStartDocument();
             dataset.WriteXml(myXmlTextWriter, XmlWriteMode.IgnoreSchema);
             myXmlTextWriter.Flush();
             myXmlTextWriter.Close();
           }
           fs.Close(); // write buffer and release lock on file (either Flush, Dispose or Close is required)
-          LogMyFilms.Debug("Commit()- closing '" + Catalog + "' FileStream and releasing file lock");
+          LogMyFilms.Debug("Commit()- closing '" + catalog + "' FileStream and releasing file lock");
         }
       }
       catch (Exception saveexeption)
       {
-        LogMyFilms.Debug("Commit()- exception while trying to save data in '" + Catalog + "' - exception: " + saveexeption.Message + ", stacktrace: " + saveexeption.StackTrace);
+        LogMyFilms.Debug("Commit()- exception while trying to save data in '" + catalog + "' - exception: " + saveexeption.Message + ", stacktrace: " + saveexeption.StackTrace);
         return false;
       }
       return true;
@@ -3268,8 +3268,8 @@ namespace MyFilmsPlugin.MyFilms.Configuration
 
     private void Read_Default_XML_AMCconfig()
     {
-      string AMCDefaultconfigFile = Config.GetDirectoryInfo(Config.Dir.Config) + @"\MyFilmsAMCSettings" + ".xml";
-      if (!System.IO.File.Exists(AMCDefaultconfigFile))
+      string amcDefaultconfigFile = Config.GetDirectoryInfo(Config.Dir.Config) + @"\MyFilmsAMCSettings" + ".xml";
+      if (!System.IO.File.Exists(amcDefaultconfigFile))
       {
         MessageBox.Show("The default AMCupdater configfile cannot be found! (" + Config.GetDirectoryInfo(Config.Dir.Config) + @"\MyFilmsAMCSettings.xml" + ")", "Configuration", MessageBoxButtons.OK, MessageBoxIcon.Stop);
         return;
@@ -3278,7 +3278,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
       //DataSet ds = new DataSet();
       AMCdsSettings.Clear();
 
-      FileStream fs = new FileStream(AMCDefaultconfigFile, FileMode.Open, FileAccess.Read);
+      FileStream fs = new FileStream(amcDefaultconfigFile, FileMode.Open, FileAccess.Read);
       StreamReader sr = new StreamReader(fs);
       AMCdsSettings.ReadXml(sr, XmlReadMode.InferSchema);
       AMCdsSettings.CaseSensitive = false;
@@ -3298,14 +3298,14 @@ namespace MyFilmsPlugin.MyFilms.Configuration
         i = i + 1;
       }
       // set MF GUI to values from AMC file, if values are present
-      if (!string.IsNullOrEmpty(this.AMCGetAttribute("Movie_Scan_Path")))
-        AMCMovieScanPath.Text = this.AMCGetAttribute("Movie_Scan_Path");
-      if (!string.IsNullOrEmpty(this.AMCGetAttribute("Purge_Missing_Files")))
+      if (!string.IsNullOrEmpty(AMCGetAttribute("Movie_Scan_Path")))
+        AMCMovieScanPath.Text = AMCGetAttribute("Movie_Scan_Path");
+      if (!string.IsNullOrEmpty(AMCGetAttribute("Purge_Missing_Files")))
         chkAMC_Purge_Missing_Files.Checked = AMCGetAttribute("Purge_Missing_Files").ToLower() == "true";
-      if (!string.IsNullOrEmpty(this.AMCGetAttribute("Import_File_On_Internet_Lookup_Failure")))
+      if (!string.IsNullOrEmpty(AMCGetAttribute("Import_File_On_Internet_Lookup_Failure")))
         chkAMC_ImportOnInternetFail.Checked = AMCGetAttribute("Import_File_On_Internet_Lookup_Failure").ToLower() == "true";
-      if (!string.IsNullOrEmpty(this.AMCGetAttribute("Movie_Title_Handling")))
-        AmcTitleSearchHandling.Text = this.AMCGetAttribute("Movie_Title_Handling");
+      if (!string.IsNullOrEmpty(AMCGetAttribute("Movie_Title_Handling")))
+        AmcTitleSearchHandling.Text = AMCGetAttribute("Movie_Title_Handling");
     }
 
     private void Read_XML_AMCconfig(string currentconfig)
@@ -3314,22 +3314,22 @@ namespace MyFilmsPlugin.MyFilms.Configuration
         return;
 
       string wfiledefault = Config.GetDirectoryInfo(Config.Dir.Config) + @"\MyFilmsAMCSettings";
-      string AMCconfigFile = (txtAMCUpd_cnf.Text.Length > 0) ? txtAMCUpd_cnf.Text : wfiledefault + "_" + currentconfig + ".xml";
+      string amCconfigFile = txtAMCUpd_cnf.Text.Length > 0 ? txtAMCUpd_cnf.Text : wfiledefault + "_" + currentconfig + ".xml";
 
-      if (!Directory.Exists(Path.GetDirectoryName(AMCconfigFile)))
+      if (!Directory.Exists(Path.GetDirectoryName(amCconfigFile)))
       {
         try
-        { Directory.CreateDirectory(Path.GetDirectoryName(AMCconfigFile)); }
+        { Directory.CreateDirectory(Path.GetDirectoryName(amCconfigFile)); }
         catch { }
       }
 
-      if (!System.IO.File.Exists(AMCconfigFile)) // if (!System.IO.File.Exists(wfiledefault + "_" + currentconfig + ".xml"))
+      if (!System.IO.File.Exists(amCconfigFile)) // if (!System.IO.File.Exists(wfiledefault + "_" + currentconfig + ".xml"))
       {
         try
         {
           if (System.IO.File.Exists(wfiledefault + ".xml"))
           {
-            System.IO.File.Copy(XmlConfig.EntireFilenameConfig("MyFilmsAMCSettings"), AMCconfigFile, true);
+            System.IO.File.Copy(XmlConfig.EntireFilenameConfig("MyFilmsAMCSettings"), amCconfigFile, true);
           }
           else
           {
@@ -3340,14 +3340,14 @@ namespace MyFilmsPlugin.MyFilms.Configuration
         }
         catch
         {
-          MessageBox.Show("The AMCUpdater config file could not be found! \n(" + AMCconfigFile + ")", "Configuration", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+          MessageBox.Show("The AMCUpdater config file could not be found! \n(" + amCconfigFile + ")", "Configuration", MessageBoxButtons.OK, MessageBoxIcon.Stop);
         }
       }
 
       //DataSet ds = new DataSet();
       AMCdsSettings.Clear();
 
-      var fs = new FileStream(AMCconfigFile, FileMode.Open, FileAccess.Read);
+      var fs = new FileStream(amCconfigFile, FileMode.Open, FileAccess.Read);
       var sr = new StreamReader(fs);
       AMCdsSettings.ReadXml(sr, XmlReadMode.InferSchema);
       AMCdsSettings.CaseSensitive = false;
@@ -3367,14 +3367,14 @@ namespace MyFilmsPlugin.MyFilms.Configuration
         i = i + 1;
       }
       // set MF GUI to values from AMC file, if values are present
-      if (!string.IsNullOrEmpty(this.AMCGetAttribute("Movie_Scan_Path")))
-        AMCMovieScanPath.Text = this.AMCGetAttribute("Movie_Scan_Path");
-      if (!string.IsNullOrEmpty(this.AMCGetAttribute("Purge_Missing_Files")))
+      if (!string.IsNullOrEmpty(AMCGetAttribute("Movie_Scan_Path")))
+        AMCMovieScanPath.Text = AMCGetAttribute("Movie_Scan_Path");
+      if (!string.IsNullOrEmpty(AMCGetAttribute("Purge_Missing_Files")))
         chkAMC_Purge_Missing_Files.Checked = AMCGetAttribute("Purge_Missing_Files").ToLower() == "true";
-      if (!string.IsNullOrEmpty(this.AMCGetAttribute("Import_File_On_Internet_Lookup_Failure")))
+      if (!string.IsNullOrEmpty(AMCGetAttribute("Import_File_On_Internet_Lookup_Failure")))
         chkAMC_ImportOnInternetFail.Checked = AMCGetAttribute("Import_File_On_Internet_Lookup_Failure").ToLower() == "true";
-      if (!string.IsNullOrEmpty(this.AMCGetAttribute("Movie_Title_Handling")))
-        AmcTitleSearchHandling.Text = this.AMCGetAttribute("Movie_Title_Handling");
+      if (!string.IsNullOrEmpty(AMCGetAttribute("Movie_Title_Handling")))
+        AmcTitleSearchHandling.Text = AMCGetAttribute("Movie_Title_Handling");
 
       //  if (i > 0)
       //  {
@@ -3414,7 +3414,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
 
     private void Save_XML_AMCconfig(string currentconfig) //Save AMC configuration to file (before launching AMCupdater with it)
     {
-      string amCconfigFile = (txtAMCUpd_cnf.Text.Length > 0) ? txtAMCUpd_cnf.Text : Config.GetDirectoryInfo(Config.Dir.Config) + @"\MyFilmsAMCSettings" + "_" + currentconfig + ".xml";
+      string amCconfigFile = txtAMCUpd_cnf.Text.Length > 0 ? txtAMCUpd_cnf.Text : Config.GetDirectoryInfo(Config.Dir.Config) + @"\MyFilmsAMCSettings" + "_" + currentconfig + ".xml";
       if (System.IO.File.Exists(amCconfigFile))
         System.IO.File.Delete(amCconfigFile);
       try
@@ -3425,23 +3425,23 @@ namespace MyFilmsPlugin.MyFilms.Configuration
       catch { }
     }
 
-    private void AMCSetAttribute(string OptionName, string OptionValue)
+    private void AMCSetAttribute(string optionName, string optionValue)
     {
       DataRow row = null;
       if (AMCdsSettings.Tables.Count > 0)
-        row = AMCdsSettings.Tables[0].Rows.Find(OptionName);
+        row = AMCdsSettings.Tables[0].Rows.Find(optionName);
       if (row != null)
-        row["Value"] = OptionValue;
+        row["Value"] = optionValue;
       else
         //AMCdsSettings.Tables[0].Rows.Add();
-        AMCdsSettings.Tables[0].Rows.Add(OptionValue, OptionName);
+        AMCdsSettings.Tables[0].Rows.Add(optionValue, optionName);
     }
 
-    private string AMCGetAttribute(string OptionName)
+    private string AMCGetAttribute(string optionName)
     {
       DataRow row = null;
       if (AMCdsSettings.Tables.Count > 0)
-        row = AMCdsSettings.Tables[0].Rows.Find(OptionName);
+        row = AMCdsSettings.Tables[0].Rows.Find(optionName);
       return row != null ? row["Value"].ToString() : string.Empty;
     }
 
@@ -3517,6 +3517,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
         i++;
       }
       while (true);
+      
       i = 0;
       do
       {
@@ -3527,6 +3528,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
         i++;
       }
       while (true);
+      
       i = 0;
       do
       {
@@ -3537,7 +3539,6 @@ namespace MyFilmsPlugin.MyFilms.Configuration
         i++;
       }
       while (true);
-      i = 0;
     }
 
     private void Charge_LogosView(ref string[] wtab, int i, string typelogo, string logopath)
@@ -3550,20 +3551,20 @@ namespace MyFilmsPlugin.MyFilms.Configuration
       LogoView.Items[LogoView.Items.Count - 1].SubItems.Add(wtab[4]);
       LogoView.Items[LogoView.Items.Count - 1].SubItems.Add(wtab[5]);
       LogoView.Items[LogoView.Items.Count - 1].SubItems.Add(wtab[6]);
-      LogoView.Items[LogoView.Items.Count - 1].SubItems.Add(System.IO.Path.GetFileName(wtab[7]));
+      LogoView.Items[LogoView.Items.Count - 1].SubItems.Add(Path.GetFileName(wtab[7]));
       if (System.IO.File.Exists(wtab[7]))
-        LogoView.Items[LogoView.Items.Count - 1].SubItems.Add(System.IO.Path.GetDirectoryName(wtab[7]));
+        LogoView.Items[LogoView.Items.Count - 1].SubItems.Add(Path.GetDirectoryName(wtab[7]));
       else
         if (System.IO.File.Exists(logopath + wtab[7])) // Check if Logofile exists in default media directory of current skin and add it, if found
-          LogoView.Items[LogoView.Items.Count - 1].SubItems.Add(System.IO.Path.GetDirectoryName(logopath + wtab[7]));
+          LogoView.Items[LogoView.Items.Count - 1].SubItems.Add(Path.GetDirectoryName(logopath + wtab[7]));
         else
           if (!wtab[7].Contains("\\")) // Check, if logo file is present in subdirectories of logo directory of current skin - only if not already full path defined !
           {
             string[] filePathsLogoSearch = Directory.GetFiles(logopath, wtab[7], SearchOption.AllDirectories);
-            LogoView.Items[this.LogoView.Items.Count - 1].SubItems.Add(filePathsLogoSearch.Length > 0 ? Path.GetDirectoryName(filePathsLogoSearch[0]) : "");
+            LogoView.Items[LogoView.Items.Count - 1].SubItems.Add(filePathsLogoSearch.Length > 0 ? Path.GetDirectoryName(filePathsLogoSearch[0]) : "");
           }
           else
-            LogoView.Items[LogoView.Items.Count - 1].SubItems.Add(System.IO.Path.GetDirectoryName(wtab[7]));
+            LogoView.Items[LogoView.Items.Count - 1].SubItems.Add(Path.GetDirectoryName(wtab[7]));
     }
     private void chkLogos_CheckedChanged(object sender, EventArgs e)
     {
@@ -3654,7 +3655,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
 
     private void cbfdupdate_SelectedIndexChanged(object sender, EventArgs e)
     {
-      if (cbSuppressPlayStopFieldToUpdate.SelectedItem.ToString() == "Checked" && !(load))
+      if (cbSuppressPlayStopFieldToUpdate.SelectedItem.ToString() == "Checked" && !load)
       {
         General.SelectTab(4);
         cbSuppressPlayStopFieldToUpdate.Focus();
@@ -3664,7 +3665,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
 
     private void chksupplaystop_CheckedChanged(object sender, EventArgs e)
     {
-      if (chkSuppressPlayStopUpdateField.Checked && !(load))
+      if (chkSuppressPlayStopUpdateField.Checked && !load)
       {
         General.SelectTab(4);
         chkSuppressPlayStopUpdateField.Focus();
@@ -3736,7 +3737,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
 
     private void MesFilmsCat_TextChanged(object sender, EventArgs e)
     {
-      if (CatalogType.SelectedIndex == 4 || CatalogType.SelectedIndex == 5) // EAX Movie Catalog 2.5.0 or 3.0.9
+      if (CatalogType.SelectedIndex == 4 || CatalogType.SelectedIndex == 5) // EAX Movie catalog 2.5.0 or 3.0.9
         if (MesFilmsImg.Text.Length == 0)
           MesFilmsImg.Text = MesFilmsCat.Text.Substring(0, MesFilmsCat.Text.LastIndexOf("\\")) + "\\Pictures";
     }
@@ -3752,9 +3753,9 @@ namespace MyFilmsPlugin.MyFilms.Configuration
       //View_Dflt_Item.Items.Add("Country");
       //View_Dflt_Item.Items.Add("RecentlyAdded");
 
-      foreach (MFview.ViewRow viewRow in Enumerable.Where(this.MyCustomViews.View, viewRow => !string.IsNullOrEmpty(viewRow.Label) && !string.IsNullOrEmpty(viewRow.DBfield)))
+      foreach (MFview.ViewRow viewRow in Enumerable.Where(MyCustomViews.View, viewRow => !string.IsNullOrEmpty(viewRow.Label) && !string.IsNullOrEmpty(viewRow.DBfield)))
       {
-        this.View_Dflt_Item.Items.Add(viewRow.Label);
+        View_Dflt_Item.Items.Add(viewRow.Label);
       }
 
       //if (this.AntStorage.Text.Length != 0 && !(AntStorage.Text == "(none)")) View_Dflt_Item.Items.Add("Storage");
@@ -3809,16 +3810,16 @@ namespace MyFilmsPlugin.MyFilms.Configuration
         //lbl_View_Dflt_Text.Visible = true;
       }
 
-      foreach (MFview.ViewRow viewRow in Enumerable.Where(this.MyCustomViews.View, viewRow => this.View_Dflt_Item.Text == viewRow.Label))
+      foreach (MFview.ViewRow viewRow in Enumerable.Where(MyCustomViews.View, viewRow => View_Dflt_Item.Text == viewRow.Label))
       {
-        this.View_Dflt_Text.Text = (viewRow.Value.Length > 0) ? viewRow.Value : "";
-        this.View_Dflt_Text.Enabled = false;
+        View_Dflt_Text.Text = viewRow.Value.Length > 0 ? viewRow.Value : "";
+        View_Dflt_Text.Enabled = false;
         return;
       }
       View_Dflt_Text.Enabled = true;
     }
 
-    public Task CreateTask(string name)
+    private Task CreateTask(string name)
     {
       Task t;
       try
@@ -3840,7 +3841,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
       t.IdleWaitDeadlineMinutes = 20;
       t.IdleWaitMinutes = 10;
       t.MaxRunTime = new TimeSpan(1, 0, 0);
-      t.Priority = System.Diagnostics.ProcessPriorityClass.High;
+      t.Priority = ProcessPriorityClass.High;
       t.Triggers.Add(new RunOnceTrigger(DateTime.Now + TimeSpan.FromDays(1.0) + TimeSpan.FromMinutes(3.0)));
       t.Triggers.Add(new DailyTrigger(8, 30, 1));
       t.Triggers.Add(new WeeklyTrigger(6, 0, DaysOfTheWeek.Sunday));
@@ -3941,7 +3942,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
       DialogResult dialogResult = MessageBox.Show("Are you sure you want to reset all generated Thumbs?", "Information", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
       if (dialogResult == DialogResult.Yes)
       {
-        foreach (string wfile in System.IO.Directory.GetFiles(MyFilmsSettings.GetPath(MyFilmsSettings.Path.ThumbsCache) + @"\MyFilms_Views", "*.*", SearchOption.AllDirectories))
+        foreach (string wfile in Directory.GetFiles(MyFilmsSettings.GetPath(MyFilmsSettings.Path.ThumbsCache) + @"\MyFilms_Views", "*.*", SearchOption.AllDirectories))
         {
           try
           {
@@ -3970,7 +3971,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
       folderBrowserDialog1.Description = "Select Extended Trailer Searchpath";
       if (folderBrowserDialog1.ShowDialog(this) == DialogResult.OK)
       {
-        if (this.folderBrowserDialog1.SelectedPath.LastIndexOf(@"\") != this.folderBrowserDialog1.SelectedPath.Length - 1)
+        if (folderBrowserDialog1.SelectedPath.LastIndexOf(@"\") != folderBrowserDialog1.SelectedPath.Length - 1)
           folderBrowserDialog1.SelectedPath = folderBrowserDialog1.SelectedPath + "\\";
 
         if (PathStorageTrailer.Text.Length == 0)
@@ -4022,7 +4023,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
       MessageBoxIcon.Question);
       if (dialogResult == DialogResult.Yes)
       {
-        foreach (string wfile in System.IO.Directory.GetFiles(MyFilmsSettings.GetPath(MyFilmsSettings.Path.ThumbsCache) + @"\MyFilms_Persons"))
+        foreach (string wfile in Directory.GetFiles(MyFilmsSettings.GetPath(MyFilmsSettings.Path.ThumbsCache) + @"\MyFilms_Persons"))
         {
           try
           {
@@ -4042,14 +4043,13 @@ namespace MyFilmsPlugin.MyFilms.Configuration
       var wakeOnLanManager = new WakeOnLanManager();
       String macAddress;
       byte[] hwAddress;
-      IPAddress ipAddress = null;
+      IPAddress ipAddress;
 
       if (!IPAddress.TryParse(NAS_Name_1.Text, out ipAddress))
       {
         try
         {
-          IPAddress[] ips;
-          ips = Dns.GetHostAddresses(NAS_Name_1.Text);
+          IPAddress[] ips = Dns.GetHostAddresses(NAS_Name_1.Text);
           foreach (IPAddress ip in ips)
           {
             LogMyFilms.Debug("    {0}", ip);
@@ -4071,27 +4071,23 @@ namespace MyFilmsPlugin.MyFilms.Configuration
 
         if (wakeOnLanManager.IsValidEthernetAddress(hwAddress))
         {
-          LogMyFilms.Debug("TVHome: WOL - Valid auto MAC address: {0:x}:{1:x}:{2:x}:{3:x}:{4:x}:{5:x}"
-                    , hwAddress[0], hwAddress[1], hwAddress[2], hwAddress[3], hwAddress[4], hwAddress[5]);
+          LogMyFilms.Debug("TVHome: WOL - Valid auto MAC address: {0:x}:{1:x}:{2:x}:{3:x}:{4:x}:{5:x}", hwAddress[0], hwAddress[1], hwAddress[2], hwAddress[3], hwAddress[4], hwAddress[5]);
 
           //Store MAC address
           macAddress = BitConverter.ToString(hwAddress).Replace("-", ":");
 
           LogMyFilms.Debug("MyFilmsSetup - GetMACaddresses: Store MAC address: {0}", macAddress);
           NAS_MAC_1.Text = macAddress;
-
         }
       }
 
 
-      ipAddress = null;
       if (!IPAddress.TryParse(NAS_Name_2.Text, out ipAddress))
       {
         //Get IP address of the TV server
         try
         {
-          IPAddress[] ips;
-          ips = Dns.GetHostAddresses(NAS_Name_2.Text);
+          IPAddress[] ips = Dns.GetHostAddresses(NAS_Name_2.Text);
           foreach (IPAddress ip in ips)
           {
             LogMyFilms.Debug("    {0}", ip);
@@ -4125,14 +4121,12 @@ namespace MyFilmsPlugin.MyFilms.Configuration
         }
       }
 
-      ipAddress = null;
       if (!IPAddress.TryParse(NAS_Name_3.Text, out ipAddress))
       {
         //Get IP address of the TV server
         try
         {
-          IPAddress[] ips;
-          ips = Dns.GetHostAddresses(NAS_Name_3.Text);
+          IPAddress[] ips = Dns.GetHostAddresses(NAS_Name_3.Text);
           foreach (IPAddress ip in ips)
           {
             LogMyFilms.Debug("    {0}", ip);
@@ -4171,15 +4165,13 @@ namespace MyFilmsPlugin.MyFilms.Configuration
     {
       var wakeOnLanManager = new WakeOnLanManager();
       const int intTimeOut = 30; //Timeout für WOL
-      String macAddress;
-      byte[] hwAddress;
 
-      macAddress = NAS_MAC_1.Text;
+      var macAddress = NAS_MAC_1.Text;
       if (macAddress.Length > 1)
       {
         try
         {
-          hwAddress = wakeOnLanManager.GetHwAddrBytes(macAddress);
+          byte[] hwAddress = wakeOnLanManager.GetHwAddrBytes(macAddress);
 
           //Finally, start up the TV server
           LogMyFilms.Info("MyFilmsSetup - WOL: Start the NAS-Server");
@@ -4204,15 +4196,13 @@ namespace MyFilmsPlugin.MyFilms.Configuration
     {
       var wakeOnLanManager = new WakeOnLanManager();
       const int intTimeOut = 30; //Timeout für WOL
-      String macAddress;
-      byte[] hwAddress;
 
-      macAddress = NAS_MAC_2.Text;
+      var macAddress = NAS_MAC_2.Text;
       if (macAddress.Length > 1)
       {
         try
         {
-          hwAddress = wakeOnLanManager.GetHwAddrBytes(macAddress);
+          byte[] hwAddress = wakeOnLanManager.GetHwAddrBytes(macAddress);
 
           //Finally, start up the TV server
           LogMyFilms.Info("MyFilmsSetup - WOL: Start the NAS-Server");
@@ -4237,15 +4227,13 @@ namespace MyFilmsPlugin.MyFilms.Configuration
     {
       var wakeOnLanManager = new WakeOnLanManager();
       const int intTimeOut = 30; //Timeout für WOL
-      String macAddress;
-      byte[] hwAddress;
 
-      macAddress = NAS_MAC_3.Text;
+      var macAddress = NAS_MAC_3.Text;
       if (macAddress.Length > 1)
       {
         try
         {
-          hwAddress = wakeOnLanManager.GetHwAddrBytes(macAddress);
+          byte[] hwAddress = wakeOnLanManager.GetHwAddrBytes(macAddress);
 
           //Finally, start up the TV server
           LogMyFilms.Info("MyFilmsSetup - WOL: Start the NAS-Server");
@@ -4316,14 +4304,17 @@ namespace MyFilmsPlugin.MyFilms.Configuration
 
       using (var p = new Process())
       {
-        var psi = new ProcessStartInfo();
-        psi.FileName = Config.GetDirectoryInfo(Config.Dir.Base) + @"\AMCupdater.exe";
-        psi.UseShellExecute = false; // try to avoid UAC popup ...
-        psi.WindowStyle = ProcessWindowStyle.Normal;
-        psi.Arguments = "\"" + configParam + "\"" + " " + "LogDirectory" + " " + "GUI";
+        var psi = new ProcessStartInfo
+        {
+          FileName = Config.GetDirectoryInfo(Config.Dir.Base) + @"\AMCupdater.exe",
+          UseShellExecute = false,
+          WindowStyle = ProcessWindowStyle.Normal,
+          Arguments = "\"" + configParam + "\"" + " " + "LogDirectory" + " " + "GUI",
+          ErrorDialog = true
+        };
+        // try to avoid UAC popup ...
 
-        //psi.Arguments = " \"" + Config.GetDirectoryInfo(Config.Dir.Config).ToString() + @"\MyFilmsAMCSettings_" + Config_Name.Text + "\"" + Config.GetDirectoryInfo(Config.Dir.Log).ToString() + "\" \"GUI\"";
-        psi.ErrorDialog = true;
+        //psi.arguments = " \"" + Config.GetDirectoryInfo(Config.Dir.Config).ToString() + @"\MyFilmsAMCSettings_" + Config_Name.Text + "\"" + Config.GetDirectoryInfo(Config.Dir.Log).ToString() + "\" \"GUI\"";
         if (OSInfo.OSInfo.VistaOrLater())
         {
           psi.Verb = "runas";
@@ -4349,7 +4340,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
     {
       if (Config_Name.Text.Length > 0)
       {
-        CreateAMCDesktopIcon();
+        CreateAmcDesktopIcon();
       }
       else
       {
@@ -4357,14 +4348,14 @@ namespace MyFilmsPlugin.MyFilms.Configuration
       }
     }
 
-    private void CreateAMCDesktopIcon()
+    private void CreateAmcDesktopIcon()
     {
       string deskDir = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
       string linkName = "AMC-Updater '" + Config_Name.Text + "'";
       //string commandLine = "\"" + Config.GetDirectoryInfo(Config.Dir.Base) + @"\AMCupdater.exe""" + " \"" + Config.GetDirectoryInfo(Config.Dir.Config) + @"\MyFilmsAMCSettings_" + Config_Name.Text + "\" \"" + Config.GetDirectoryInfo(Config.Dir.Log) + "\" \"GUI\"";
       //string argument = "\"" + Config.GetDirectoryInfo(Config.Dir.Config) + @"\MyFilmsAMCSettings_" + Config_Name.Text + "\" \"" + Config.GetDirectoryInfo(Config.Dir.Log) + "\" \"GUI";
 
-      string configParam = "";
+      string configParam;
       if (!string.IsNullOrEmpty(txtAMCUpd_cnf.Text))
       {
         if (!System.IO.File.Exists(txtAMCUpd_cnf.Text))
@@ -4418,35 +4409,32 @@ namespace MyFilmsPlugin.MyFilms.Configuration
     /// <summary>
     /// Create Windows Shorcut
     /// </summary>
-    /// <param name="SourceFile">A file you want to make shortcut to</param>
-    /// <param name="ShortcutFile">Path and shorcut file name including file extension (.lnk)</param>
-    /// <param name="Description">Shortcut description</param>
-    /// <param name="Arguments">Command line arguments</param>
-    /// <param name="HotKey">Shortcut hot key as a string, for example "Ctrl+F"</param>
-    /// <param name="WorkingDirectory">"Start in" shorcut parameter</param>
-    public void CreateShortcut(string SourceFile, string ShortcutFile, string Description, string Arguments, string HotKey, string WorkingDirectory)
+    /// <param name="sourceFile">A file you want to make shortcut to</param>
+    /// <param name="shortcutFile">Path and shorcut file name including file extension (.lnk)</param>
+    /// <param name="description">Shortcut description</param>
+    /// <param name="arguments">Command line arguments</param>
+    /// <param name="hotKey">Shortcut hot key as a string, for example "Ctrl+F"</param>
+    /// <param name="workingDirectory">"Start in" shorcut parameter</param>
+    private void CreateShortcut(string sourceFile, string shortcutFile, string description, string arguments, string hotKey, string workingDirectory)
     {
       // Check necessary parameters first:
-      if (String.IsNullOrEmpty(SourceFile))
-        throw new ArgumentNullException("SourceFile");
-      if (String.IsNullOrEmpty(ShortcutFile))
-        throw new ArgumentNullException("ShortcutFile");
+      if (String.IsNullOrEmpty(sourceFile))
+        throw new ArgumentNullException("sourceFile");
+      if (String.IsNullOrEmpty(shortcutFile))
+        throw new ArgumentNullException("shortcutFile");
 
       // Create WshShellClass instance:
       var wshShell = new WshShellClass();
 
       // Create shortcut object:
-      IWshRuntimeLibrary.IWshShortcut shorcut = (IWshRuntimeLibrary.IWshShortcut)wshShell.CreateShortcut(ShortcutFile);
+      IWshRuntimeLibrary.IWshShortcut shorcut = (IWshRuntimeLibrary.IWshShortcut)wshShell.CreateShortcut(shortcutFile);
 
       // Assign shortcut properties:
-      shorcut.TargetPath = SourceFile;
-      shorcut.Description = Description;
-      if (!String.IsNullOrEmpty(Arguments))
-        shorcut.Arguments = Arguments;
-      if (!String.IsNullOrEmpty(HotKey))
-        shorcut.Hotkey = HotKey;
-      if (!String.IsNullOrEmpty(WorkingDirectory))
-        shorcut.WorkingDirectory = WorkingDirectory;
+      shorcut.TargetPath = sourceFile;
+      shorcut.Description = description;
+      if (!String.IsNullOrEmpty(arguments))         shorcut.Arguments = arguments;
+      if (!String.IsNullOrEmpty(hotKey))            shorcut.Hotkey = hotKey;
+      if (!String.IsNullOrEmpty(workingDirectory))  shorcut.WorkingDirectory = workingDirectory;
 
       // Save the shortcut:
       shorcut.Save();
@@ -4506,7 +4494,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
         }
         System.IO.File.Delete(wfiledefault + "_" + Config_Name.Text + ".xml");
         Read_XML_AMCconfig(Config_Name.Text); // read current (or create new default) config file
-        CreateMyFilmsDefaultsForAMCconfig(Config_Name.Text); //create MF defaults
+        CreateMyFilmsDefaultsForAmCconfig(Config_Name.Text); //create MF defaults
         Save_XML_AMCconfig(Config_Name.Text); // save new config
         Read_XML_AMCconfig(Config_Name.Text); // reread config file with new defaults
 
@@ -4524,7 +4512,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
         MessageBox.Show("The default AMCupdater configfile cannot be found! (" + Config.GetDirectoryInfo(Config.Dir.Config) + @"\MyFilmsAMCSettings.xml" + ")", "Configuration", MessageBoxButtons.OK, MessageBoxIcon.Stop);
     }
 
-    private void CreateMyFilmsDefaultsForAMCconfig(string currentconfig)
+    private void CreateMyFilmsDefaultsForAmCconfig(string currentconfig)
     {
       // Set Parameters from MyFilms configuration
       AMCSetAttribute("Ant_Database_Source_Field", AntStorage.Text);
@@ -4647,45 +4635,45 @@ namespace MyFilmsPlugin.MyFilms.Configuration
       //"Use Logos of currently selected skin",
       //"Use MyFilms Logo Pack",
       //"Define your path to logo image files"});
-      switch (this.comboBoxLogoPresets.Text)
+      switch (comboBoxLogoPresets.Text)
       {
         case "Define your path to logo image files":
-          this.StoreFullLogoPath = false; // Changed on request of Dadeo
-          this.txtLogosPath.Visible = true;
-          this.txtLogosPath.Enabled = true;
-          this.btnLogosPath.Visible = true;
-          this.lblLogosPath.Visible = true;
+          StoreFullLogoPath = false; // Changed on request of Dadeo
+          txtLogosPath.Visible = true;
+          txtLogosPath.Enabled = true;
+          btnLogosPath.Visible = true;
+          lblLogosPath.Visible = true;
           break;
         case "Use Logos of currently selected skin":
-          this.txtLogosPath.Text = string.Empty;
-          this.StoreFullLogoPath = false;
-          this.txtLogosPath.Visible = true;
-          this.txtLogosPath.Enabled = false;
-          this.btnLogosPath.Visible = false;
-          this.lblLogosPath.Visible = false;
+          txtLogosPath.Text = string.Empty;
+          StoreFullLogoPath = false;
+          txtLogosPath.Visible = true;
+          txtLogosPath.Enabled = false;
+          btnLogosPath.Visible = false;
+          lblLogosPath.Visible = false;
           break;
         case "Use MyFilms Logo Pack":
-          this.txtLogosPath.Text = Config.GetDirectoryInfo(Config.Dir.Thumbs) + @"\MyFilms\DefaultLogos";
-          this.StoreFullLogoPath = false;
-          this.txtLogosPath.Visible = true;
-          this.txtLogosPath.Enabled = false;
-          this.btnLogosPath.Visible = false;
-          this.lblLogosPath.Visible = false;
+          txtLogosPath.Text = Config.GetDirectoryInfo(Config.Dir.Thumbs) + @"\MyFilms\DefaultLogos";
+          StoreFullLogoPath = false;
+          txtLogosPath.Visible = true;
+          txtLogosPath.Enabled = false;
+          btnLogosPath.Visible = false;
+          lblLogosPath.Visible = false;
           break;
         case "Use Blue3Wide logos":
-          this.txtLogosPath.Text = Config.GetDirectoryInfo(Config.Dir.Skin) + @"\defaultwide\media\logos";
-          this.StoreFullLogoPath = false;
-          this.txtLogosPath.Visible = true;
-          this.txtLogosPath.Enabled = false;
-          this.btnLogosPath.Visible = false;
-          this.lblLogosPath.Visible = false;
+          txtLogosPath.Text = Config.GetDirectoryInfo(Config.Dir.Skin) + @"\defaultwide\media\logos";
+          StoreFullLogoPath = false;
+          txtLogosPath.Visible = true;
+          txtLogosPath.Enabled = false;
+          btnLogosPath.Visible = false;
+          lblLogosPath.Visible = false;
           break;
         default:
-          this.txtLogosPath.Text = string.Empty;
-          this.StoreFullLogoPath = false;
-          this.txtLogosPath.Visible = false;
-          this.btnLogosPath.Visible = false;
-          this.lblLogosPath.Visible = false;
+          txtLogosPath.Text = string.Empty;
+          StoreFullLogoPath = false;
+          txtLogosPath.Visible = false;
+          btnLogosPath.Visible = false;
+          lblLogosPath.Visible = false;
           break;
       }
     }
@@ -4700,7 +4688,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
       if (!Directory.Exists(MyFilmsSettings.GetPath(MyFilmsSettings.Path.ThumbsCache) + @"\MyFilms_Logos"))
         Directory.CreateDirectory(MyFilmsSettings.GetPath(MyFilmsSettings.Path.ThumbsCache) + @"\MyFilms_Logos");
       int i = 0;
-      foreach (string sFile in System.IO.Directory.GetFiles(MyFilmsSettings.GetPath(MyFilmsSettings.Path.ThumbsCache) + @"\MyFilms_Logos"))
+      foreach (string sFile in Directory.GetFiles(MyFilmsSettings.GetPath(MyFilmsSettings.Path.ThumbsCache) + @"\MyFilms_Logos"))
       {
         if (sFile.ToUpper().EndsWith(".PNG"))
           System.IO.File.Delete(sFile);
@@ -4712,18 +4700,18 @@ namespace MyFilmsPlugin.MyFilms.Configuration
           MessageBox.Show(
             "No cached logo files to delete, your logo cache is already empty !", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
         else
-          MessageBox.Show("Successfully cleared " + i.ToString() + " cached files in your logo cache directory! Be aware browsing your movies might be slower when rebuilding the logos in cache.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+          MessageBox.Show("Successfully cleared " + i + " cached files in your logo cache directory! Be aware browsing your movies might be slower when rebuilding the logos in cache.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
       }
     }
 
     private void btnFirstTimeSetup_Click(object sender, EventArgs e)
     {
       WizardActive = true;
-      newCatalogWizard();
+      NewCatalogWizard();
       WizardActive = false;
     }
 
-    private void newCatalogWizard()
+    private void NewCatalogWizard()
     {
       bool newCatalog = true;
       // MyFilms.SetupType setupType = MyFilms.SetupType.Local; // set local install as default
@@ -4742,11 +4730,11 @@ namespace MyFilmsPlugin.MyFilms.Configuration
       MyFilmsInputBox input = new MyFilmsInputBox
         {
           // preset to central config client only, if central config is available
-          SetupType = (!syncFromServerOnStartup || myFilmsCentralConfigDir.Length == 0) ? (int)MyFilms.SetupType.Local : (int)MyFilms.SetupType.CentralClient,
+          SetupType = !syncFromServerOnStartup || myFilmsCentralConfigDir.Length == 0 ? (int)MyFilms.SetupType.Local : (int)MyFilms.SetupType.CentralClient,
           Text = "MyFilms - Setup Wizard",
           UseNfoGrabber = false,
           CatalogTypeSelectedIndex = 10,
-          CatalogType = "Ant Movie Catalog Xtended (V4.1)",
+          CatalogType = "Ant Movie catalog Xtended (V4.1)",
           Country = "USA (Full Detail Grabbing)",
           ShowOnlyName =  false,
           TestMode = true // always use feature, as it is moved to normal mode - before: TestMode = (MyFilms_PluginMode != "normal")
@@ -4868,7 +4856,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
         }
         #endregion
 
-        if (!System.IO.Directory.Exists(myFilmsCentralConfigDir))
+        if (!Directory.Exists(myFilmsCentralConfigDir))
         {
           MessageBox.Show("Your remote directory does not exist - cannot continue !\nPlease make sure the path is existing and accessible.", "MyFilms Server Setup", MessageBoxButtons.OK, MessageBoxIcon.Error);
           return;
@@ -4892,7 +4880,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
       string newCountry = input.Country;
       int newCatalogSelectedIndex = input.CatalogTypeSelectedIndex;
       bool useNfoGrabber = input.UseNfoGrabber;
-      if (!(newCatalogSelectedIndex == 0 || newCatalogSelectedIndex == 10)) // if not Ant Movie Catalog, do NOT use nfo grabber anyway
+      if (!(newCatalogSelectedIndex == 0 || newCatalogSelectedIndex == 10)) // if not Ant Movie catalog, do NOT use nfo grabber anyway
         useNfoGrabber = false;
 
       if (string.IsNullOrEmpty(newConfigName))
@@ -4935,7 +4923,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
       switch (input.SetupType)
       {
         case (int)MyFilms.SetupType.Local:
-          catalogDirectory = MyFilmsSettings.GetPath(MyFilmsSettings.Path.MyFilmsPath) + @"\Catalog";
+          catalogDirectory = MyFilmsSettings.GetPath(MyFilmsSettings.Path.MyFilmsPath) + @"\catalog";
           if (!Directory.Exists(catalogDirectory))
           {
             try { Directory.CreateDirectory(catalogDirectory); }
@@ -4946,7 +4934,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
           }
           break;
         case (int)MyFilms.SetupType.CentralMaster:
-          catalogDirectory = Path.Combine(myFilmsCentralConfigDir, "Catalog");
+          catalogDirectory = Path.Combine(myFilmsCentralConfigDir, "catalog");
           if (!Directory.Exists(catalogDirectory))
           {
             try { Directory.CreateDirectory(catalogDirectory); }
@@ -4957,8 +4945,6 @@ namespace MyFilmsPlugin.MyFilms.Configuration
           }
           break;
         case (int)MyFilms.SetupType.CentralClient:
-          break;
-        default:
           break;
       }
       
@@ -4973,7 +4959,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
         openFileDialog1.RestoreDirectory = true;
         openFileDialog1.DefaultExt = "xml";
         openFileDialog1.Filter = "XML Files|*.xml";
-        openFileDialog1.Title = "Select Movie Catalog File (xml)";
+        openFileDialog1.Title = "Select Movie catalog File (xml)";
         openFileDialog1.CheckFileExists = false;
 
         if (openFileDialog1.ShowDialog(this) == DialogResult.OK)
@@ -5000,13 +4986,13 @@ namespace MyFilmsPlugin.MyFilms.Configuration
             };
           destXml.WriteStartDocument();
           destXml.WriteStartElement("AntMovieCatalog");
-          destXml.WriteStartElement("Catalog");
+          destXml.WriteStartElement("catalog");
           destXml.WriteElementString("Properties", string.Empty);
           destXml.WriteStartElement("Contents");
           destXml.Close();
         }
         MesFilmsCat.Text = catalogName;
-        if (this.MesFilmsCat.Text.Length > 0 && this.MesFilmsImg.Text.Length == 0)
+        if (MesFilmsCat.Text.Length > 0 && MesFilmsImg.Text.Length == 0)
         {
           MesFilmsImg.Text = MesFilmsCat.Text.Substring(0, MesFilmsCat.Text.LastIndexOf("\\"));
         }
@@ -5069,8 +5055,8 @@ namespace MyFilmsPlugin.MyFilms.Configuration
       chkDfltFanartImage.Checked = true;
       chkDfltFanartImageAll.Checked = true;
 
-      Sort.Text = (AntSTitle.Text == "") ? AntTitle1.Text : AntSTitle.Text;
-      SortInHierarchies.Text = (AntSTitle.Text == "") ? AntTitle1.Text : AntSTitle.Text;
+      Sort.Text = AntSTitle.Text == "" ? AntTitle1.Text : AntSTitle.Text;
+      SortInHierarchies.Text = AntSTitle.Text == "" ? AntTitle1.Text : AntSTitle.Text;
       SortSens.Text = " ASC";
       SortSensInHierarchies.Text = " ASC";
       LayoutInHierarchies.Text = "List";
@@ -5247,13 +5233,13 @@ namespace MyFilmsPlugin.MyFilms.Configuration
           }
           if (!Directory.Exists(moviepath)) { try { Directory.CreateDirectory(moviepath); } catch { } }
 
-          if (System.IO.Directory.Exists(moviepath))
+          if (Directory.Exists(moviepath))
             folderBrowserDialog1.SelectedPath = moviepath;
 
           if (folderBrowserDialog1.ShowDialog(this) == DialogResult.OK)
           {
-            if (this.folderBrowserDialog1.SelectedPath.LastIndexOf(@"\") !=
-                this.folderBrowserDialog1.SelectedPath.Length - 1) folderBrowserDialog1.SelectedPath = folderBrowserDialog1.SelectedPath + "\\";
+            if (folderBrowserDialog1.SelectedPath.LastIndexOf(@"\") !=
+                folderBrowserDialog1.SelectedPath.Length - 1) folderBrowserDialog1.SelectedPath = folderBrowserDialog1.SelectedPath + "\\";
 
             if (PathStorage.Text.Length == 0)
               PathStorage.Text = folderBrowserDialog1.SelectedPath;
@@ -5412,7 +5398,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
         System.IO.File.Delete(wfiledefault + "_" + Config_Name.Text + ".xml");
 
         Read_XML_AMCconfig(Config_Name.Text); // read current (or create new default) config file
-        CreateMyFilmsDefaultsForAMCconfig(Config_Name.Text); //create MF defaults
+        CreateMyFilmsDefaultsForAmCconfig(Config_Name.Text); //create MF defaults
         Save_XML_AMCconfig(Config_Name.Text); // save new config
         Read_XML_AMCconfig(Config_Name.Text); // reread config file with new defaults
       }
@@ -5420,7 +5406,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
 
       #region Create Desktop Icon for AMCupdater with config created...
       if (newCatalogSelectedIndex == 0 || newCatalogSelectedIndex == 10) // only for AMC configs
-        CreateAMCDesktopIcon();
+        CreateAmcDesktopIcon();
       #endregion
 
       // Change Config to selected catalog type
@@ -5452,7 +5438,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
         #region upload server config for client
         string serverConfigFile = myFilmsCentralConfigDir + @"\MyFilms.xml";
         string localConfigFile = Config.GetFolder(Config.Dir.Config) + @"\MyFilms.xml";
-        if (!System.IO.Directory.Exists(myFilmsCentralConfigDir))
+        if (!Directory.Exists(myFilmsCentralConfigDir))
         {
           MessageBox.Show("Your remote directory does not exist - cannot continue !\nPlease make sure the path is existing and accessible.", "MyFilms Server Setup", MessageBoxButtons.OK, MessageBoxIcon.Error);
           return;
@@ -5510,32 +5496,32 @@ namespace MyFilmsPlugin.MyFilms.Configuration
     {
       MyFilmsInputBox input = new MyFilmsInputBox
         {
-          Text = "MyFilms - New Catalog",
+          Text = "MyFilms - New catalog",
           CatalogTypeSelectedIndex = 0,
-          CatalogType = "Ant Movie Catalog (V3.5.1.2)"
+          CatalogType = "Ant Movie catalog (V3.5.1.2)"
         };
       input.ShowDialog(this);
-      string newConfig_Name = input.ConfigName;
+      string newConfigName = input.ConfigName;
       string newCatalogType = input.CatalogType;
       int newCatalogSelectedIndex = input.CatalogTypeSelectedIndex;
 
-      if (string.IsNullOrEmpty(newConfig_Name))
+      if (string.IsNullOrEmpty(newConfigName))
       {
         MessageBox.Show("New Config Name must not be empty !", "MyFilms - New Configuration", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
       }
       else
       {
-        if (newConfig_Name == Config_Name.Text)
+        if (newConfigName == Config_Name.Text)
         {
           MessageBox.Show("New Config Name must be different from the existing one !", "MyFilms - New Configuration", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
         }
         else
         {
-          Read_XML_AMCconfig(newConfig_Name);
+          Read_XML_AMCconfig(newConfigName);
           NewConfigButton = true;
           Refresh_Items(true); // Reset all
           Refresh_Tabs(true); // enable Tabs
-          Config_Name.Text = newConfig_Name;
+          Config_Name.Text = newConfigName;
           //Config_Name_Load();
           MessageBox.Show("Created a new Configuration ! \n You must do proper setup to use it.", "MyFilms - New Configuration", MessageBoxButtons.OK, MessageBoxIcon.Information);
           CatalogType.SelectedIndex = newCatalogSelectedIndex; // set selected CatalogType
@@ -5606,12 +5592,14 @@ namespace MyFilmsPlugin.MyFilms.Configuration
     {
       using (var p = new Process())
       {
-        var psi = new ProcessStartInfo();
-        psi.FileName = Config.GetDirectoryInfo(Config.Dir.Base) + @"\MyFilms_Grabber_Interface.exe";
-        psi.UseShellExecute = true;
-        psi.WindowStyle = ProcessWindowStyle.Normal;
-        psi.Arguments = "\"" + txtGrabber.Text + "\"";
-        psi.ErrorDialog = true;
+        var psi = new ProcessStartInfo
+        {
+          FileName = Config.GetDirectoryInfo(Config.Dir.Base) + @"\MyFilms_Grabber_Interface.exe",
+          UseShellExecute = true,
+          WindowStyle = ProcessWindowStyle.Normal,
+          Arguments = "\"" + txtGrabber.Text + "\"",
+          ErrorDialog = true
+        };
         if (OSInfo.OSInfo.VistaOrLater())
         {
           psi.Verb = "runas";
@@ -5638,14 +5626,14 @@ namespace MyFilmsPlugin.MyFilms.Configuration
       string destFile = string.Empty;
       switch (CatalogType.SelectedIndex)
       {
-        case 0: // ANT Movie Catalog
-        case 10:// ANT Movie Catalog extnded V4.1
+        case 0: // ANT Movie catalog
+        case 10:// ANT Movie catalog extnded V4.1
           break;
         case 1: // DVD Profiler
         case 2: // Movie Collector V7.1.4
         case 3: // MyMovies
-        case 4: // EAX Movie Catalog 2.5.0
-        case 5: // EAX Movie Catalog 3.0.9 (beta5)
+        case 4: // EAX Movie catalog 2.5.0
+        case 5: // EAX Movie catalog 3.0.9 (beta5)
         case 6: // PVD PersonalVideoDatabase V0.9.9.21
         case 7: // eXtreme Movie Manager
         case 8: // XBMC fulldb export (all movies in one DB)
@@ -5680,12 +5668,14 @@ namespace MyFilmsPlugin.MyFilms.Configuration
       }
       using (var p = new Process())
       {
-        var psi = new ProcessStartInfo();
-        psi.FileName = "notepad.exe";
-        psi.UseShellExecute = true;
-        psi.WindowStyle = ProcessWindowStyle.Normal;
-        psi.Arguments = "\"" + MesFilmsCat.Text.Substring(0, MesFilmsCat.Text.Length - 4) + "_tmp.xml" + "\"";
-        psi.ErrorDialog = true;
+        var psi = new ProcessStartInfo
+        {
+          FileName = "notepad.exe",
+          UseShellExecute = true,
+          WindowStyle = ProcessWindowStyle.Normal,
+          Arguments = "\"" + MesFilmsCat.Text.Substring(0, MesFilmsCat.Text.Length - 4) + "_tmp.xml" + "\"",
+          ErrorDialog = true
+        };
         if (OSInfo.OSInfo.VistaOrLater())
         {
           psi.Verb = "runas";
@@ -5706,10 +5696,9 @@ namespace MyFilmsPlugin.MyFilms.Configuration
 
     private void buttonOpenTmpFileAMC_Click(object sender, EventArgs e)
     {
-      string destFile = string.Empty;
-      destFile = this.IsAMCcatalogType(this.CatalogType.SelectedIndex)
-                   ? this.MesFilmsCat.Text
-                   : this.MesFilmsCat.Text.Substring(0, this.MesFilmsCat.Text.Length - 4) + "_tmp.xml";
+      var destFile = IsAMCcatalogType(CatalogType.SelectedIndex)
+        ? MesFilmsCat.Text
+        : MesFilmsCat.Text.Substring(0, MesFilmsCat.Text.Length - 4) + "_tmp.xml";
       if (!System.IO.File.Exists(destFile))
       {
         MessageBox.Show("The file '" + destFile + "' does not exist!", "Control Configuration", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -5717,7 +5706,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
       }
       if (string.IsNullOrEmpty(AMCexePath.Text))
       {
-        MessageBox.Show("Unable to launch Ant Movie Catalog ! \nPlease set the path accordingly first!", "Control Configuration", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        MessageBox.Show("Unable to launch Ant Movie catalog ! \nPlease set the path accordingly first!", "Control Configuration", MessageBoxButtons.OK, MessageBoxIcon.Information);
         return;
       }
       if (IsAMCcatalogType(CatalogType.SelectedIndex)) // show warning when launching AMC with EC tmp file !
@@ -5727,12 +5716,14 @@ namespace MyFilmsPlugin.MyFilms.Configuration
       //System.Diagnostics.Process.Start(AMCexePath.Text); // More detailed startup below ...
       using (var p = new Process())
       {
-        var psi = new ProcessStartInfo();
-        psi.FileName = AMCexePath.Text;
-        psi.UseShellExecute = true;
-        psi.WindowStyle = ProcessWindowStyle.Normal;
-        psi.Arguments = "\"" + destFile + "\"";
-        psi.ErrorDialog = true;
+        var psi = new ProcessStartInfo
+        {
+          FileName = AMCexePath.Text,
+          UseShellExecute = true,
+          WindowStyle = ProcessWindowStyle.Normal,
+          Arguments = "\"" + destFile + "\"",
+          ErrorDialog = true
+        };
         if (OSInfo.OSInfo.VistaOrLater())
         {
           psi.Verb = "runas";
@@ -5762,7 +5753,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
       openFileDialog1.RestoreDirectory = true;
       openFileDialog1.DefaultExt = "exe";
       openFileDialog1.Filter = "exe Files|*.exe";
-      openFileDialog1.Title = "Select AMC Movie Catalog Executable (.exe)";
+      openFileDialog1.Title = "Select AMC Movie catalog Executable (.exe)";
       openFileDialog1.CheckFileExists = false;
       if (openFileDialog1.ShowDialog(this) == DialogResult.OK)
       {
@@ -5787,10 +5778,12 @@ namespace MyFilmsPlugin.MyFilms.Configuration
 
     private void btnWatchedExport_Click(object sender, EventArgs e)
     {
-      SaveFileDialog fd = new SaveFileDialog();
-      fd.Title = "Select Backup file for watched Status (.watched)";
-      fd.Filter = "Exported Watched Info (*.watched)|*.watched";
-      fd.DefaultExt = ".watched";
+      SaveFileDialog fd = new SaveFileDialog
+      {
+        Title = "Select Backup file for watched Status (.watched)",
+        Filter = "Exported Watched Info (*.watched)|*.watched",
+        DefaultExt = ".watched"
+      };
       if (MesFilmsCat.Text.Contains("\\"))
         fd.InitialDirectory = MesFilmsCat.Text.Substring(0, MesFilmsCat.Text.LastIndexOf("\\") + 1);
       // fd.RestoreDirectory = true;
@@ -5811,11 +5804,11 @@ namespace MyFilmsPlugin.MyFilms.Configuration
             DataRow[] movies = mydivx.Movie.Select(expression);
             if (mydivx.Movie.Count > 0)
             {
-              foreach (string val in movies.Select(movie => movie["Number"] + " || " + movie[this.cbWatched.Text] + " || " + movie["OriginalTitle"] + " || " + movie["Year"]))
+              foreach (string val in movies.Select(movie => movie["Number"] + " || " + movie[cbWatched.Text] + " || " + movie["OriginalTitle"] + " || " + movie["Year"]))
               {
                 try
                 {
-                  w.WriteLine((string)val);
+                  w.WriteLine(val);
                 }
                 catch (IOException exception)
                 {
@@ -5827,11 +5820,11 @@ namespace MyFilmsPlugin.MyFilms.Configuration
             }
             else
             {
-              MessageBox.Show("Watched info NOT exported!  No Movies found in Catalog !", "Configuration", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+              MessageBox.Show("Watched info NOT exported!  No Movies found in catalog !", "Configuration", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
           }
           else
-            MessageBox.Show("Watched info NOT exported!  Catalog cannot be read !", "Configuration", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            MessageBox.Show("Watched info NOT exported!  catalog cannot be read !", "Configuration", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
         else
         {
@@ -5848,19 +5841,21 @@ namespace MyFilmsPlugin.MyFilms.Configuration
 
     private void btnWatchedImport_Click(object sender, EventArgs e)
     {
-      OpenFileDialog fd = new OpenFileDialog();
-      fd.Title = "Select Backup file for watched Status (.watched)";
-      fd.Filter = "Exported Watched Info (*.watched)|*.watched";
-      fd.DefaultExt = ".watched";
+      OpenFileDialog fd = new OpenFileDialog
+      {
+        Title = "Select Backup file for watched Status (.watched)",
+        Filter = "Exported Watched Info (*.watched)|*.watched",
+        DefaultExt = ".watched"
+      };
       if (MesFilmsCat.Text.Contains("\\"))
         fd.InitialDirectory = MesFilmsCat.Text.Substring(0, MesFilmsCat.Text.LastIndexOf("\\") + 1);
       // fd.RestoreDirectory = true;
-      fd.FileName = System.IO.Path.GetFileNameWithoutExtension(MesFilmsCat.Text) + ".watched";
+      fd.FileName = Path.GetFileNameWithoutExtension(MesFilmsCat.Text) + ".watched";
 
       if (fd.ShowDialog() == DialogResult.OK && System.IO.File.Exists(fd.FileName))
       {
-        string line = string.Empty;
-        DataRow[] movies = null;
+        string line;
+        DataRow[] movies;
 
         // try reading catalog
         if (MesFilmsCat.Text.Length > 0)
@@ -5874,12 +5869,12 @@ namespace MyFilmsPlugin.MyFilms.Configuration
             movies = mydivx.Movie.Select(expression);
             if (mydivx.Movie.Count == 0)
             {
-              MessageBox.Show("Watched info NOT imported!  No Movies found in Catalog !", "Configuration", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+              MessageBox.Show("Watched info NOT imported!  No Movies found in catalog !", "Configuration", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
           }
           else
           {
-            MessageBox.Show("Watched info NOT imported!  Catalog cannot be read !", "Configuration", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            MessageBox.Show("Watched info NOT imported!  catalog cannot be read !", "Configuration", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             return;
           }
         }
@@ -5893,7 +5888,6 @@ namespace MyFilmsPlugin.MyFilms.Configuration
         // set unwatched for all
         foreach (DataRow movie in movies)
         {
-          //movie[cbWatched.Text] = "";
           movie[cbWatched.Text] = textBoxGlobalUnwatchedOnlyValue.Text;
         }
         // now set watched for all in file
@@ -5912,7 +5906,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
 
           foreach (DataRow movie in movies.Where(movie => movie["Number"].ToString() == number && movie["OriginalTitle"].ToString() == otitle && movie["Year"].ToString() == year))
           {
-            movie[this.cbWatched.Text] = watched;
+            movie[cbWatched.Text] = watched;
           }
         }
         r.Close();
@@ -5962,8 +5956,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
 
     private void btnHyperLinkParamGen_Click(object sender, EventArgs e)
     {
-      var input = new HyperLinkParamGenerator();
-      input.Text = "MyFilms - Hyperlink Start Parameter Creator";
+      var input = new HyperLinkParamGenerator {Text = "MyFilms - Hyperlink Start Parameter Creator"};
       input.ShowDialog(this);
     }
 
@@ -5994,7 +5987,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
       if (index < General.TabCount - 1)
         do
         {
-          SwapTabPages(tabpage, (General.TabPages[General.TabPages.IndexOf(tabpage) - 1]));
+          SwapTabPages(tabpage, General.TabPages[General.TabPages.IndexOf(tabpage) - 1]);
         }
         while (General.TabPages.IndexOf(tabpage) != index);
       General.SelectedTab = tabpage;
@@ -6005,10 +5998,10 @@ namespace MyFilmsPlugin.MyFilms.Configuration
       if (General.TabPages.Contains(tp1) == false || General.TabPages.Contains(tp2) == false)
         throw new ArgumentException("TabPages must be in the TabControls TabPageCollection.");
 
-      int Index1 = General.TabPages.IndexOf(tp1);
-      int Index2 = General.TabPages.IndexOf(tp2);
-      General.TabPages[Index1] = tp2;
-      General.TabPages[Index2] = tp1;
+      int index1 = General.TabPages.IndexOf(tp1);
+      int index2 = General.TabPages.IndexOf(tp2);
+      General.TabPages[index1] = tp2;
+      General.TabPages[index2] = tp1;
 
       //Uncomment the following section to overcome bugs in the Compact Framework
       //tabControl1.SelectedIndex = tabControl1.SelectedIndex; 
@@ -6076,7 +6069,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
             textBoxUpdateGrabberScripts.Text = "";
             if (updatedscripts.Count > 0)
             {
-              string updatelist = updatedscripts.Aggregate("Grabber Scripts updated: \n", (current, updatedscript) => current + (updatedscript + "\n"));
+              string updatelist = updatedscripts.Aggregate("Grabber Scripts updated: \n", (current, updatedscript) => current + updatedscript + "\n");
               MessageBox.Show(updatelist);
             }
             else MessageBox.Show("No Updates available !");
@@ -6145,7 +6138,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
       // MessageBox.Show("Download(s) completed!");
     }
 
-    public List<string> UpdateScriptFiles(string versionfile)
+    private List<string> UpdateScriptFiles(string versionfile)
     {
       var updatedscripts = new List<string>();
       var dirsInf = new DirectoryInfo(MyFilmsSettings.GetPath(MyFilmsSettings.Path.GrabberScripts));
@@ -6332,15 +6325,17 @@ namespace MyFilmsPlugin.MyFilms.Configuration
 
     private void toolStripButtonAddDefaults_Click(object sender, EventArgs e)
     {
-      this.AddDefaultViews();
+      AddDefaultViews();
     }
 
     private void AntViewFilterEditButton_Click(object sender, EventArgs e)
     {
-      var filterEditor = new FilterEditor();
-      filterEditor.Text = "MyFilms - View Filter Editor ('" + AntViewFilter.Text + "')";
-      filterEditor.MasterTitle = AntTitle1.Text;
-      filterEditor.ExtendedFields = (this.CatalogType.SelectedIndex != 0);
+      FilterEditor filterEditor = new FilterEditor
+      {
+        Text = "MyFilms - View Filter Editor ('" + AntViewFilter.Text + "')",
+        MasterTitle = AntTitle1.Text,
+        ExtendedFields = (CatalogType.SelectedIndex != 0)
+      };
 
       // preset the values
       string[] filterSettings = AntViewFilterSaveString.Text.Split('|');
@@ -6358,7 +6353,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
       }
       
       filterEditor.ShowDialog(this);
-      if (filterEditor.DialogResult == System.Windows.Forms.DialogResult.OK)
+      if (filterEditor.DialogResult == DialogResult.OK)
       {
         // AntViewFilter.Focus();
         AntViewFilter.Text = filterEditor.ConfigString;
@@ -6386,9 +6381,9 @@ namespace MyFilmsPlugin.MyFilms.Configuration
 
     private void toolStripButtonAdd_Click(object sender, EventArgs e)
     {
-      MFview.ViewRow newRow = this.MyCustomViews.View.NewViewRow();
+      MFview.ViewRow newRow = MyCustomViews.View.NewViewRow();
       newRow.Label = "New View";
-      this.MyCustomViews.View.Rows.Add(newRow);
+      MyCustomViews.View.Rows.Add(newRow);
       // bindingNavigatorSaveItem.PerformClick();
       //viewBindingSourceAddNewItem.PerformClick();
       viewBindingSource.ResetBindings(false);
@@ -6406,11 +6401,11 @@ namespace MyFilmsPlugin.MyFilms.Configuration
       //MFview current = (MFview)viewBindingSource.Current;
       //viewBindingSource.Remove(current);
 
-      DataRow selectedRow = this.MyCustomViews.View.Rows[position];
-      DataRow newRow = this.MyCustomViews.View.NewRow();
+      DataRow selectedRow = MyCustomViews.View.Rows[position];
+      DataRow newRow = MyCustomViews.View.NewRow();
       newRow.ItemArray = selectedRow.ItemArray; // copy data
-      this.MyCustomViews.View.Rows.Remove(selectedRow);
-      this.MyCustomViews.View.Rows.InsertAt(newRow, position - 1);
+      MyCustomViews.View.Rows.Remove(selectedRow);
+      MyCustomViews.View.Rows.InsertAt(newRow, position - 1);
 
       //viewBindingSource.Insert(position - 1, current);
       viewBindingSource.Position = position - 1;
@@ -6421,7 +6416,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
 
     private void toolStripButtonMoveDown_Click(object sender, EventArgs e)
     {
-      //this.viewBindingSource.MoveDown();
+      //viewBindingSource.MoveDown();
       int position = viewBindingSource.Position;
       if (position == viewBindingSource.Count - 1) return;  // already at bottom
 
@@ -6431,11 +6426,11 @@ namespace MyFilmsPlugin.MyFilms.Configuration
       //viewBindingSource.Remove(current);
 
 
-      DataRow selectedRow = this.MyCustomViews.View.Rows[position];
-      DataRow newRow = this.MyCustomViews.View.NewRow();
+      DataRow selectedRow = MyCustomViews.View.Rows[position];
+      DataRow newRow = MyCustomViews.View.NewRow();
       newRow.ItemArray = selectedRow.ItemArray; // copy data
-      this.MyCustomViews.View.Rows.Remove(selectedRow);
-      this.MyCustomViews.View.Rows.InsertAt(newRow, position + 1);
+      MyCustomViews.View.Rows.Remove(selectedRow);
+      MyCustomViews.View.Rows.InsertAt(newRow, position + 1);
 
       //viewBindingSource.Insert(position + 1, current);
       viewBindingSource.Position = position + 1;
@@ -6461,18 +6456,20 @@ namespace MyFilmsPlugin.MyFilms.Configuration
 
     private void btnCustomConfigFilter_Click(object sender, EventArgs e)
     {
-      var filterEditor = new FilterEditor();
-      filterEditor.Text = "MyFilms - View Filter Editor ('" + AntViewFilter.Text + "')";
-      filterEditor.MasterTitle = AntTitle1.Text;
-      filterEditor.ExtendedFields = (this.CatalogType.SelectedIndex != 0);
-      filterEditor.FilterItem1 = AntFilterItem1.Text;
-      filterEditor.FilterItem2 = AntFilterItem2.Text;
-      filterEditor.FilterSign1 = AntFilterSign1.Text;
-      filterEditor.FilterSign2 = AntFilterSign2.Text;
-      filterEditor.FilterText1 = AntFilterText1.Text;
-      filterEditor.FilterText2 = AntFilterText2.Text;
-      filterEditor.FilterFreeText = AntFilterFreeText.Text;
-      filterEditor.FilterComb = AntFilterComb.Text;
+      FilterEditor filterEditor = new FilterEditor
+      {
+        Text = "MyFilms - View Filter Editor ('" + AntViewFilter.Text + "')",
+        MasterTitle = AntTitle1.Text,
+        ExtendedFields = CatalogType.SelectedIndex != 0,
+        FilterItem1 = AntFilterItem1.Text,
+        FilterItem2 = AntFilterItem2.Text,
+        FilterSign1 = AntFilterSign1.Text,
+        FilterSign2 = AntFilterSign2.Text,
+        FilterText1 = AntFilterText1.Text,
+        FilterText2 = AntFilterText2.Text,
+        FilterFreeText = AntFilterFreeText.Text,
+        FilterComb = AntFilterComb.Text
+      };
       filterEditor.ShowDialog(this);
       if (filterEditor.DialogResult == DialogResult.OK)
       {
@@ -6694,7 +6691,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
     //      destXml.Formatting = Formatting.Indented;
     //      destXml.WriteStartDocument(false);
     //      destXml.WriteStartElement("AntMovieCatalog");
-    //      destXml.WriteStartElement("Catalog");
+    //      destXml.WriteStartElement("catalog");
     //      destXml.WriteElementString("Properties", "");
     //      destXml.WriteStartElement("Contents");
     //      destXml.WriteEndElement();

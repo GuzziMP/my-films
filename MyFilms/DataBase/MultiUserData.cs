@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace MyFilmsPlugin.DataBase
 {
   using System.Globalization;
 
-  using MyFilmsPlugin.MyFilms.MyFilmsGUI;
+  using MyFilms.MyFilmsGUI;
 
   public class MultiUserData
   {
@@ -59,7 +58,7 @@ namespace MyFilmsPlugin.DataBase
     {
       var userstate = GetUserState(username);
 
-      userstate.WatchedCount = (watched) ? 1 : 0;
+      userstate.WatchedCount = watched ? 1 : 0;
       userstate.Watched = watched;
       userstate.WatchedDate = NoWatchedDate;
     }
@@ -67,23 +66,23 @@ namespace MyFilmsPlugin.DataBase
     public void SetWatched(string username, bool watched)
     {
       var userstate = GetUserState(username);
-      userstate.WatchedCount = (watched) ? 1 : 0;
+      userstate.WatchedCount = watched ? 1 : 0;
       userstate.Watched = watched;
-      userstate.WatchedDate = (watched) ? DateTime.Today : NoWatchedDate; // DateTime.Parse(DateTime.Now.ToShortDateString()); // make sure, only the date will be used with time to 00:00
+      userstate.WatchedDate = watched ? DateTime.Today : NoWatchedDate; // DateTime.Parse(DateTime.Now.ToShortDateString()); // make sure, only the date will be used with time to 00:00
     }
 
     public void SetWatchedCount(string username, int watchedcount)
     {
       var userstate = GetUserState(username);
       userstate.WatchedCount = watchedcount;
-      userstate.Watched = (watchedcount > 0);
-      userstate.WatchedDate = (watchedcount > 0) ? DateTime.Today : NoWatchedDate;
+      userstate.Watched = watchedcount > 0;
+      userstate.WatchedDate = watchedcount > 0 ? DateTime.Today : NoWatchedDate;
     }
 
     public void SetRating(string username, decimal rating)
     {
       var userstate = GetUserState(username);
-      userstate.UserRating = (rating < 0) ? NoRating : rating;
+      userstate.UserRating = rating < 0 ? NoRating : rating;
     }
 
     public void AddWatchedCountByOne(string username)
@@ -107,7 +106,7 @@ namespace MyFilmsPlugin.DataBase
       {
         // LogMyFilms.Debug("LoadUserStates() - return state for user '" + state.UserName + "', rating = '" + state.UserRating + "', count = '" + state.WatchedCount + "', watched = '" + state.Watched + "', watcheddate = '" + state.WatchedDate + "'");
         // var sNew = ((!string.IsNullOrEmpty(state.UserName)) ? state.UserName : "*") + ":" + state.WatchedCount + ":" + state.UserRating.ToString(CultureInfo.InvariantCulture) + ":" + ((state.WatchedDate > DateTime.Parse("01/01/1900")) ? state.WatchedDate.ToShortDateString() : "");  // short date as invariant culture // var sNew = state.UserName + ":" + state.WatchedCount + ":" + state.UserRating.ToString(CultureInfo.InvariantCulture) + ":" + state.WatchedDate.ToString("d", invC);  // short date as invariant culture
-        string sNew = state.UserName + ":" + state.WatchedCount + ":" + state.UserRating.ToString(CultureInfo.InvariantCulture) + ":" + ((state.WatchedDate > DateTime.Parse("01/01/1900")) ? state.WatchedDate.ToShortDateString() : "") + ":" + state.ResumeData;  // short date as invariant culture // var sNew = state.UserName + ":" + state.WatchedCount + ":" + state.UserRating.ToString(CultureInfo.InvariantCulture) + ":" + state.WatchedDate.ToString("d", invC);  // short date as invariant culture
+        string sNew = state.UserName + ":" + state.WatchedCount + ":" + state.UserRating.ToString(CultureInfo.InvariantCulture) + ":" + (state.WatchedDate > DateTime.Parse("01/01/1900") ? state.WatchedDate.ToShortDateString() : "") + ":" + state.ResumeData;  // short date as invariant culture // var sNew = state.UserName + ":" + state.WatchedCount + ":" + state.UserRating.ToString(CultureInfo.InvariantCulture) + ":" + state.WatchedDate.ToString("d", invC);  // short date as invariant culture
         if (resultValueString.Length > 0) resultValueString += "|";
         resultValueString += sNew;
       }
@@ -141,7 +140,7 @@ namespace MyFilmsPlugin.DataBase
           var userstate = new UserState((string)EnhancedWatchedValue(s, Type.Username));
           userstate.UserRating = (decimal)EnhancedWatchedValue(s, Type.Rating);
           userstate.WatchedCount = (int)EnhancedWatchedValue(s, Type.Count);
-          userstate.Watched = (userstate.WatchedCount > 0);
+          userstate.Watched = userstate.WatchedCount > 0;
           userstate.WatchedDate = (DateTime)(EnhancedWatchedValue(s, Type.Datewatched));
           userstate.ResumeData = (int)(EnhancedWatchedValue(s, Type.Resume));
           // LogMyFilms.Debug("LoadUserStates() - loading state for user '" + userstate.UserName + "', rating = '" + userstate.UserRating + "', count = '" + userstate.WatchedCount + "', watched = '" + userstate.Watched + "', watcheddate = '" + userstate.WatchedDate + "'");
@@ -162,20 +161,20 @@ namespace MyFilmsPlugin.DataBase
           value = split[0];
           break;
         case Type.Count:
-          int count = 0;
-          value = (split.Length > 1 && int.TryParse(split[1], out count)) ? count : 0;
+          int count;
+          value = split.Length > 1 && int.TryParse(split[1], out count) ? count : 0;
           break;
         case Type.Rating:
           decimal rating;
-          value = (split.Length > 2 && decimal.TryParse(split[2], NumberStyles.Any, CultureInfo.InvariantCulture, out rating)) ? rating : NoRating;
+          value = split.Length > 2 && decimal.TryParse(split[2], NumberStyles.Any, CultureInfo.InvariantCulture, out rating) ? rating : NoRating;
           break;
         case Type.Datewatched:
           DateTime datewatched;
-          value = (split.Length > 3 && DateTime.TryParse(split[3], out datewatched)) ? datewatched : NoWatchedDate;
+          value = split.Length > 3 && DateTime.TryParse(split[3], out datewatched) ? datewatched : NoWatchedDate;
           break;
         case Type.Resume:
           int resume;
-          value = (split.Length > 4 && int.TryParse(split[4], out resume)) ? resume : 0;
+          value = split.Length > 4 && int.TryParse(split[4], out resume) ? resume : 0;
           break;
       }
       return value;
@@ -184,7 +183,7 @@ namespace MyFilmsPlugin.DataBase
     internal static string Remove(string input, string toRemove)
     {
       string output = "";
-      string[] split = input.Split(new Char[] { ',', '|' }, StringSplitOptions.RemoveEmptyEntries);
+      string[] split = input.Split(new[] { ',', '|' }, StringSplitOptions.RemoveEmptyEntries);
       List<string> itemList = split.Select(x => x.Trim()).Distinct().ToList();
       if (itemList.Contains(toRemove)) itemList.Remove(toRemove);
       itemList.Sort();
@@ -199,7 +198,7 @@ namespace MyFilmsPlugin.DataBase
     internal static string Add(string input, string toAdd)
     {
       string output = "";
-      string[] split = input.Split(new Char[] { ',', '|' }, StringSplitOptions.RemoveEmptyEntries);
+      string[] split = input.Split(new[] { ',', '|' }, StringSplitOptions.RemoveEmptyEntries);
       List<string> itemList = split.Select(x => x.Trim()).Distinct().ToList();
       if (!itemList.Contains(toAdd)) itemList.Add(toAdd);
       itemList.Sort();

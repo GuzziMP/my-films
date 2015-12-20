@@ -519,7 +519,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
 
     public override string GetModuleName()
     {
-      return (GUILocalizeStrings.Get(MyFilms.ID_MyFilmsDetail) + "/" + GUILocalizeStrings.Get(10798751)); // return localized string for Module ID -> MyFilms/Details/Overview
+      return GUILocalizeStrings.Get(MyFilms.ID_MyFilmsDetail) + "/" + GUILocalizeStrings.Get(10798751); // return localized string for Module ID -> MyFilms/Details/Overview
     }
 
     public override bool Init()
@@ -658,7 +658,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
 
     protected override void OnPageDestroy(int newWindowId)
     {
-      LogMyFilms.Debug("MyFilmsDetail.OnPageDestroy(" + newWindowId.ToString() + ") started.");
+      LogMyFilms.Debug("MyFilmsDetail.OnPageDestroy(" + newWindowId + ") started.");
       if (MyFilms.conf.PersonsEnableDownloads)
       {
         if (downloadingWorker.IsBusy) downloadingWorker.CancelAsync();
@@ -1051,7 +1051,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
             else
             {
               string[] split1 = MyFilms.r[MyFilms.conf.StrIndex][MyFilms.conf.StrStorageTrailer].ToString().Trim().Split(new Char[] { ';' });
-              trailercount = split1.Count().ToString();
+              trailercount = split1.Length.ToString();
             }
             if (trailercount != "0")
             {
@@ -1593,14 +1593,9 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
           break;
 
         case "trakt-AddToWatchedListMovies":
-          if (Helper.IsTraktAvailableAndEnabledAndNewVersion)
-          {
-            GUIUtils.ShowErrorDialog("This feature is no more supported - use the Trakt menu instead!");
-          }
-          else
-          {
-            GUIUtils.ShowErrorDialog("Your installed Trakt Version does not allow this feature!");
-          }
+          GUIUtils.ShowErrorDialog(Helper.IsTraktAvailableAndEnabledAndNewVersion
+            ? "This feature is no more supported - use the Trakt menu instead!"
+            : "Your installed Trakt Version does not allow this feature!");
           break;
 
         case "trakt-Lists":
@@ -1633,14 +1628,9 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
           break;
 
         case "trakt-Rate":
-          if (Helper.IsTraktAvailableAndEnabled)
-          {
-            GUIUtils.ShowErrorDialog("This feature is no more supported - use the Trakt menu instead!");
-          }
-          else
-          {
-            GUIUtils.ShowErrorDialog("Your installed Trakt Version does not allow this feature!");
-          }
+          GUIUtils.ShowErrorDialog(Helper.IsTraktAvailableAndEnabled
+            ? "This feature is no more supported - use the Trakt menu instead!"
+            : "Your installed Trakt Version does not allow this feature!");
           break;
 
         case "trakt-RelatedMovies":
@@ -1846,7 +1836,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
               ArrayList displayItems = MyFilms.GetDisplayItems("view");
               foreach (string[] displayItem in displayItems)
               {
-                string entry = (string.IsNullOrEmpty(displayItem[1])) ? displayItem[0] : displayItem[1];
+                string entry = string.IsNullOrEmpty(displayItem[1]) ? displayItem[0] : displayItem[1];
                 dlgmenu.Add(" " + entry);
                 choiceUpd.Add(displayItem[0]);
                 LogMyFilms.Debug("Update properties menu - add '{0}' as '{1}'", displayItem[0], entry);
@@ -2334,7 +2324,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
       switch (site)
       {
         case "YouTube":
-          titleextension = " " + MyFilms.r[MyFilms.conf.StrIndex]["Year"] + " trailer" + ((MyFilms.conf.GrabberOverrideLanguage.Length > 0) ? (" " + MyFilms.conf.GrabberOverrideLanguage) : "");
+          titleextension = " " + MyFilms.r[MyFilms.conf.StrIndex]["Year"] + " trailer" + (MyFilms.conf.GrabberOverrideLanguage.Length > 0 ? " " + MyFilms.conf.GrabberOverrideLanguage : "");
           break;
         case "YouTubeMore":
           titleextension = " trailer";
@@ -2440,7 +2430,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
           dlgPrgrs.SetLine(1, GUILocalizeStrings.Get(1079848)); // Creating new Fanart from movie
           dlgPrgrs.Percentage = 0;
         }
-        new System.Threading.Thread(delegate()
+        new Thread(delegate()
         {
           Searchtitles sTitles = GetSearchTitles(MyFilms.r[MyFilms.conf.StrIndex], "");
           if (!string.IsNullOrEmpty(sTitles.FanartTitle) && MyFilms.conf.StrFanart)
@@ -3909,28 +3899,28 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
                 try
                 {
                   personProperty = "name";
-                  strOldValue = (person != null && person.Name.Length > 0) ? person.Name : "";
+                  strOldValue = person != null && person.Name.Length > 0 ? person.Name : "";
                   strNewValue = Result[(int)Grabber_URLClass.Grabber_Output.OriginalTitle];
                   dlgmenu.Add(GUILocalizeStrings.Get(10799301) + ": '" + strOldValue.Replace(Environment.NewLine, " # ") + "' -> '" + strNewValue.Replace(Environment.NewLine, " # ") + "'");
                   choiceViewMenu.Add(personProperty);
                   LogMyFilms.Debug("GrabberUpdate - Add to menu (" + personProperty + "): '" + strOldValue + "' -> '" + strNewValue + "'");
 
                   personProperty = "dateofbirth";
-                  strOldValue = (person != null && person.DateOfBirth.Length > 0) ? person.DateOfBirth : "";
+                  strOldValue = person != null && person.DateOfBirth.Length > 0 ? person.DateOfBirth : "";
                   strNewValue = Result[(int)Grabber_URLClass.Grabber_Output.Comments];
                   dlgmenu.Add(GUILocalizeStrings.Get(10799302) + ": '" + strOldValue.Replace(Environment.NewLine, " # ") + "' -> '" + strNewValue.Replace(Environment.NewLine, " # ") + "'");
                   choiceViewMenu.Add(personProperty);
                   LogMyFilms.Debug("GrabberUpdate - Add to menu (" + personProperty + "): '" + strOldValue + "' -> '" + strNewValue + "'");
 
                   personProperty = "placeofbirth";
-                  strOldValue = (person != null && person.PlaceOfBirth.Length > 0) ? person.PlaceOfBirth : "";
+                  strOldValue = person != null && person.PlaceOfBirth.Length > 0 ? person.PlaceOfBirth : "";
                   strNewValue = Result[(int)Grabber_URLClass.Grabber_Output.Country];
                   dlgmenu.Add(GUILocalizeStrings.Get(10799303) + ": '" + strOldValue.Replace(Environment.NewLine, " # ") + "' -> '" + strNewValue.Replace(Environment.NewLine, " # ") + "'");
                   choiceViewMenu.Add(personProperty);
                   LogMyFilms.Debug("GrabberUpdate - Add to menu (" + personProperty + "): '" + strOldValue + "' -> '" + strNewValue + "'");
 
                   personProperty = "biography";
-                  strOldValue = (person != null && person.Biography.Length > 0) ? person.Biography : "";
+                  strOldValue = person != null && person.Biography.Length > 0 ? person.Biography : "";
                   strNewValue = Result[(int)Grabber_URLClass.Grabber_Output.Description];
                   dlgmenu.Add(GUILocalizeStrings.Get(10799304) + ": '" + strOldValue.Replace(Environment.NewLine, " # ") + "' -> '" + strNewValue.Replace(Environment.NewLine, " # ") + "'");
                   choiceViewMenu.Add(personProperty);
@@ -3942,7 +3932,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
 #endif
                   // main image
                   personProperty = "coverimage";
-                  strOldValue = (person != null && person.ThumbnailUrl.Length > 0) ? person.ThumbnailUrl : "";
+                  strOldValue = person != null && person.ThumbnailUrl.Length > 0 ? person.ThumbnailUrl : "";
                   strNewValue = Result[(int)Grabber_URLClass.Grabber_Output.PictureURL];
                   dlgmenu.Add(GUILocalizeStrings.Get(10798682) + ": '" + strOldValue.Replace(Environment.NewLine, " # ") + "' -> '" + strNewValue.Replace(Environment.NewLine, " # ") + "'");
                   choiceViewMenu.Add(personProperty);
@@ -4149,10 +4139,10 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
                   dlgPrgrs.ShouldRenderLayer();
                   dlgPrgrs.StartModal(GUIWindowManager.ActiveWindow);
 
-                  new System.Threading.Thread(delegate()
+                  new Thread(delegate()
                       {
                         string imdbid = GetIMDB_Id(MyFilms.r[MyFilms.conf.StrIndex]);
-                        GrabArtwork(title, ttitle, (int)year, director, imdbid, MyFilms.conf.StrTitle1, dlgPrgrs);
+                        GrabArtwork(title, ttitle, year, director, imdbid, MyFilms.conf.StrTitle1, dlgPrgrs);
                         //  dlgPrgrs.Percentage = 100;
                         //  dlgPrgrs.SetLine(1, "Finished loading Movie Details ...");
                         //  dlgPrgrs.NeedRefresh();
@@ -7587,10 +7577,10 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
     // Play Movie from external (wrapper to prepare environment)
     //-------------------------------------------------------------------------------------------
     {
-      int GetID = GUIWindowManager.GetPreviousActiveWindow();
+      int getId = GUIWindowManager.GetPreviousActiveWindow();
       try
       {
-        Launch_Movie(movieid, GetID, null, MyFilmsDetail.PlayerOption.Internal);
+        Launch_Movie(movieid, getId, null, MyFilmsDetail.PlayerOption.Internal);
       }
       catch (Exception ex)
       {
@@ -7690,11 +7680,11 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
 
             // Start NAS Server
 
-            bool SuccessFulStart = wakeOnLanManager.WakeupSystem(wakeOnLanManager.GetHwAddrBytes(NasMACAddress), NasServerName, wTimeout);
+            bool successFulStart = wakeOnLanManager.WakeupSystem(wakeOnLanManager.GetHwAddrBytes(NasMACAddress), NasServerName, wTimeout);
 
             if (MyFilms.conf.StrCheckWOLuserdialog)
             {
-              if (SuccessFulStart)
+              if (successFulStart)
                 GUIUtils.ShowNotifyDialog("'" + NasServerName + "' " + GUILocalizeStrings.Get(10798743)); //successfully started 
               else
                 GUIUtils.ShowOKDialog("'" + NasServerName + "' " + GUILocalizeStrings.Get(10798744)); // could not be started 
@@ -7881,7 +7871,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
       // Maximum 20 entries (limitation for MP dialogFileStacking)
       {
         GUIUtils.ShowOKDialog("", MyFilms.r[selectItem][MyFilms.conf.StrSTitle].ToString(), "maximum 20 entries for the playlist", "");
-        LogMyFilms.Info("Too many entries found for movie '" + MyFilms.r[selectItem][MyFilms.conf.StrSTitle] + "', number of entries found = " + newItems.Count.ToString());
+        LogMyFilms.Info("Too many entries found for movie '" + MyFilms.r[selectItem][MyFilms.conf.StrSTitle] + "', number of entries found = " + newItems.Count);
         return;
       }
       SetProcessAnimationStatus(false, m_SearchAnimation);
@@ -7987,9 +7977,9 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
           string titleextension = string.Empty;
           string path = MyFilms.r[MyFilms.conf.StrIndex][MyFilms.conf.StrStorage].ToString();
           if (path.Contains(";"))
-            path = path.Substring(0, path.IndexOf(";", System.StringComparison.Ordinal));
+            path = path.Substring(0, path.IndexOf(";", StringComparison.Ordinal));
           if (path.Contains("\\"))
-            path = path.Substring(0, path.LastIndexOf("\\", System.StringComparison.Ordinal));
+            path = path.Substring(0, path.LastIndexOf("\\", StringComparison.Ordinal));
 
           switch (choiceViewMenu[dlgmenu.SelectedLabel].ToLower())
           {
@@ -8052,7 +8042,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
       if (newItems.Count > 20)
       // Maximum 20 entries (limitation for MP dialogFileStacking)
       {
-        LogMyFilms.Info("Too many entries found !', number of entries = " + newItems.Count.ToString());
+        LogMyFilms.Info("Too many entries found !', number of entries = " + newItems.Count);
         return;
       }
       if (newItems.Count > 0)
@@ -8732,7 +8722,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
       {
         try
         {
-          var movie = o as MFMovie;
+          MFMovie movie = o as MFMovie;
           string pictureFile = Helper.PicturePath(MyFilms.r[MyFilms.conf.StrIndex]["Picture"].ToString(), MyFilms.conf.StrPathImg, MyFilms.conf.DefaultCover);
 
           Thread.Sleep(3000);
