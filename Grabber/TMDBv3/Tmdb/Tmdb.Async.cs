@@ -496,13 +496,15 @@ namespace WatTmdb.V3
             GetMovieInfoETag(MovieID, Language, UserState, callback);
         }
 
-        /// <summary>
-        /// Retrieve all the basic movie information for a particular movie by IMDB reference.
-        /// (http://help.themoviedb.org/kb/api/movie-info)
-        /// </summary>
-        /// <param name="IMDB_ID">IMDB movie id</param>
-        /// <param name="callback"></param>
-        public void GetMovieByIMDB(string IMDB_ID, string language, object UserState, Action<TmdbAsyncResult<TmdbMovie>> callback)
+      /// <summary>
+      /// Retrieve all the basic movie information for a particular movie by IMDB reference.
+      /// (http://help.themoviedb.org/kb/api/movie-info)
+      /// </summary>
+      /// <param name="IMDB_ID">IMDB movie id</param>
+      /// <param name="UserState"></param>
+      /// <param name="callback"></param>
+      /// <param name="language"></param>
+      public void GetMovieByIMDB(string IMDB_ID, string language, object UserState, Action<TmdbAsyncResult<TmdbMovie>> callback)
         {
             if (CheckQuery(IMDB_ID, UserState, callback) == false)
                 return;
@@ -908,14 +910,16 @@ namespace WatTmdb.V3
 
 
         #region TV Info
-        /// <summary>
-        /// Get the primary informaiton about a TV Series
-        /// (http://docs.themoviedb.apiary.io/#get-%2F3%2Ftv%2F%7Bid%7D)
-        /// </summary>
-        /// <param name="TvId"></param>
-        /// <param name="UserState"></param>
-        /// <param name="callback"></param>
-        public void GetTVInfo(int TvId, string language, object UserState, Action<TmdbAsyncResult<TmdbTv>> callback)
+
+      /// <summary>
+      /// Get the primary informaiton about a TV Series
+      /// (http://docs.themoviedb.apiary.io/#get-%2F3%2Ftv%2F%7Bid%7D)
+      /// </summary>
+      /// <param name="TvId"></param>
+      /// <param name="language"></param>
+      /// <param name="UserState"></param>
+      /// <param name="callback"></param>
+      public void GetTVInfo(int TvId, string language, object UserState, Action<TmdbAsyncResult<TmdbTv>> callback)
         {
             ProcessAsyncRequest<TmdbTv>(Generator.GetTVInfo(TvId, language, UserState), callback);
         }

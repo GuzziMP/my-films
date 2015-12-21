@@ -167,9 +167,8 @@
 
 
         public ImageSwapper() {
-            _imageResource = new AsyncImageResource();
-            _imageResource.Property = _propertyOne;
-            _imageResource.ImageLoadingComplete += new AsyncImageLoadComplete(imageResource_ImageLoadingComplete);
+          _imageResource = new AsyncImageResource {Property = _propertyOne};
+          _imageResource.ImageLoadingComplete += new AsyncImageLoadComplete(imageResource_ImageLoadingComplete);
         }
 
         // Once image loading is complete this method is called and the visibility of the

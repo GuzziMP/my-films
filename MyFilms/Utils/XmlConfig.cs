@@ -54,12 +54,9 @@
 
 #region using
 using System;
-using System.IO; // For I/O file
-using System.Collections.Generic;
-using System.Text;
-using System.Xml; // For XmlDocument
+using System.IO;
+using System.Xml;
 using MediaPortal.Configuration; // For recover install MediaPortal path
-using NLog;
 #endregion
 
 namespace MyFilmsPlugin.MyFilms.Utils
@@ -89,11 +86,11 @@ namespace MyFilmsPlugin.MyFilms.Utils
     //  configxml.Load(EntireFilenameConfig(fileName));
     //}
 
-    public void Load(string FileName)
+    public void Load(string fileName)
     {
       //Open xml document
-      configxml.Load(EntireFilenameConfig(FileName));
-      xmlFileName = FileName;
+      configxml.Load(EntireFilenameConfig(fileName));
+      xmlFileName = fileName;
     }
 
     public void Save()
@@ -111,56 +108,42 @@ namespace MyFilmsPlugin.MyFilms.Utils
     }
 
     // Build entire filename of config file
-    public string EntireFilenameConfig(string FileName)
+    public string EntireFilenameConfig(string fileName)
     {
-      if (FileName.Contains(":\\"))
-        return FileName;
-      string entirefilename = PathInstalMP() + @"\" + FileName + ".xml";
+      if (fileName.Contains(":\\"))
+        return fileName;
+      string entirefilename = PathInstalMP() + @"\" + fileName + ".xml";
       return entirefilename;
     }
 
     // Called with bool type
-    public void WriteXmlConfig(string FileName, string Section, string Entry, bool Value)
+    public void WriteXmlConfig(string fileName, string Section, string Entry, bool Value, bool immediateWrite = true)
     {
-      WriteXmlConfig(FileName, Section, Entry, Value, true);
-    }
-    public void WriteXmlConfig(string FileName, string Section, string Entry, bool Value, bool immediateWrite)
-    {
-      string value = string.Empty;
       // Change true by "yes" and false by "no" for xml MediaPortal compatibility 
-      value = Value ? "yes" : "no";
-
-      WriteXmlConfig(FileName, Section, Entry, value, immediateWrite);
+      string value = Value ? "yes" : "no";
+      WriteXmlConfig(fileName, Section, Entry, value, immediateWrite);
     }
 
     // Called with decimal type
-    public void WriteXmlConfig(string FileName, string Section, string Entry, decimal Value)
-    {
-      WriteXmlConfig(FileName, Section, Entry, Value, true);
-    }
-    public void WriteXmlConfig(string FileName, string Section, string Entry, decimal Value, bool immediateWrite)
+    public void WriteXmlConfig(string fileName, string Section, string Entry, decimal Value, bool immediateWrite = true)
     {
       string value = Value.ToString();
-      WriteXmlConfig(FileName, Section, Entry, value, immediateWrite);
+      WriteXmlConfig(fileName, Section, Entry, value, immediateWrite);
     }
 
     // Write a config file with XmlDocument
-    public void WriteXmlConfig(string FileName, string Section, string Entry, string Value)
-    {
-      WriteXmlConfig(FileName, Section, Entry, Value, true);
-    }
-    public void WriteXmlConfig(string FileName, string Section, string Entry, string Value, bool immediateWrite)
+    public void WriteXmlConfig(string fileName, string Section, string Entry, string Value, bool immediateWrite = true)
     {
       // Create file if doesn't exist
-      if (!File.Exists(EntireFilenameConfig(FileName)))
+      if (!File.Exists(EntireFilenameConfig(fileName)))
       {
-        CreateXmlConfig(FileName);
+        CreateXmlConfig(fileName);
       }
 
       //Open xml document
-      if (FileName != xmlFileName)
+      if (fileName != xmlFileName)
       {
-        this.Load(FileName);
+        Load(fileName);
       }
       //Recover profile node
       XmlElement profile = configxml.DocumentElement;
@@ -188,40 +171,36 @@ namespace MyFilmsPlugin.MyFilms.Utils
       entry.InnerText = Value;
 
       //Save xml config file  
-      if (immediateWrite) configxml.Save(EntireFilenameConfig(FileName));
+      if (immediateWrite) configxml.Save(EntireFilenameConfig(fileName));
     }
 
     // Remove an Entry
-    public void RemoveEntry(string FileName, string Section, string Entry)
-    {
-      RemoveEntry(FileName, Section, Entry, true);
-    }
-    public void RemoveEntry(string FileName, string Section, string Entry, bool immideateWrite)
+    public void RemoveEntry(string fileName, string Section, string Entry, bool immideateWrite = true)
     {
       // Return if xml file doesn't exist
-      if (!File.Exists(EntireFilenameConfig(FileName)))
+      if (!File.Exists(EntireFilenameConfig(fileName)))
       {
         return;
       }
 
       //Open xml document
-      if (FileName != xmlFileName)
+      if (fileName != xmlFileName)
       {
-        this.Load(FileName);
+        Load(fileName);
       }
       //Recover profile node
       XmlElement profile = configxml.DocumentElement;
 
       //Posit on value
-      string XPath = string.Empty;
+      string xPath;
       if (Entry.Length > 0)
-        XPath = @"/profile/section[@name='" + Section + "']/entry[@name='" + Entry + "']";
+        xPath = @"/profile/section[@name='" + Section + "']/entry[@name='" + Entry + "']";
       else
-        XPath = @"/profile/section[@name='" + Section + "']";
-      XmlNodeList ListEntry = configxml.SelectNodes(XPath);
+        xPath = @"/profile/section[@name='" + Section + "']";
+      XmlNodeList listEntry = configxml.SelectNodes(xPath);
 
       // If value exist, remove it otherwise, return
-      if (ListEntry.Count > 0)
+      if (listEntry.Count > 0)
       {
         //Posit on section node
         XmlNode section = profile.SelectSingleNodeFast("section[@name='" + Section + "']");
@@ -237,31 +216,28 @@ namespace MyFilmsPlugin.MyFilms.Utils
           section.RemoveAll();
 
         //Save xml config file   
-        if (immideateWrite) configxml.Save(EntireFilenameConfig(FileName));
+        if (immideateWrite) configxml.Save(EntireFilenameConfig(fileName));
       }
     }
 
     // Called with bool type
-    public bool ReadXmlConfig(string FileName, string Section, string Entry, bool Value)
+    public bool ReadXmlConfig(string fileName, string Section, string Entry, bool value)
     {
       // Change true by "yes" and false by "no" for xml MediaPortal compatibility 
-      string value = Value.ToString();
-      value = Value ? "yes" : "no";
+      string val = value ? "yes" : "no";
+      string result = ReadXmlConfig(fileName, Section, Entry, val);
 
-      string result = ReadXmlConfig(FileName, Section, Entry, value);
+      value = result == "yes";
 
-      // Change "yes" by true and "no" by false for xml MediaPortal compatibility 
-      Value = result == "yes";
-
-      return Value;
+      return value;
     }
 
     // Called with int type
-    public int ReadXmlConfig(string FileName, string Section, string Entry, int Value)
+    public int ReadXmlConfig(string fileName, string Section, string Entry, int Value)
     {
       string value = Value.ToString();
 
-      string result = ReadXmlConfig(FileName, Section, Entry, value);
+      string result = ReadXmlConfig(fileName, Section, Entry, value);
 
       try { Value = Convert.ToInt32(result); }
       catch { }
@@ -270,18 +246,18 @@ namespace MyFilmsPlugin.MyFilms.Utils
     }
 
     // Read xml config file with XmlDocument
-    public string ReadXmlConfig(string FileName, string Section, string Entry, string Value)
+    public string ReadXmlConfig(string fileName, string Section, string Entry, string Value)
     {
       // Default value if xml file doesn't exist
-      if (!File.Exists(EntireFilenameConfig(FileName)))
+      if (!File.Exists(EntireFilenameConfig(fileName)))
       {
         return Value;
       }
 
       //Open xml document
-      if (FileName != xmlFileName)
+      if (fileName != xmlFileName)
       {
-        this.Load(FileName);
+        Load(fileName);
       }
       //Recover profile node
       XmlElement profile = configxml.DocumentElement;
@@ -300,60 +276,59 @@ namespace MyFilmsPlugin.MyFilms.Utils
         //Recover value with entry data
         Value = entry.InnerText;
       }
-      // LogMyFilms.Debug("Configuration - ReadXMLConfig: Filename: '" + FileName + "', Section: '" + Section + "', Entry: '" + Entry + "', Value: '" + Value + "'");
       return Value;
     }
     // Read xml config file with XmlDocument
-    public string ReadAMCUXmlConfig(string FileName, string Option, string Value)
+    public string ReadAMCUXmlConfig(string fileName, string option, string value)
     {
       // Default value if xml file doesn't exist
-      if (!File.Exists(EntireFilenameConfig(FileName)))
+      if (!File.Exists(EntireFilenameConfig(fileName)))
       {
-        return Value;
+        return value;
       }
 
       //Open xml document
-      configxml.Load(EntireFilenameConfig(FileName));
+      configxml.Load(EntireFilenameConfig(fileName));
       //Recover profile node
       XmlElement profile = configxml.DocumentElement;
 
       //Posit on value
-      String XPath = @"/NewDataSet/Values[@Option='" + Option + "']";
-      XmlNodeList ListEntry = configxml.SelectNodes(XPath);
+      String xPath = @"/NewDataSet/Values[@option='" + option + "']";
+      XmlNodeList ListEntry = configxml.SelectNodes(xPath);
 
       // If value exist, return it otherwise, return default value
       if (ListEntry.Count > 0)
-        Value = ListEntry.Item(0).SelectSingleNodeFast("Value").InnerText;
+        value = ListEntry.Item(0).SelectSingleNodeFast("value").InnerText;
 
-      return Value;
+      return value;
     }
 
-    public void WriteAMCUXmlConfig(string FileName, string Option, string Value)
+    public void WriteAMCUXmlConfig(string fileName, string option, string value)
     {
       // Create file if doesn't exist
-      if (!File.Exists(EntireFilenameConfig(FileName)))
+      if (!File.Exists(EntireFilenameConfig(fileName)))
       {
-        CreateXmlConfig(FileName);
+        CreateXmlConfig(fileName);
       }
 
       //Open xml document
-      if (FileName != xmlFileName)
+      if (fileName != xmlFileName)
       {
-        this.Load(FileName);
+        Load(fileName);
       }
 
       //Recover profile node
       XmlElement profile = configxml.DocumentElement;
 
       //Posit on value
-      String XPath = @"/NewDataSet/Values[@Option='" + Option + "']";
-      XmlNodeList ListEntry = configxml.SelectNodes(XPath);
+      String xPath = @"/NewDataSet/Values[@option='" + option + "']";
+      XmlNodeList ListEntry = configxml.SelectNodes(xPath);
 
-      // If value exist, select it and store new Value
-      if (ListEntry.Count > 0) ListEntry.Item(0).SelectSingleNodeFast("Value").InnerText = Value;
+      // If value exist, select it and store new value
+      if (ListEntry.Count > 0) ListEntry.Item(0).SelectSingleNodeFast("value").InnerText = value;
 
       //Save xml config file  
-      configxml.Save(EntireFilenameConfig(FileName));
+      configxml.Save(EntireFilenameConfig(fileName));
     }
 
     #endregion
@@ -361,7 +336,7 @@ namespace MyFilmsPlugin.MyFilms.Utils
     #region <<private>>
 
     // Create xml config file with profile node
-    private void CreateXmlConfig(string FileName)
+    private void CreateXmlConfig(string fileName)
     {
       XmlDocument configxml = new XmlDocument();
       //Declaration of XML document type (utf-8, same as MediaPortal)
@@ -369,12 +344,12 @@ namespace MyFilmsPlugin.MyFilms.Utils
       //Add declaration to document
       configxml.AppendChild(declaration);
       //Create profile node
-      XmlNode profile = configxml.CreateNode(System.Xml.XmlNodeType.Element, "profile", string.Empty);
+      XmlNode profile = configxml.CreateNode(XmlNodeType.Element, "profile", string.Empty);
       //Add node to document
       configxml.AppendChild(profile);
 
       //Save xml config file
-      configxml.Save(EntireFilenameConfig(FileName));
+      configxml.Save(EntireFilenameConfig(fileName));
     }
 
     // create section node

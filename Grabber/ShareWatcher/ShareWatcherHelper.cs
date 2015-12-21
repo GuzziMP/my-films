@@ -18,6 +18,8 @@
 
 #endregion
 
+using System.Linq;
+
 namespace ShareWatcherHelper
 {
   using System;
@@ -28,11 +30,7 @@ namespace ShareWatcherHelper
   using System.Timers;
 
   using MediaPortal.GUI.Library;
-//  using MediaPortal.Music.Database;
-//  using MediaPortal.Profile;
   using MediaPortal.Services;
-  using MediaPortal.Util;
-
   using Timer = System.Timers.Timer;
 
   public class ShareWatcherHelper
@@ -67,7 +65,7 @@ namespace ShareWatcherHelper
     {
 
 //      MyFilmsDB = MusicDatabase.Instance;
-      this.LoadShares(watchdirectories);
+      LoadShares(watchdirectories);
       LogMyFilms.Info("ShareWatcher starting up!");
     }
 
@@ -77,10 +75,10 @@ namespace ShareWatcherHelper
 
     public void StartMonitor()
     {
-      if (this.bMonitoring)
+      if (bMonitoring)
       {
-        Log.Info(LogType.MusicShareWatcher, "Starting up a worker thread...");
-        Thread workerThread = new Thread(this.WatchShares);
+        LogMyFilms.Info("Starting up a worker thread...");
+        Thread workerThread = new Thread(WatchShares);
         workerThread.IsBackground = true;
         workerThread.Name = "ShareWatcher";
         workerThread.Start();
@@ -89,54 +87,54 @@ namespace ShareWatcherHelper
 
     public void SetMonitoring(bool status)
     {
-      this.bMonitoring = status;
+      bMonitoring = status;
     }
 
     public void ChangeMonitoring(bool status)
     {
       if (status)
       {
-        this.bMonitoring = true;
-        foreach (DelayedFileSystemWatcher watcher in this.m_Watchers)
+        bMonitoring = true;
+        foreach (DelayedFileSystemWatcher watcher in m_Watchers)
         {
           watcher.EnableRaisingEvents = true;
         }
-        this.m_Timer.Start();
-        Log.Info(LogType.MusicShareWatcher, "Monitoring of shares enabled");
+        m_Timer.Start();
+        LogMyFilms.Info("Monitoring of shares enabled");
       }
       else
       {
-        this.bMonitoring = false;
-        foreach (DelayedFileSystemWatcher watcher in this.m_Watchers)
+        bMonitoring = false;
+        foreach (DelayedFileSystemWatcher watcher in m_Watchers)
         {
           watcher.EnableRaisingEvents = false;
         }
-        if (this.m_Timer != null)
+        if (m_Timer != null)
         {
-          this.m_Timer.Stop();
-          this.m_Events.Clear();
+          m_Timer.Stop();
+          m_Events.Clear();
         }
-        Log.Info(LogType.MusicShareWatcher, "Monitoring of shares disabled");
+        LogMyFilms.Info("Monitoring of shares disabled");
       }
     }
 
     private void WatchShares()
     {
-      Log.Info(LogType.MusicShareWatcher, "Monitoring active for following shares:");
-      Log.Info(LogType.MusicShareWatcher, "---------------------------------------");
+      LogMyFilms.Info("Monitoring active for following shares:");
+      LogMyFilms.Info("---------------------------------------");
 
       // Release existing FSW Objects first
-      foreach (DelayedFileSystemWatcher watcher in this.m_Watchers)
+      foreach (DelayedFileSystemWatcher watcher in m_Watchers)
       {
         watcher.EnableRaisingEvents = false;
         watcher.Dispose();
       }
-      this.m_Watchers.Clear();
-      foreach (String sharename in this.m_Shares)
+      m_Watchers.Clear();
+      foreach (String sharename in m_Shares)
       {
         try
         {
-          this.m_Events = ArrayList.Synchronized(new ArrayList(64));
+          m_Events = ArrayList.Synchronized(new ArrayList(64));
           // Create the watchers. 
           //I need 2 type of watchers. 1 for files and the other for directories
           // Reason is that i don't know if the event occured on a file or directory.
@@ -156,35 +154,34 @@ namespace ShareWatcherHelper
           watcherDirectory.IncludeSubdirectories = true;
 
           // Add event handlers.
-          watcherFile.Changed += new FileSystemEventHandler(this.OnChanged);
-          watcherFile.Created += new FileSystemEventHandler(this.OnCreated);
-          watcherFile.Deleted += new FileSystemEventHandler(this.OnDeleted);
-          watcherFile.Renamed += new RenamedEventHandler(this.OnRenamed);
+          watcherFile.Changed += new FileSystemEventHandler(OnChanged);
+          watcherFile.Created += new FileSystemEventHandler(OnCreated);
+          watcherFile.Deleted += new FileSystemEventHandler(OnDeleted);
+          watcherFile.Renamed += new RenamedEventHandler(OnRenamed);
           // For directories, i'm only interested in a Delete event
-          watcherDirectory.Deleted += new FileSystemEventHandler(this.OnDirectoryDeleted);
-          watcherDirectory.Renamed += new RenamedEventHandler(this.OnRenamed);
+          watcherDirectory.Deleted += new FileSystemEventHandler(OnDirectoryDeleted);
+          watcherDirectory.Renamed += new RenamedEventHandler(OnRenamed);
 
           // Begin watching.
           watcherFile.EnableRaisingEvents = true;
           watcherDirectory.EnableRaisingEvents = true;
-          this.m_Watchers.Add(watcherFile);
-          this.m_Watchers.Add(watcherDirectory);
+          m_Watchers.Add(watcherFile);
+          m_Watchers.Add(watcherDirectory);
 
           // Start Timer for processing events
-          this.m_Timer = new Timer(m_TimerInterval);
-          this.m_Timer.Elapsed += new ElapsedEventHandler(this.ProcessEvents);
-          this.m_Timer.AutoReset = true;
-          this.m_Timer.Enabled = watcherFile.EnableRaisingEvents;
-          Log.Info(LogType.MusicShareWatcher, sharename);
+          m_Timer = new Timer(m_TimerInterval);
+          m_Timer.Elapsed += new ElapsedEventHandler(ProcessEvents);
+          m_Timer.AutoReset = true;
+          m_Timer.Enabled = watcherFile.EnableRaisingEvents;
+          LogMyFilms.Info(sharename);
         }
         catch (ArgumentException ex)
         {
-          Log.Info(LogType.MusicShareWatcher, "Unable to turn on monitoring for: {0} Exception: {1}", sharename,
-                   ex.Message);
+          LogMyFilms.Info("Unable to turn on monitoring for: {0} Exception: {1}", sharename, ex.Message);
         }
       }
-      Log.Info(LogType.MusicShareWatcher, "---------------------------------------");
-      Log.Info(LogType.MusicShareWatcher, "Note: Errors reported for CD/DVD drives can be ignored.");
+      LogMyFilms.Info("---------------------------------------");
+      LogMyFilms.Info("Note: Errors reported for CD/DVD drives can be ignored.");
     }
 
     #endregion Main
@@ -194,8 +191,8 @@ namespace ShareWatcherHelper
     // Event handler for Create of a file
     private void OnCreated(object source, FileSystemEventArgs e)
     {
-      Log.Debug(LogType.MusicShareWatcher, "Add Song Fired: {0}", e.FullPath);
-      this.m_Events.Add(new ShareWatcherEvent(ShareWatcherEvent.EventType.Create, e.FullPath));
+      LogMyFilms.Debug("Add Song Fired: {0}", e.FullPath);
+      m_Events.Add(new ShareWatcherEvent(ShareWatcherEvent.EventType.Create, e.FullPath));
     }
 
     // Event handler for Change of a file
@@ -206,30 +203,30 @@ namespace ShareWatcherHelper
       // Was it on a file? Ignore change events on directories
       if (fi.Exists)
       {
-        Log.Debug(LogType.MusicShareWatcher, "Change Song Fired: {0}", e.FullPath);
-        this.m_Events.Add(new ShareWatcherEvent(ShareWatcherEvent.EventType.Change, e.FullPath));
+        LogMyFilms.Debug("Change Song Fired: {0}", e.FullPath);
+        m_Events.Add(new ShareWatcherEvent(ShareWatcherEvent.EventType.Change, e.FullPath));
       }
     }
 
     // Event handler handling the Delete of a file
     private void OnDeleted(object source, FileSystemEventArgs e)
     {
-      Log.Debug(LogType.MusicShareWatcher, "Delete Song Fired: {0}", e.FullPath);
-      this.m_Events.Add(new ShareWatcherEvent(ShareWatcherEvent.EventType.Delete, e.FullPath));
+      LogMyFilms.Debug("Delete Song Fired: {0}", e.FullPath);
+      m_Events.Add(new ShareWatcherEvent(ShareWatcherEvent.EventType.Delete, e.FullPath));
     }
 
     // Event handler handling the Delete of a directory
     private void OnDirectoryDeleted(object source, FileSystemEventArgs e)
     {
-      Log.Debug(LogType.MusicShareWatcher, "Delete Directory Fired: {0}", e.FullPath);
-      this.m_Events.Add(new ShareWatcherEvent(ShareWatcherEvent.EventType.DeleteDirectory, e.FullPath));
+      LogMyFilms.Debug("Delete Directory Fired: {0}", e.FullPath);
+      m_Events.Add(new ShareWatcherEvent(ShareWatcherEvent.EventType.DeleteDirectory, e.FullPath));
     }
 
     // Event handler handling the Rename of a file/directory
     private void OnRenamed(object source, RenamedEventArgs e)
     {
-      Log.Debug(LogType.MusicShareWatcher, "Rename File/Directory Fired: {0}", e.FullPath);
-      this.m_Events.Add(new ShareWatcherEvent(ShareWatcherEvent.EventType.Rename, e.FullPath, e.OldFullPath));
+      LogMyFilms.Debug("Rename File/Directory Fired: {0}", e.FullPath);
+      m_Events.Add(new ShareWatcherEvent(ShareWatcherEvent.EventType.Rename, e.FullPath, e.OldFullPath));
     }
 
     #endregion EventHandlers
@@ -239,19 +236,19 @@ namespace ShareWatcherHelper
     private void ProcessEvents(object sender, ElapsedEventArgs e)
     {
       // Allow only one Timer event to be executed.
-      if (Monitor.TryEnter(this.m_EnterThread))
+      if (Monitor.TryEnter(m_EnterThread))
       {
         // Only one thread at a time is processing the events                
         try
         {
           // Lock the Collection, while processing the Events
-          lock (this.m_Events.SyncRoot)
+          lock (m_Events.SyncRoot)
           {
             ShareWatcherEvent currentEvent = null;
             List<string> newfiles = new List<string>();
-            for (int i = 0; i < this.m_Events.Count; i++)
+            for (int i = 0; i < m_Events.Count; i++)
             {
-              currentEvent = this.m_Events[i] as ShareWatcherEvent;
+              currentEvent = m_Events[i] as ShareWatcherEvent;
               switch (currentEvent.Type)
               {
                 case ShareWatcherEvent.EventType.Create:
@@ -261,11 +258,11 @@ namespace ShareWatcherHelper
                   break;
                 case ShareWatcherEvent.EventType.Delete:
                   //MyFilmsDB.DeleteSong(currentEvent.FileName, true);
-                  Log.Info(LogType.MusicShareWatcher, "Deleted Song: {0}", currentEvent.FileName);
+                  LogMyFilms.Info("Deleted Song: {0}", currentEvent.FileName);
                   break;
                 case ShareWatcherEvent.EventType.DeleteDirectory:
                   //MyFilmsDB.DeleteSongDirectory(currentEvent.FileName);
-                  Log.Info(LogType.MusicShareWatcher, "Deleted Directory: {0}", currentEvent.FileName);
+                  LogMyFilms.Info("Deleted Directory: {0}", currentEvent.FileName);
                   break;
                 case ShareWatcherEvent.EventType.Rename:
                   //if (MyFilmsDB.RenameSong(currentEvent.OldFileName, currentEvent.FileName))
@@ -279,7 +276,7 @@ namespace ShareWatcherHelper
                   //}
                   break;
               }
-              this.m_Events.RemoveAt(i);
+              m_Events.RemoveAt(i);
               i--; // Don't skip next event
             }
             if (newfiles.Count > 0)
@@ -294,7 +291,7 @@ namespace ShareWatcherHelper
         }
         finally
         {
-          Monitor.Exit(this.m_EnterThread);
+          Monitor.Exit(m_EnterThread);
         }
       }
     }
@@ -314,8 +311,7 @@ namespace ShareWatcherHelper
       try
       {
         FileInfo file = new FileInfo(strFileName);
-        Stream s = null;
-        s = file.OpenRead();
+        Stream s = file.OpenRead();
         s.Close();
       }
       catch (IOException)
@@ -333,19 +329,15 @@ namespace ShareWatcherHelper
     #region Common Methods
 
     // Retrieve the Music Shares that should be monitored
-    private int LoadShares(List<string> watchdirectories)
+    private int LoadShares(IList<string> watchdirectories)
     {
-      for (int i = 0; i < watchdirectories.Count; i++)
+      foreach (string sharePath in watchdirectories.Where(sharePath => sharePath.Length > 0))
       {
-        string SharePath = watchdirectories[i];
-
-        if (SharePath.Length > 0)
-        {
-          this.m_Shares.Add(SharePath);
-        }
+        m_Shares.Add(sharePath);
       }
       return 0;
     }
+
     #endregion
   }
 }

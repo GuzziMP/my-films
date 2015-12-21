@@ -143,11 +143,11 @@ namespace MyFilmsPlugin.Configuration
           {
             case "not like":
             case "#":
-              this.StrViewFilterSelect = "(" + AntFilterItem1.Text + " " + wAntFilterSign + " #" + Convert.ToDateTime(AntFilterText1.Text) + "# or " + AntFilterItem1.Text + " is null) ";
+              StrViewFilterSelect = "(" + AntFilterItem1.Text + " " + wAntFilterSign + " #" + Convert.ToDateTime(AntFilterText1.Text) + "# or " + AntFilterItem1.Text + " is null) ";
               break;
             case "not in":
             case "in":
-              this.StrViewFilterSelect = "(" + AntFilterItem1.Text + " " + wAntFilterSign + " (" + DBitemList(AntFilterText1.Text, true) + ")) ";
+              StrViewFilterSelect = "(" + AntFilterItem1.Text + " " + wAntFilterSign + " (" + DBitemList(AntFilterText1.Text, true) + ")) ";
               break;
             case "like in":
               StrViewFilterSelect = "(" + TransformedLikeIn(AntFilterItem1.Text, AntFilterText1.Text, true) + ") ";
@@ -210,7 +210,7 @@ namespace MyFilmsPlugin.Configuration
               break;
             case "not in":
             case "in":
-              StrViewFilterSelect = "(" + AntFilterItem2.Text + " " + wAntFilterSign + " (" + this.DBitemList(AntFilterText2.Text, false) + ")) AND ";
+              StrViewFilterSelect = "(" + AntFilterItem2.Text + " " + wAntFilterSign + " (" + DBitemList(AntFilterText2.Text, false) + ")) AND ";
               break;
             case "like in":
               StrViewFilterSelect = "(" + TransformedLikeIn(AntFilterItem2.Text, AntFilterText2.Text, true) + ") AND ";

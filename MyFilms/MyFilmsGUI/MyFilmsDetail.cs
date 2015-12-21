@@ -547,7 +547,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
       if (!PlayBackEvents_Subscribed)
       {
         // Subscribe to GUI Events
-        MyFilmsDetail.DetailsUpdated += new MyFilmsDetail.DetailsUpdatedEventDelegate(OnDetailsUpdated);
+        DetailsUpdated += new MyFilmsDetail.DetailsUpdatedEventDelegate(OnDetailsUpdated);
         PlayBackEvents_Subscribed = true;
       }
 
@@ -1007,7 +1007,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
 
             if (Helper.IsTraktAvailableAndEnabledAndNewVersion)
             {
-              if (MyFilmsDetail.ExtendedStartmode(MyFilmsDetail.PluginMode.Extended, "Detail context menu - old MF Trakt menu"))
+              if (ExtendedStartmode(PluginMode.Extended, "Detail context menu - old MF Trakt menu"))
               {
                 dlgmenu.Add(GUILocalizeStrings.Get(10798775) + " (MF old menu)"); // Trakt ... (MF menu)
                 choiceViewMenu.Add("trakt");
@@ -1122,7 +1122,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
 
           try
           {
-            this.LoadOnlineVideosViews();
+            LoadOnlineVideosViews();
             foreach (string theOnlineVideosView in theOnlineVideosViews)
             {
               dlgmenu.Add(theOnlineVideosView);
@@ -1622,7 +1622,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
 
         case "trakt-Shouts":
           movie = GetMovieFromRecord(MyFilms.r[MyFilms.conf.StrIndex]);
-          this.TraktShout(movie);
+          TraktShout(movie);
           //TraktShout(MyFilms.currentMovie);
           //GUIWindowManager.ActivateWindow((int)TraktGUIWindows.Shouts);
           break;
@@ -4180,7 +4180,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
       string tmpPicturename = ""; // picturename only
       string newPicture = ""; // full path to new picture
       string newPictureCatalogname = ""; // entry to be stored in catalog
-      string oldPicture = MyFilmsDetail.getGUIProperty("picture"); // "save" current picture for later restore...
+      string oldPicture = getGUIProperty("picture"); // "save" current picture for later restore...
       string oldPictureCatalogname = MyFilms.r[MyFilms.conf.StrIndex]["Picture"].ToString();
 
       // set defaults...
@@ -4682,7 +4682,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
 
       try
       {
-        MyFilmsPlugin.MyFilms.Utils.ImageFast.CreateImage(
+        MyFilmsPlugin.Utils.ImageFast.CreateImage(
           tempImage.Substring(0, tempImage.LastIndexOf(".")) + "title.jpg", cleanedtitle, tempImage.Substring(0, tempImage.LastIndexOf(".")) + "L.jpg");
       }
       catch (Exception)
@@ -4692,7 +4692,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
       }
 
       string newPicture = tempImage.Substring(0, tempImage.LastIndexOf(".")) + "L.jpg";
-      string oldPicture = MyFilmsDetail.getGUIProperty("picture");
+      string oldPicture = getGUIProperty("picture");
       if (oldPicture.Length == 0 || oldPicture == null)
         oldPicture = newPicture;
       LogMyFilms.Debug("Picture Grabber options: Old temp Cover Image: '" + oldPicture + "'");
@@ -4819,7 +4819,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
     //-------------------------------------------------------------------------------------------        
     public static void Download_TMDB_Posters(string wtitle, string wttitle, string director, string year, bool choose, int wGetID, string savetitle, GUIAnimation searchanimation)
     {
-      string oldPicture = MyFilmsDetail.getGUIProperty("picture");
+      string oldPicture = getGUIProperty("picture");
       string newPicture = ""; // full path to new picture
       string newPictureCatalogname = ""; // entry to be stored in catalog
       if (string.IsNullOrEmpty(oldPicture)) 
@@ -5064,7 +5064,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
       string[] files = null;
       Int64 wsize = 0; // Temporary Filesize detection
       string startPattern = "";
-      string currentPicture = MyFilmsDetail.getGUIProperty("picture");
+      string currentPicture = getGUIProperty("picture");
       //if ((sr["Picture"].ToString().IndexOf(":\\") == -1) && (sr["Picture"].ToString().Substring(0, 2) != "\\\\"))
       //  conf.FileImage = conf.StrPathImg + "\\" + sr["Picture"].ToString();
       //else
@@ -6068,12 +6068,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
         LogMyFilms.Debug("OnDetailsUpdated(): Skipping reloading Details");
     }
 
-    private void afficher_detail(bool searchPicture)
-    {
-      afficher_detail(searchPicture, false);
-    }
-
-    private void afficher_detail(bool searchPicture, bool checkfileavailability)
+    private void afficher_detail(bool searchPicture, bool checkfileavailability = false)
     {
       //-----------------------------------------------------------------------------------------------------------------------
       //    Load Detailed Info
@@ -6097,14 +6092,14 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
         // int TitlePos = (MyFilms.conf.StrTitleSelect.Length > 0) ? MyFilms.conf.StrTitleSelect.Length + 1 : 0; //only display rest of title after selected part common to group
         // MyFilms.conf.StrTIndex = MyFilms.r[MyFilms.conf.StrIndex][MyFilms.conf.StrTitle1].ToString().Substring(TitlePos);
         string fullTitle = MyFilms.r[MyFilms.conf.StrIndex][MyFilms.conf.StrTitle1].ToString();
-        MyFilms.conf.StrTIndex = ((fullTitle.LastIndexOf(MyFilms.conf.TitleDelim, System.StringComparison.Ordinal) > 0)
-                                    ? fullTitle.Substring(fullTitle.LastIndexOf(MyFilms.conf.TitleDelim, System.StringComparison.Ordinal) + 1)
+        MyFilms.conf.StrTIndex = (fullTitle.LastIndexOf(MyFilms.conf.TitleDelim, StringComparison.Ordinal) > 0
+                                    ? fullTitle.Substring(fullTitle.LastIndexOf(MyFilms.conf.TitleDelim, StringComparison.Ordinal) + 1)
                                     : fullTitle);
         // ((masterTitle.LastIndexOf(conf.TitleDelim, System.StringComparison.Ordinal) > 0) ? masterTitle.Substring(masterTitle.LastIndexOf(conf.TitleDelim, System.StringComparison.Ordinal) + 1) : masterTitle)
         MyFilms.currentMovie.Title = MyFilms.conf.StrTIndex;
       }
 
-      int year = 1900;
+      int year;
       Int32.TryParse(MyFilms.r[MyFilms.conf.StrIndex]["Year"].ToString(), out year);
       MyFilms.currentMovie.Year = year;
       string imdb = "";
@@ -6865,7 +6860,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
               if (!string.IsNullOrEmpty(sourceFull.Trim()))
               {
                 string[] split = sourceFull.Trim().Split(new Char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
-                count = split.Count().ToString();
+                count = split.Length.ToString();
                 foreach (string s in split.Select(x => x.Trim()).Where(x => x.LastIndexOf("\\", StringComparison.Ordinal) > 0))
                 {
                   if (name.Length > 0) name += "; ";
@@ -6895,7 +6890,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
               if (!string.IsNullOrEmpty(sourceFull.Trim()))
               {
                 string[] split = sourceFull.Trim().Split(new Char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
-                count = split.Count().ToString();
+                count = split.Length.ToString();
                 foreach (string s in split.Select(x => x.Trim()).Where(x => x.LastIndexOf("\\", StringComparison.Ordinal) > 0))
                 {
                   if (name.Length > 0) name += "; ";
@@ -7338,7 +7333,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
       {
         foreach (var item in movieThumbs.Select(movieThumb => new GUIListItem { IconImageBig = movieThumb }))
         {
-          this.facadeMovieThumbs.Add(item);
+          facadeMovieThumbs.Add(item);
         }
       }
 
@@ -7346,7 +7341,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
       {
         if (movieThumbs.Count > 0)
         {
-          ImgMovieThumbsDir.TexturePath = (movieThumbs[0].LastIndexOf("\\", System.StringComparison.Ordinal) > 0) ? movieThumbs[0].Substring(0, movieThumbs[0].LastIndexOf("\\", System.StringComparison.Ordinal)) : movieThumbs[0];
+          ImgMovieThumbsDir.TexturePath = (movieThumbs[0].LastIndexOf("\\", StringComparison.Ordinal) > 0) ? movieThumbs[0].Substring(0, movieThumbs[0].LastIndexOf("\\", StringComparison.Ordinal)) : movieThumbs[0];
           ImgMovieThumbsDir.PreAllocResources();
           ImgMovieThumbsDir.AllocResources();
           SetMovieThumbDummyControl(true);
@@ -7768,7 +7763,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
             break;
           case PlayerOption.Internal:
             bool externalplayerextensiondetected = MyFilms.conf.ExternalPlayerExtensions.Split(new Char[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Any(s => filestorage.ToLower().Contains(s.ToLower()));
-            if (externalplayerextensiondetected && MyFilms.conf.ExternalPlayerPath.Length > 0) // check, if this is configured to use external player via extensions in setup
+            if (externalplayerextensiondetected && MyFilms.conf.ExternalPlayerPath.Length > 0) // check, if this is configured to use external player via Extensions in setup
             {
               #region external player playback (myfilms)
               LogMyFilms.Info("Launch_Movie() - extension for external player detected! - start external player - path = '" + MyFilms.conf.ExternalPlayerPath + "', argument (filestorage) = '" + filestorage + "'");
@@ -8425,7 +8420,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
       MyFilms.conf.MyFilmsPlaybackActive = false;
 
       // detach from global action event, to handle remote keys during playback - e.g. trailer previews
-      try { GUIWindowManager.OnNewAction -= new OnActionHandler(this.GUIWindowManager_OnNewAction); }
+      try { GUIWindowManager.OnNewAction -= new OnActionHandler(GUIWindowManager_OnNewAction); }
       catch (Exception) { }
 
       if (MyFilms.conf.StrPlayedRow == null) return;
@@ -10534,7 +10529,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
             // check for subtitles in mediainfo
             var files = new List<string>();
             files.Add(file);
-            bool availableSubtitles = this.CheckHasSubtitles(files, true);
+            bool availableSubtitles = CheckHasSubtitles(files, true);
           }
           else
             failed = true;
@@ -10590,7 +10585,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
 
     public bool CheckHasLocalSubtitles(List<string> filenames)
     {
-      return this.CheckHasSubtitles(filenames, false);
+      return CheckHasSubtitles(filenames, false);
     }
 
     public bool CheckHasSubtitles(List<string> filenames, bool useMediaInfo)
@@ -10643,7 +10638,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
     {
       if (string.IsNullOrEmpty(file)) return false;
       var fi = new FileInfo(file);
-      return this.isWritable(fi);
+      return isWritable(fi);
     }
 
     private void GUIWindowManager_OnNewMessage(GUIMessage message)

@@ -83,9 +83,9 @@ namespace MyFilmsPlugin.Utils
       DbField = curconf.DbSelection[2];
       DbSort = curconf.DbSelection[3];
       bool showall;
-      DbShowAll = (Boolean.TryParse(curconf.DbSelection[4], out showall)) && showall;
+      DbShowAll = Boolean.TryParse(curconf.DbSelection[4], out showall) && showall;
       bool extrasort;
-      DbExtraSort = (Boolean.TryParse(curconf.DbSelection[4], out extrasort)) && extrasort;
+      DbExtraSort = Boolean.TryParse(curconf.DbSelection[4], out extrasort) && extrasort;
 
       NbObjects = nbobjects;
       MovieContext = moviecontext;

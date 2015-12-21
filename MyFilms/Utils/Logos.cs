@@ -23,6 +23,7 @@
 
 using System.ComponentModel;
 using System.Diagnostics;
+using MyFilmsPlugin.Utils;
 
 namespace MyFilmsPlugin.MyFilms.Utils
 {
@@ -212,23 +213,23 @@ namespace MyFilmsPlugin.MyFilms.Utils
       switch (logoType)
       {
         case "ID2001":
-          fileLogoName = GetLogos(r, ref listelogos, Logos.ID2001Logos);
+          fileLogoName = GetLogos(r, ref listelogos, ID2001Logos);
           break;
         case "ID2002":
-          fileLogoName = GetLogos(r, ref listelogos, Logos.ID2002Logos);
+          fileLogoName = GetLogos(r, ref listelogos, ID2002Logos);
           break;
         case "ID2003":
-          fileLogoName = GetLogos(r, ref listelogos, Logos.ID2003Logos);
+          fileLogoName = GetLogos(r, ref listelogos, ID2003Logos);
           break;
         case "ID2012":
-          fileLogoName = GetLogos(r, ref listelogos, Logos.ID2001Logos);
-          fileLogoName = fileLogoName + GetLogos(r, ref listelogos, Logos.ID2002Logos);
+          fileLogoName = GetLogos(r, ref listelogos, ID2001Logos);
+          fileLogoName = fileLogoName + GetLogos(r, ref listelogos, ID2002Logos);
           break;
       }
       if (listelogos.Count > 0)
       {
         LogMyFilms.Debug("Logo picture to be added " + fileLogoName);
-        string skinName = GUIGraphicsContext.Skin.Substring(GUIGraphicsContext.Skin.LastIndexOf("\\", System.StringComparison.Ordinal) + 1);
+        string skinName = GUIGraphicsContext.Skin.Substring(GUIGraphicsContext.Skin.LastIndexOf("\\", StringComparison.Ordinal) + 1);
         fileLogoName = id == MyFilms.ID_MyFilms
                          ? "MyFilms_" + skinName + "_M" + LogoConfigOverride + fileLogoName + ".png"
                          : "MyFilms_" + skinName + "_D" + LogoConfigOverride + fileLogoName + ".png";

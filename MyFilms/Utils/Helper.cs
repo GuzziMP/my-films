@@ -712,11 +712,7 @@ namespace MyFilmsPlugin.MyFilms.Utils
       return new string(a);
     }
 
-    public static bool Contains(string source, string toCheck)
-    {
-      return Contains(source, toCheck, StringComparison.OrdinalIgnoreCase);
-    }
-    public static bool Contains(string source, string toCheck, StringComparison comp)
+    public static bool Contains(string source, string toCheck, StringComparison comp = StringComparison.OrdinalIgnoreCase)
     {
       if (string.IsNullOrEmpty(toCheck) || string.IsNullOrEmpty(source))
         return true;
@@ -848,7 +844,7 @@ namespace MyFilmsPlugin.MyFilms.Utils
     {
       get
       {
-        bool status = Helper.IsAssemblyAvailable("SubCentral", new Version(1, 0, 0, 0), false) && IsPluginEnabled("SubCentral");
+        bool status = IsAssemblyAvailable("SubCentral", new Version(1, 0, 0, 0), false) && IsPluginEnabled("SubCentral");
         // LogMyFilms.Debug("Helper() - SubCentral available and enabled = '" + status + "'");
         return status;
       }
@@ -858,7 +854,7 @@ namespace MyFilmsPlugin.MyFilms.Utils
     {
       get
       {
-        bool status = Helper.IsAssemblyAvailable("BluRayPlayerLauncher", new Version(0, 1, 1, 1), false) && IsPluginEnabled("Blu-Ray Player Launcher");
+        bool status = IsAssemblyAvailable("BluRayPlayerLauncher", new Version(0, 1, 1, 1), false) && IsPluginEnabled("Blu-Ray Player Launcher");
         // LogMyFilms.Debug("Helper() - BluRayPlayerLauncher available and enabled = '" + status + "'");
         return status;
       }
@@ -868,7 +864,7 @@ namespace MyFilmsPlugin.MyFilms.Utils
     {
       get
       {
-        bool status = Helper.IsAssemblyAvailable("TraktPlugin", new Version(5, 0, 5, 0), false) && IsPluginEnabled("Trakt");
+        bool status = IsAssemblyAvailable("TraktPlugin", new Version(5, 0, 5, 0), false) && IsPluginEnabled("Trakt");
         // LogMyFilms.Debug("Helper() - TraktPlugin available and enabled = '" + status + "'");
         return status;
       }
@@ -904,7 +900,7 @@ namespace MyFilmsPlugin.MyFilms.Utils
     {
       get
       {
-        bool status = Helper.IsAssemblyAvailable("BDHandler", new Version(0, 9, 7, 29), false) && IsPluginEnabled("Blu-ray Handler");
+        bool status = IsAssemblyAvailable("BDHandler", new Version(0, 9, 7, 29), false) && IsPluginEnabled("Blu-ray Handler");
         // LogMyFilms.Debug("Helper() - BDHandler available and enabled = '" + status + "'");
         return status;
       }
@@ -914,7 +910,7 @@ namespace MyFilmsPlugin.MyFilms.Utils
     {
       get
       {
-        bool status = Helper.IsAssemblyAvailable("OnlineVideos", new Version(2, 0, 0, 0), true) && IsPluginEnabled("OnlineVideos");
+        bool status = IsAssemblyAvailable("OnlineVideos", new Version(2, 0, 0, 0), true) && IsPluginEnabled("OnlineVideos");
         // LogMyFilms.Debug("Helper() - OnlineVideos available and enabled = '" + status + "'");
         return status;
       }
@@ -924,7 +920,7 @@ namespace MyFilmsPlugin.MyFilms.Utils
     {
       get
       {
-        bool status = Helper.IsAssemblyAvailable("mpNZB", new Version(1, 5, 5, 0), true) && IsPluginEnabled("mpNZB");
+        bool status = IsAssemblyAvailable("mpNZB", new Version(1, 5, 5, 0), true) && IsPluginEnabled("mpNZB");
         // LogMyFilms.Debug("Helper() - mpNZB available and enabled = '" + status + "'");
         return status;
       }
@@ -1004,7 +1000,7 @@ namespace MyFilmsPlugin.MyFilms.Utils
       try
       {
         Directory.CreateDirectory(Path.GetDirectoryName(localFile));
-        if (!File.Exists(localFile) || ImageFast.FastFromFile(localFile) == null)
+        if (!File.Exists(localFile) || MyFilmsPlugin.Utils.ImageFast.FastFromFile(localFile) == null)
         {
           LogMyFilms.Debug("Downloading new file from: " + url);
           webClient.DownloadFile(url, localFile);
@@ -1134,11 +1130,7 @@ namespace MyFilmsPlugin.MyFilms.Utils
         }
     }
 
-    public static bool PersonUpdateAllowed(string path, string person) // default 7 days
-    {
-      return PersonUpdateAllowed(path, person, 30);
-    }
-    public static bool PersonUpdateAllowed(string path, string person, int days)
+    public static bool PersonUpdateAllowed(string path, string person, int days = 30)
     {
       string filename = Path.Combine(path, (person + ".chk")); // create checkfilename
       try
@@ -1476,12 +1468,12 @@ namespace MyFilmsPlugin.MyFilms.Utils
 
     public static DataTable Join(DataTable First, DataTable Second, DataColumn FJC, DataColumn SJC)
     {
-      return SQLOps.Join(First, Second, new DataColumn[] { FJC }, new DataColumn[] { SJC });
+      return Join(First, Second, new DataColumn[] { FJC }, new DataColumn[] { SJC });
     }
 
     public static DataTable Join(DataTable First, DataTable Second, string FJC, string SJC)
     {
-      return SQLOps.Join(
+      return Join(
         First, Second, new DataColumn[] { First.Columns[FJC] }, new DataColumn[] { First.Columns[SJC] });
     }
 

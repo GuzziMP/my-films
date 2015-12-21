@@ -103,70 +103,70 @@ namespace MyFilmsPlugin.MyFilms
 
     public void Reset()
     {
-      this.Title = string.Empty;
-      this.TranslatedTitle = string.Empty;
-      this.FormattedTitle = string.Empty;
-      this.GroupName = string.Empty;
-      this.CategoryTrakt.Clear();
-      this.Edition = string.Empty;
-      this.IMDBNumber = string.Empty;
-      this.TMDBNumber = string.Empty;
-      this.Year = 1900;
-      this.Category = string.Empty;
-      this.Length = 0;
-      this.Rating = 0.0f;
-      this.RatingUser = 0.0f;
-      this.Watched = false;
-      this.WatchedCount = -1;
-      this.DateTime = DateTime.Today;
-      this.DateAdded = string.Empty;
-      this.File = string.Empty;
-      this.Trailer = string.Empty;
-      this.Path = string.Empty;
-      this.Picture = string.Empty;
-      this.Fanart = string.Empty;
-      this.Config = string.Empty;
-      this.Username = string.Empty;
-      this.ReadOnly = false;
-      this.Actors.Clear();
-      this.Directors.Clear();
-      this.Writers.Clear();
-      this.Producers.Clear();
-      //this.AllowTrakt = false;
-      //this.AllowLatestMediaAPI = false;
-      //this.MovieRow = null;
+      Title = string.Empty;
+      TranslatedTitle = string.Empty;
+      FormattedTitle = string.Empty;
+      GroupName = string.Empty;
+      CategoryTrakt.Clear();
+      Edition = string.Empty;
+      IMDBNumber = string.Empty;
+      TMDBNumber = string.Empty;
+      Year = 1900;
+      Category = string.Empty;
+      Length = 0;
+      Rating = 0.0f;
+      RatingUser = 0.0f;
+      Watched = false;
+      WatchedCount = -1;
+      DateTime = DateTime.Today;
+      DateAdded = string.Empty;
+      File = string.Empty;
+      Trailer = string.Empty;
+      Path = string.Empty;
+      Picture = string.Empty;
+      Fanart = string.Empty;
+      Config = string.Empty;
+      Username = string.Empty;
+      ReadOnly = false;
+      Actors.Clear();
+      Directors.Clear();
+      Writers.Clear();
+      Producers.Clear();
+      //AllowTrakt = false;
+      //AllowLatestMediaAPI = false;
+      //MovieRow = null;
     }
 
     private MFMovie GetCurrentMovie()
     {
       var movie = new MFMovie
         {
-          ID = this.ID,
-          Title = this.Title,
-          TranslatedTitle = this.TranslatedTitle,
-          FormattedTitle = this.FormattedTitle,
-          GroupName = this.GroupName,
-          CategoryTrakt = this.CategoryTrakt,
-          Edition = this.Edition,
-          IMDBNumber = this.IMDBNumber,
-          TMDBNumber = this.TMDBNumber,
-          Year = this.Year,
-          Category = this.Category,
-          Length = this.Length,
-          Rating = this.Rating,
-          RatingUser = this.RatingUser,
-          Watched = this.Watched,
-          WatchedCount = this.WatchedCount,
-          DateTime = this.DateTime,
-          DateAdded = this.DateAdded,
-          File = this.File,
-          Trailer = this.Trailer,
-          Path = this.Path,
-          Picture = this.Picture,
-          Fanart = this.Fanart,
-          Config = this.Config,
-          Username = this.Username,
-          ReadOnly = this.ReadOnly
+          ID = ID,
+          Title = Title,
+          TranslatedTitle = TranslatedTitle,
+          FormattedTitle = FormattedTitle,
+          GroupName = GroupName,
+          CategoryTrakt = CategoryTrakt,
+          Edition = Edition,
+          IMDBNumber = IMDBNumber,
+          TMDBNumber = TMDBNumber,
+          Year = Year,
+          Category = Category,
+          Length = Length,
+          Rating = Rating,
+          RatingUser = RatingUser,
+          Watched = Watched,
+          WatchedCount = WatchedCount,
+          DateTime = DateTime,
+          DateAdded = DateAdded,
+          File = File,
+          Trailer = Trailer,
+          Path = Path,
+          Picture = Picture,
+          Fanart = Fanart,
+          Config = Config,
+          Username = Username,
+          ReadOnly = ReadOnly
         };
       return movie;
     }

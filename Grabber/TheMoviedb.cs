@@ -119,7 +119,7 @@ namespace Grabber
           foreach (TmdbMovie movieResult in movies)
           {
             DbMovieInfo movie = GetMovieInformation(api, movieResult, language);
-            if (movie != null && Grabber.GrabUtil.normalizeTitle(movie.Name.ToLower()).Contains(Grabber.GrabUtil.normalizeTitle(title.ToLower())))
+            if (movie != null && GrabUtil.normalizeTitle(movie.Name.ToLower()).Contains(GrabUtil.normalizeTitle(title.ToLower())))
               if (year > 0 && movie.Year > 0 && !choose)
               {
                 if ((year >= movie.Year - 2) && (year <= movie.Year + 2))

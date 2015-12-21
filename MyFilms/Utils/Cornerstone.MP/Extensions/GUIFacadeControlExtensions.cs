@@ -21,7 +21,7 @@
         /// <param name="parent">GUIControl instance to check</param>
         /// <returns>True if the control is related</returns>
         public static bool IsRelated(this GUIFacadeControl self, GUIControl parent) {
-            return (parent == self || parent == self.FilmstripLayout() || parent == self.ThumbnailLayout() || parent == self.ListLayout() || parent == self.AlbumListLayout());
+            return parent == self || parent == self.FilmstripLayout() || parent == self.ThumbnailLayout() || parent == self.ListLayout() || parent == self.AlbumListLayout();
         }
 
         /// <summary>

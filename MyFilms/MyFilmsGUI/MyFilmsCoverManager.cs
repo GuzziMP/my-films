@@ -168,7 +168,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
       LogMyFilms.Debug("OnPageLoad() - Cover Manager Window initialization started ...");
       AllocResources();
       MovieId = MyFilms.conf.StrIndex;
-      MyFilmsDetail.Searchtitles sTitles = MyFilmsDetail.GetSearchTitles(MyFilms.r[MyFilms.conf.StrIndex], MyFilmsDetail.GetMediaPathOfFirstFile(MyFilms.r, this.MovieId));
+      MyFilmsDetail.Searchtitles sTitles = MyFilmsDetail.GetSearchTitles(MyFilms.r[MyFilms.conf.StrIndex], MyFilmsDetail.GetMediaPathOfFirstFile(MyFilms.r, MovieId));
       ArtworkFileName = MyFilmsDetail.GetOrCreateCoverFilename(MyFilms.r, MyFilms.conf.StrIndex, sTitles.MasterTitle);
 
       GUIPropertyManager.SetProperty("#currentmodule", GUILocalizeStrings.Get(10799201)); // MyFilms Cover Manager
@@ -256,8 +256,8 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
           strLine = GUILocalizeStrings.Get(95) + GUILocalizeStrings.Get(791);
           break;
       }
-      if (this.ButtonLayouts != null)
-        GUIControl.SetControlLabel(GetID, this.ButtonLayouts.GetID, strLine);
+      if (ButtonLayouts != null)
+        GUIControl.SetControlLabel(GetID, ButtonLayouts.GetID, strLine);
     }
 
     private static void ClearProperties()
@@ -284,7 +284,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
     void WorkerRunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
     {
       MyFilmsDetail.setGUIProperty("cover.currentmoviename", MovieLabel);
-      MyFilmsDetail.setGUIProperty("cover.count", this.MFacade.Count.ToString());
+      MyFilmsDetail.setGUIProperty("cover.count", MFacade.Count.ToString());
 
       if (int.Parse(MFacade.Count.ToString()) == 0)
       {
@@ -356,11 +356,8 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
 
 
     #region Context Menu
-    private void ShowContextMenu()
-    {
-      ShowContextMenu((int)MenuAction.MenuMain, true); // calls main context menu
-    }
-    private void ShowContextMenu(int menuaction, bool iscontextmenu)
+
+    private void ShowContextMenu(int menuaction = (int)MenuAction.MenuMain, bool iscontextmenu = true)
     {
       try
       {
@@ -370,7 +367,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
         if (currentitem == null || !(currentitem.TVTag is MFCover))
           bCoverSelected = false; //return;
         else
-          selectedCover = currentitem.TVTag as MFCover;
+          selectedCover = (MFCover) currentitem.TVTag;
 
         var dlg = (IDialogbox)GUIWindowManager.GetWindow((int)Window.WINDOW_DIALOG_MENU);
         GUIListItem pItem;
@@ -456,7 +453,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
 
             if (bCoverSelected)
             {
-              if (!loadingWorker.IsBusy && !string.IsNullOrEmpty(MyFilms.r[this.MovieId]["Picture"].ToString()))
+              if (!loadingWorker.IsBusy && !string.IsNullOrEmpty(MyFilms.r[MovieId]["Picture"].ToString()))
               {
                 pItem = new GUIListItem(GUILocalizeStrings.Get(10798810)); // Delete Movie Cover from DB
                 dlg.Add(pItem);
@@ -593,8 +590,8 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
             if (NewArtworkFileName == selectedCover.FullPath)
             {
               NewArtworkFileName = "";
-              sTitles = MyFilmsDetail.GetSearchTitles(MyFilms.r[this.MovieId], MyFilmsDetail.GetMediaPathOfFirstFile(MyFilms.r, this.MovieId));
-              ArtworkFileName = MyFilmsDetail.GetOrCreateCoverFilename(MyFilms.r, this.MovieId, sTitles.MasterTitle);
+              sTitles = MyFilmsDetail.GetSearchTitles(MyFilms.r[MovieId], MyFilmsDetail.GetMediaPathOfFirstFile(MyFilms.r, MovieId));
+              ArtworkFileName = MyFilmsDetail.GetOrCreateCoverFilename(MyFilms.r, MovieId, sTitles.MasterTitle);
               MyFilmsDetail.clearGUIProperty("picture");
               SaveChangesToDb();
             }
@@ -766,7 +763,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
 
     private void OnFacadeItemSelected(GUIListItem item, GUIControl parent) // triggered when a selection change was made on the facade
     {
-      if (this.mBQuickSelect) return;
+      if (mBQuickSelect) return;
       if (parent != MFacade && parent != MFacade.FilmstripLayout && parent != MFacade.ThumbnailLayout && parent != MFacade.ListLayout) return; // if this is not a message from the facade, exit
       var selectedCover = item.TVTag as MFCover;
       if (selectedCover != null) SetItemProperties(selectedCover);
@@ -774,7 +771,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
 
     protected override void OnClicked(int controlId, GUIControl control, Action.ActionType actionType)
     {
-      if (control == this.ButtonFilters)
+      if (control == ButtonFilters)
       {
         ShowFiltersMenu();
         ButtonFilters.Focus = false;
@@ -850,7 +847,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
         dlg.Add(GUILocalizeStrings.Get(529));//Cover list - used as extended list
         menuentries.Add((int)View.AlbumView);
       }
-      if (AllowView(View.CoverFlow) && this.MFacade.CoverFlowLayout != null)
+      if (AllowView(View.CoverFlow) && MFacade.CoverFlowLayout != null)
       {
         dlg.Add(GUILocalizeStrings.Get(791));//Coverflow
         menuentries.Add((int)View.CoverFlow);
@@ -1027,13 +1024,16 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
 
           if (add)
           {
-            item = new GUIListItem(mfCover.ImageResolution);
-            item.IsRemote = false;
-            item.TVTag = mfCover;
-            item.Path = mfCover.FullPath;
-            item.IconImageBig = ImageAllocator.GetOtherImage(mfCover.FullPath, new System.Drawing.Size(400, 600), false);
-            item.IconImage = item.IconImageBig;
-            item.ThumbnailImage = item.IconImageBig;
+            var img = ImageAllocator.GetOtherImage(mfCover.FullPath, new Size(400, 600), false);
+            item = new GUIListItem(mfCover.ImageResolution)
+            {
+              IsRemote = false,
+              TVTag = mfCover,
+              Path = mfCover.FullPath,
+              IconImageBig = img,
+              IconImage = img,
+              ThumbnailImage = img
+            };
             item.OnItemSelected += OnFacadeItemSelected;
           }
           loadingWorker.ReportProgress(i < 100 ? ++i : 100, item);
@@ -1143,15 +1143,16 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
         {
           #region add found files
           wsize = new FileInfo(filefound).Length;
-          var item = new MFCover();
-          item.FileName = Path.GetFileNameWithoutExtension(filefound);
-          item.FullPath = filefound;
-
           //if (!File.Exists(localFile) || ImageFast.FastFromFile(localFile) == null) {}
-          var newCover = Image.FromFile(filefound);
-          item.ImageResolution = newCover.Width + " x " + newCover.Height;
-          item.ImageWith = newCover.Width;
-          item.ImageHeight = newCover.Height;
+          Image newCover = Image.FromFile(filefound);
+          var item = new MFCover
+          {
+            FileName = Path.GetFileNameWithoutExtension(filefound),
+            FullPath = filefound,
+            ImageResolution = newCover.Width + " x " + newCover.Height,
+            ImageWith = newCover.Width,
+            ImageHeight = newCover.Height
+          };
 
           if (newCover.Height > 800) item.ImageResolutionClass = "High";
           else if (newCover.Height > 400) item.ImageResolutionClass = "Medium";

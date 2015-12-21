@@ -43,16 +43,16 @@ namespace ShareWatcherHelper
 
     public ShareWatcherEvent(EventType type, string strFilename)
     {
-      this.Type = type;
-      this.FileName = strFilename;
-      this.OldFileName = null;
+      Type = type;
+      FileName = strFilename;
+      OldFileName = null;
     }
 
     public ShareWatcherEvent(EventType type, string strFilename, string strOldFilename)
     {
-      this.Type = type;
-      this.FileName = strFilename;
-      this.OldFileName = strOldFilename;
+      Type = type;
+      FileName = strFilename;
+      OldFileName = strOldFilename;
     }
 
     #endregion

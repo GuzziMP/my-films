@@ -21,18 +21,16 @@
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #endregion
 
-namespace MyFilmsPlugin.MyFilms.CatalogConverter
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Text;
+using System.Xml;
+using Grabber;
+using NLog;
+
+namespace MyFilmsPlugin.CatalogConverter
 {
-  using System;
-  using System.Collections.Generic;
-  using System.Text;
-  using System.Xml;
-  using System.Globalization;
-
-  using Grabber;
-
-  using NLog;
-
   class EaxMovieCatalog3
   {
     private static Logger LogMyFilms = LogManager.GetCurrentClassLogger();  //log
@@ -89,8 +87,7 @@ namespace MyFilmsPlugin.MyFilms.CatalogConverter
         TitleDelim = "\\";
       string WStrPath = System.IO.Path.GetDirectoryName(source);
       string destFile = WStrPath + "\\" + source.Substring(source.LastIndexOf(@"\") + 1, source.Length - source.LastIndexOf(@"\") - 5) + "_tmp.xml";
-      XmlTextWriter destXml = new XmlTextWriter(destFile, Encoding.Default);
-      destXml.Formatting = Formatting.Indented;
+      XmlTextWriter destXml = new XmlTextWriter(destFile, Encoding.Default) {Formatting = Formatting.Indented};
       destXml.WriteStartDocument();
       destXml.WriteStartElement("AntMovieCatalog");
       destXml.WriteStartElement("Catalog");
@@ -196,9 +193,11 @@ namespace MyFilmsPlugin.MyFilms.CatalogConverter
           string wRating = "0";
           if (nodeDVD.Attributes["Rating"] != null) wRating = nodeDVD.Attributes["Rating"].Value.Replace(",", ".");
           decimal wrating = 0;
-          NumberFormatInfo provider = new NumberFormatInfo();
-          provider.NumberDecimalSeparator = ".";
-          provider.NumberDecimalDigits = 1;
+          NumberFormatInfo provider = new NumberFormatInfo
+          {
+            NumberDecimalSeparator = ".",
+            NumberDecimalDigits = 1
+          };
           wrating = (Convert.ToDecimal(wRating, provider)) / 10;
           //try
           //{wrating = Convert.ToDecimal(wRating);}

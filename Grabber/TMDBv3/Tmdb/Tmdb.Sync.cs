@@ -78,7 +78,7 @@ namespace WatTmdb.V3
             if (resp.ResponseStatus != ResponseStatus.Completed && resp.ErrorException != null)
                 throw resp.ErrorException;
 
-            return this.ResponseETag;
+            return ResponseETag;
         }
 
         #endregion
@@ -281,14 +281,15 @@ namespace WatTmdb.V3
             return ProcessRequest<TmdbKeywordSearch>(Generator.SearchKeyword(query, page));
         }
 
-        /// <summary>
-        /// Search for collections by name
-        /// http://docs.themoviedb.apiary.io/#get-%2F3%2Fsearch%2Fcollection
-        /// </summary>
-        /// <param name="query"></param>
-        /// <param name="page"></param>
-        /// <returns></returns>
-        public TmdbCollectionSearch SearchCollection(string query, int page, string language = "")
+      /// <summary>
+      /// Search for collections by name
+      /// http://docs.themoviedb.apiary.io/#get-%2F3%2Fsearch%2Fcollection
+      /// </summary>
+      /// <param name="query"></param>
+      /// <param name="page"></param>
+      /// <param name="language"></param>
+      /// <returns></returns>
+      public TmdbCollectionSearch SearchCollection(string query, int page, string language = "")
         {
             if (string.IsNullOrEmpty(query))
                 throw new ArgumentException("Search must be supplied");
@@ -377,13 +378,14 @@ namespace WatTmdb.V3
             return ProcessRequestETag(ETagGenerator.GetMovieInfo(MovieID, language));
         }
 
-        /// <summary>
-        /// Retrieve all the basic movie information for a particular movie by IMDB reference.
-        /// (http://docs.themoviedb.apiary.io/#get-%2F3%2Fmovie%2F%7Bid%7D)
-        /// </summary>
-        /// <param name="imdbId">IMDB movie id</param>
-        /// <returns></returns>
-        public TmdbMovie GetMovieByIMDB(string imdbId, string language = "")
+      /// <summary>
+      /// Retrieve all the basic movie information for a particular movie by IMDB reference.
+      /// (http://docs.themoviedb.apiary.io/#get-%2F3%2Fmovie%2F%7Bid%7D)
+      /// </summary>
+      /// <param name="imdbId">IMDB movie id</param>
+      /// <param name="language"></param>
+      /// <returns></returns>
+      public TmdbMovie GetMovieByIMDB(string imdbId, string language = "")
         {
             if (string.IsNullOrEmpty(imdbId))
                 throw new ArgumentException("IMDB_ID must be supplied");
@@ -564,13 +566,15 @@ namespace WatTmdb.V3
             return ProcessRequestETag(ETagGenerator.GetMovieChanges(MovieID));
         }
 
-        /// <summary>
-        /// Get the reviews for a particular movie id
-        /// (http://docs.themoviedb.apiary.io/#get-%2F3%2Fmovie%2F%7Bid%7D%2Freviews)
-        /// </summary>
-        /// <param name="MovieId">TMDB Movie Id</param>
-        /// <returns></returns>
-        public TmdbMovieReview GetMovieReviews(int MovieId, int page, string language = null)
+      /// <summary>
+      /// Get the reviews for a particular movie id
+      /// (http://docs.themoviedb.apiary.io/#get-%2F3%2Fmovie%2F%7Bid%7D%2Freviews)
+      /// </summary>
+      /// <param name="MovieId">TMDB Movie Id</param>
+      /// <param name="page"></param>
+      /// <param name="language"></param>
+      /// <returns></returns>
+      public TmdbMovieReview GetMovieReviews(int MovieId, int page, string language = null)
         {
             return ProcessRequest<TmdbMovieReview>(Generator.GetMovieReviews(MovieId, page, language));
         }

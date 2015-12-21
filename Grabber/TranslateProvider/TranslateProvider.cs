@@ -29,8 +29,8 @@ namespace Grabber.TranslateProvider
       const string symbolToRepresentLineshift = "QQQQQ";
       input = input.Replace(lineshiftMark, symbolToRepresentLineshift);
 
-      detectedLanguage = this.client.Detect(input, out reliable, out confidence);
-      string translated = this.client.Translate(input, detectedLanguage, translateTo);
+      detectedLanguage = client.Detect(input, out reliable, out confidence);
+      string translated = client.Translate(input, detectedLanguage, translateTo);
 
       translated = translated.Replace(symbolToRepresentLineshift, lineshiftMark);
 
@@ -62,7 +62,7 @@ namespace Grabber.TranslateProvider
 
       Stream strm = response.GetResponseStream();
 
-      StreamReader reader = new System.IO.StreamReader(strm);
+      StreamReader reader = new StreamReader(strm);
       //reading result
       translatedText = reader.ReadToEnd();
 
@@ -79,11 +79,11 @@ namespace Grabber.TranslateProvider
     /// Translates a string into another language using Google's translate API JSON calls.
     /// <seealso>Class TranslationServices</seealso>
     /// </summary>
-    /// <param name="Text">Text to translate. Should be a single word or sentence.</param>
-    /// <param name="FromCulture">
+    /// <param name="text">Text to translate. Should be a single word or sentence.</param>
+    /// <param name="fromCulture">
     /// Two letter culture (en of en-us, fr of fr-ca, de of de-ch)
     /// </param>
-    /// <param name="ToCulture">
+    /// <param name="toCulture">
     /// Two letter culture (as for FromCulture)
     /// </param>
     public string TranslateGoogle(string text, string fromCulture, string toCulture)
@@ -229,7 +229,7 @@ namespace Grabber.TranslateProvider
       string toLanguage = "Spanish";
 
       // Create a Language mapping
-      var languageMap = new Dictionary<string, string>();
+      Dictionary<string, string> languageMap = new Dictionary<string, string>();
       // ToDo: InitLanguageMap(languageMap);
 
       Console.WriteLine("Given Word: " + content);

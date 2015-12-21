@@ -15,7 +15,7 @@ namespace Grabber
 
     private static void UpdateScripts(string localscriptpath)
     {
-      if (!System.IO.Directory.Exists(localscriptpath))
+      if (!Directory.Exists(localscriptpath))
       {
         LogMyFilms.Error("Invalid script path - cannot update scripts!");
         return;

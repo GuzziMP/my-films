@@ -174,7 +174,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
         {
           if (!abortedByUser)
           {
-            GUIUtils.ShowNotifyDialog(GUIUtils.PluginName(), _CurrentTaskSuccess.HasValue ? string.Format("{0} {1}", "Error", this._CurrentTaskDescription) : string.Format("{0} {1}", "Timeout", this._CurrentTaskDescription));
+            GUIUtils.ShowNotifyDialog(GUIUtils.PluginName(), _CurrentTaskSuccess.HasValue ? string.Format("{0} {1}", "Error", _CurrentTaskDescription) : string.Format("{0} {1}", "Timeout", _CurrentTaskDescription));
           }
         }
       }

@@ -107,26 +107,17 @@ namespace MyFilmsPlugin.Utils
     }
 
     /// <summary>
-    /// Returns the Watch named "name" from the internal store (creates it if it doesn't exist)
-    /// </summary>
-    /// <param name="name">The Name of the Watch to Return</param>
-    static public Watch GetNamedWatch(string name)
-    {
-      return GetNamedWatch(name, true);
-    }
-
-    /// <summary>
     /// Returns the Watch named "name" from the internal store
     /// </summary>
     /// <param name="name">The Name of the Watch to Return</param>
-    /// <param name="CreateNewIfNotExists">Indicates wether a new Watch should be instantiated with the given name if it doesn't exist yet</param>
+    /// <param name="createNewIfNotExists">Indicates wether a new Watch should be instantiated with the given name if it doesn't exist yet</param>
     /// <returns></returns>
-    static public Watch GetNamedWatch(string name, bool CreateNewIfNotExists)
+    static public Watch GetNamedWatch(string name, bool createNewIfNotExists = true)
     {
       Watch watch = null;
       if (name == null) name = anonName; // for null we use a generic Anonymouse name
 
-      if ((watch = findWatch(name)) == null && CreateNewIfNotExists)
+      if ((watch = findWatch(name)) == null && createNewIfNotExists)
         watch = new Watch(name); // the constructor will call AddWatch                
       return watch;
     }
@@ -182,7 +173,7 @@ namespace MyFilmsPlugin.Utils
     /// </summary>
     public int StartCounter
     {
-      get { return this._startCounter; }
+      get { return _startCounter; }
     }
 
     /// <summary>
@@ -191,7 +182,7 @@ namespace MyFilmsPlugin.Utils
     /// <param name="name">The Name (Identifier) of this Watch</param>
     public Watch(string name)
     {
-      this.Name = name;
+      Name = name;
       PerfWatcher.AddWatch(this);
     }
 
@@ -200,7 +191,7 @@ namespace MyFilmsPlugin.Utils
     /// </summary>
     public new void Start()
     {
-      this._startCounter++;
+      _startCounter++;
       base.Start();
     }
 
@@ -209,7 +200,7 @@ namespace MyFilmsPlugin.Utils
     /// </summary>
     public new void Reset()
     {
-      this._startCounter = 0;
+      _startCounter = 0;
       base.Reset();
     }
 
@@ -222,15 +213,15 @@ namespace MyFilmsPlugin.Utils
       {
         long msStart;
         long usStart;
-        if (this.StartCounter > 0)
+        if (StartCounter > 0)
         {
-          msStart = this.ElapsedMilliseconds / this.StartCounter;
-          usStart = this.ElapsedMicroseconds / this.StartCounter;
+          msStart = ElapsedMilliseconds / StartCounter;
+          usStart = ElapsedMicroseconds / StartCounter;
 
           return string.Format("Watch: Started: {1} time(s) - Elapsed: {2}ms ({3} µs) -> {4} ms ({5} µs)/start \"{0}\"",
-                           this.Name, this.StartCounter, this.ElapsedMilliseconds, this.ElapsedMicroseconds, msStart, usStart);
+                           Name, StartCounter, ElapsedMilliseconds, ElapsedMicroseconds, msStart, usStart);
         }
-        else return string.Format("Watch: {0} - Started: never", this.Name);
+        else return string.Format("Watch: {0} - Started: never", Name);
       }
     }
 
@@ -239,7 +230,7 @@ namespace MyFilmsPlugin.Utils
     /// </summary>
     public override string ToString()
     {
-      return this.Info;
+      return Info;
     }
 
     /// <summary>
@@ -247,14 +238,14 @@ namespace MyFilmsPlugin.Utils
     /// </summary>
     public long ElapsedMicroseconds
     {
-      get { return (long)(this.Elapsed.Ticks / 10); }
+      get { return (long)(Elapsed.Ticks / 10); }
     }
 
     #region IComparable<Watch> Members
 
     public int CompareTo(Watch other)
     {
-      return this.Name.CompareTo(other.Name);
+      return Name.CompareTo(other.Name);
     }
 
     #endregion

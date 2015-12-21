@@ -21,6 +21,8 @@
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #endregion
 
+using MyFilmsPlugin.CatalogConverter;
+
 namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
 {
   using System;
@@ -630,7 +632,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
         #region search history
         StrSearchHistory = xmlConfig.ReadXmlConfig("MyFilms", currentConfig, "SearchHistory", string.Empty);
         MyFilms.SearchHistory.Clear();
-        foreach (string s in this.StrSearchHistory.Split('|').Where(s => !string.IsNullOrEmpty(s.Trim())))
+        foreach (string s in StrSearchHistory.Split('|').Where(s => !string.IsNullOrEmpty(s.Trim())))
         {
           MyFilms.SearchHistory.Add(s);
         }
@@ -642,7 +644,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
         {
           if (xmlConfig.ReadXmlConfig("MyFilms", currentConfig, "ListSeparator" + i, string.Empty).Length > 0)
           {
-            this.ListSeparator[j] = xmlConfig.ReadXmlConfig("MyFilms", currentConfig, "ListSeparator" + i, string.Empty).Replace("#LF#", "\n"); // support for new line separation
+            ListSeparator[j] = xmlConfig.ReadXmlConfig("MyFilms", currentConfig, "ListSeparator" + i, string.Empty).Replace("#LF#", "\n"); // support for new line separation
             j++;
           }
         }
@@ -1157,12 +1159,12 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
           if (CurrentConfig == string.Empty || xmlConfig.ReadXmlConfig("MyFilms", "MyFilms", "Menu_Config", true))
           {
             boolchoice = false;
-            CurrentConfig = Configuration.ChoiceConfig(MyFilms.ID_MyFilms);
+            CurrentConfig = ChoiceConfig(MyFilms.ID_MyFilms);
             // "" => user esc's dialog on plugin startup so exit plugin unchanged
           }
-          CurrentConfig = Configuration.ControlAccessConfig(CurrentConfig, MyFilms.ID_MyFilms);
+          CurrentConfig = ControlAccessConfig(CurrentConfig, MyFilms.ID_MyFilms);
           if ((CurrentConfig == "") && (NbConfig > 1) && boolchoice) //error password ? so if many config => choice config menu
-            CurrentConfig = Configuration.ChoiceConfig(MyFilms.ID_MyFilms);
+            CurrentConfig = ChoiceConfig(MyFilms.ID_MyFilms);
         }
       }
       return isDefaultConfig;

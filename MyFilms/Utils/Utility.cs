@@ -98,7 +98,7 @@ namespace MyFilmsPlugin.MyFilms.Utils
       Type objType = value.GetType();
       FieldInfo fieldInfo = objType.GetField(Enum.GetName(objType, value));
       DescriptionAttribute attribute = (DescriptionAttribute)
-      (fieldInfo.GetCustomAttributes(typeof(DescriptionAttribute), false)[0]);
+      fieldInfo.GetCustomAttributes(typeof(DescriptionAttribute), false)[0];
 
       // Return the description.
       return attribute.Description;
@@ -159,7 +159,7 @@ namespace MyFilmsPlugin.MyFilms.Utils
     public static List<FileInfo> GetVideoFilesRecursive(DirectoryInfo directory)
     {
       IEnumerable<FileInfo> fileList = GetFilesRecursive(directory);
-      return fileList.Where(Utility.IsVideoFile).ToList();
+      return fileList.Where(IsVideoFile).ToList();
     }
 
     /// <summary>
@@ -341,16 +341,16 @@ namespace MyFilmsPlugin.MyFilms.Utils
       string stFormD = title.Normalize(NormalizationForm.FormD);
       StringBuilder sb = new StringBuilder();
 
-      for (int ich = 0; ich < stFormD.Length; ich++)
+      foreach (char t in stFormD)
       {
-        UnicodeCategory uc = CharUnicodeInfo.GetUnicodeCategory(stFormD[ich]);
+        UnicodeCategory uc = CharUnicodeInfo.GetUnicodeCategory(t);
         if (uc != UnicodeCategory.NonSpacingMark)
         {
-          sb.Append(stFormD[ich]);
+          sb.Append(t);
         }
       }
 
-      return (sb.ToString().Normalize(NormalizationForm.FormC));
+      return sb.ToString().Normalize(NormalizationForm.FormC);
     }
 
 
@@ -637,7 +637,7 @@ namespace MyFilmsPlugin.MyFilms.Utils
     #region MediaPortal
 
     /// <summary>
-    /// Checks if file has valid video extensions (as specified by media portal
+    /// Checks if file has valid video Extensions (as specified by media portal
     /// </summary>
     /// <remarks>
     /// MediaPortal Dependency!
@@ -805,9 +805,9 @@ namespace MyFilmsPlugin.MyFilms.Utils
     private static string ToHexadecimal(byte[] bytes)
     {
       StringBuilder hexBuilder = new StringBuilder();
-      for (int i = 0; i < bytes.Length; i++)
+      foreach (byte t in bytes)
       {
-        hexBuilder.Append(bytes[i].ToString("x2"));
+        hexBuilder.Append(t.ToString("x2"));
       }
       return hexBuilder.ToString();
     }
@@ -831,8 +831,8 @@ namespace MyFilmsPlugin.MyFilms.Utils
       try
       {
         string[] folders = Directory.GetDirectories(path);
-        for (int i = 0; i < folders.Length; i++)
-          getFiles(folders[i], ref files);
+        foreach (string t in folders)
+          getFiles(t, ref files);
 
 
         string[] curFiles = Directory.GetFiles(path);
@@ -861,9 +861,9 @@ namespace MyFilmsPlugin.MyFilms.Utils
       {
         try
         {
-          for (int i = 0; i < searchPatterns.Length; i++)
+          foreach (string t in searchPatterns)
           {
-            string[] curFiles = Directory.GetFiles(path, searchPatterns[i]);
+            string[] curFiles = Directory.GetFiles(path, t);
             files.AddRange(curFiles);
           }
         }
@@ -893,14 +893,13 @@ namespace MyFilmsPlugin.MyFilms.Utils
       try
       {
         string[] folders = Directory.GetDirectories(path);
-        for (int i = 0; i < folders.Length; i++)
-          getFiles(folders[i], searchPattern, ref files);
+        foreach (string t in folders)
+          getFiles(t, searchPattern, ref files);
 
 
-        for (int i = 0; i < searchPattern.Length; i++)
+        foreach (string t in searchPattern)
         {
-          string[] curFiles = Directory.GetFiles(path, searchPattern[i]);
-          files.AddRange(curFiles);
+          files.AddRange(Directory.GetFiles(path, t));
         }
       }
       catch

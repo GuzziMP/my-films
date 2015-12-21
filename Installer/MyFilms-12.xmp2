@@ -5778,7 +5778,7 @@ Please refer to the Wiki online documentation.</Value>
       <Major>6</Major>
       <Minor>1</Minor>
       <Build>2</Build>
-      <Revision>1462</Revision>
+      <Revision>1463</Revision>
     </Version>
     <ExtensionDescription>MyFilms is a movie plugin to use your ANTmovie catalog (AMC) video database or other external catalog managers in mediaportal.
 
@@ -5814,7 +5814,7 @@ Fixes:
 - Depreciate old Trakt plugin support and adapt for new Trakt V2 API Plugin Version.Support 'Cleanup' option on Grabber Editor Search page for filebased reader grabbers like NFO</VersionDescription>
     <DevelopmentStatus>Stable</DevelopmentStatus>
     <OnlineLocation>http://www.team-mediaportal.com/index.php?option=com_mtree&amp;task=att_download&amp;link_id=155&amp;cf_id=64</OnlineLocation>
-    <ReleaseDate>2015-12-20T06:37:41.8086568+01:00</ReleaseDate>
+    <ReleaseDate>2015-12-21T06:10:54.9584073+01:00</ReleaseDate>
     <Tags>movies, films, videos, myfilms, catalog, manager, ant movie catalog (amc), dvdprofiler, extreme movie manager, xbmc, personal video database (pvd), eax movie catalog (eax), dvd profiler, extreme movie manager (xmm) , movie collector pro, mymovies</Tags>
     <Location>.\MPE-Packages\MyFilms-V[Version].mpe1</Location>
     <Params>

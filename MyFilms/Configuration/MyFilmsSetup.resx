@@ -175,8 +175,8 @@ You can set separate sort orders for the view itself, the underlying film list a
     <value>False</value>
   </metadata>
   <data name="label66.ToolTip" xml:space="preserve">
-    <value>The Value will allow you to directly display the film list filtered to that value.
-Practically, a rule "DBfield like *Value*" will be used - but other than Filter Expression, 
+    <value>The value will allow you to directly display the film list filtered to that value.
+Practically, a rule "DBfield like *value*" will be used - but other than Filter Expression, 
 this is affecting the display (Film list instead of grouped view).
 
 
@@ -354,7 +354,7 @@ The setting cannot directly be modified - My Films automatically sets it based o
 you choose for your catalog path, your Picture prefix and the path you select as "Cover Image Path".
 
 
-Options:
+options:
 Full Path - stores the full path in the catalog. 
 Relative Path - stores only the relative path in the catalog. 
 The "relative path" option is only possible, if you're defining a sub path to your catalog file.
@@ -433,7 +433,7 @@ Note: You can always launch AMCUpdater from within My Films anytime you wish and
 If you prefer that, you do NOT require to schedule a task via scheduler.</value>
   </data>
   <data name="AmcTitleSearchHandling.ToolTip" xml:space="preserve">
-    <value>Options are:
+    <value>options are:
 File Name: use file name for title field
 Folder Name: use folder name for title field
 Relative Name: use whole content of path for title
@@ -495,7 +495,7 @@ to run independently from MediaPortal / My Films.</value>
   <data name="gpspfield.ToolTip" xml:space="preserve">
     <value>This defines the action taken, when the player finishes.
 You can update e.g. the "checked" field with a value "true to indicate "watched status". 
-However be careful not to activate the delete options ("Delete Options", otherwise the physical source files would get deleted after player finishes!
+However be careful not to activate the delete options ("Delete options", otherwise the physical source files would get deleted after player finishes!
 
 
 You will have the option in the GUI to switch to "unwatched movies only" - based on the update of the "checked" field</value>
@@ -508,7 +508,7 @@ Note: If physical removal is selected, your movie files will be deleted
 from disk after you watched it - handle with care !</value>
   </data>
   <data name="groupBoxDeletionOptions.ToolTip" xml:space="preserve">
-    <value>The automatic Deletion Options allow you to update and/or delete records and/or media files 
+    <value>The automatic Deletion options allow you to update and/or delete records and/or media files 
 after the corresponding movie is watched - or manually via the context menu.
 
 
@@ -550,9 +550,9 @@ By Default, "Checked" field is used.
 
 Notes: 
 If you use other field than "Checked", you should make sure, it's content matches your needs.
-E.g. using "Media Label", but having that field already populated with content other than "Value to identify unwatched items" 
+E.g. using "Media Label", but having that field already populated with content other than "value to identify unwatched items" 
 would result in getting all movies displayed as "watched". So you might have to clear that field first and make sure
-that it will not get populated accidentally (e.g. AMCUpdater Media label) or set Value for unwatched to the Value you set to the field by default.
+that it will not get populated accidentally (e.g. AMCUpdater Media label) or set value for unwatched to the value you set to the field by default.
 
 
 If you are using "Enhanced Watched Status Handling" and use AMC, you should select another field than "Checked", as AMC handles Checked field 
@@ -571,7 +571,7 @@ of watched info and user rating for multiple users - either local ones or Trakt 
 You can choose a field to be used for "watched status" - a good recommendation is "Checked" or the new extended "Watched" field in AMC4.
 You can choose to update this field when starting a movie or when playback is finished.
 You can update e.g. the "checked" field with a value "true" to indicate "watched status". 
-However be careful not to activate the delete options ("Delete Options", otherwise the physical source files would get deleted after player finishes!
+However be careful not to activate the delete options ("Delete options", otherwise the physical source files would get deleted after player finishes!
 You will have the option in the GUI to switch to "unwatched movies only" - based on the update of the "checked" field</value>
   </data>
   <data name="btnMUSdeleteUserData.ToolTip" xml:space="preserve">
@@ -584,20 +584,20 @@ watched counts and watched state.</value>
     <value>You can set a "User Profile Name" that will be used for watched status handling.
 This is useful, if you want the watched status kept separately for different users.
 If you checked "Enhanced Watched Status handling" you can select the user 
-in the hidden menu ("Options" - "Global Settings ...") in My Films GUI.
+in the hidden menu ("options" - "Global Settings ...") in My Films GUI.
 The user "global" is always existing and is counting global watched status.</value>
   </data>
   <data name="groupBox_UserItemsDetails.ToolTip" xml:space="preserve">
     <value>You can enter a unique label and select a database field for any additional information you wish to have displayed for a movie. 
 As this can be skin dependant, some experimentation may be required to see what can be displayed and where it might appear.
 These are user defined items for the details screen.
-You can also change the assignment in My Films GUI (Options - View Options).</value>
+You can also change the assignment in My Films GUI (options - View options).</value>
   </data>
   <data name="groupBox_UserItemsMain.ToolTip" xml:space="preserve">
     <value>You can enter a unique label and select a database field for any additional information you wish to have displayed for a movie. 
 As this can be skin dependant, some experimentation may be required to see what can be displayed and where it might appear.
 These are user defined items for the main screen.
-You can also change the assignment in My Films GUI (Options - View Options).</value>
+You can also change the assignment in My Films GUI (options - View options).</value>
   </data>
   <data name="groupBox_Separators.ToolTip" xml:space="preserve">
     <value>Genre, country and actors are grouped in unique fields in the database and sometimes 
@@ -821,12 +821,12 @@ if you have not defined an image here, you might get a default image displayed i
   </data>
   <data name="groupBox5.ToolTip" xml:space="preserve">
     <value>"Filter Expression" allows you to apply filter rules, that limit the results.
-Other than "Value", it will keep "grouped Views" as display and not directly show a film list of the results - allowing you to have
+Other than "value", it will keep "grouped Views" as display and not directly show a film list of the results - allowing you to have
 views like "Category, Year, etc. - so Filter Expression can be used as Filter to allow free combinations of any conditions users might want.
 My Films helps you to create such conditions, but if you're familiar with MS Expressions, you can use them directly too.
 
 
-That filter can be combined with "Value", e.g.:
+That filter can be combined with "value", e.g.:
 You want all your action movies directly as film list from last 30 days (DBfield Category, value 'action', filter 'ageadded')
 You could do the same in the past by using different configs based on same catalog - as Filter works same way as config filter. 
 But now, you don't need separate configs, just for that. 
@@ -838,7 +838,7 @@ In this section you can define additional views;
 select the database field, enter a label for that field to be displayed in the menu, and then enter a value for the field.  
 If there is no value entered, a menu will be displayed for the range of values available in the database.  
 If a value is entered, a list of the movies with that value will be displayed.
-Optional: 
+optional: 
 - If you want to use a list of values, you can add them as comma separated values.
 - You can set Index to values of 1 or 2 to get indexed display of the values
 - You can define a Filter same way as "Config Filter" to restrict or limit the results</value>
@@ -1225,7 +1225,7 @@ If you selected "Don't use default script", you still can choose to use another 
 will always appear as first entry.
 
 
-For global override settings, that affect possibly any grabber script, see "My Films Grabber Override Options".</value>
+For global override settings, that affect possibly any grabber script, see "My Films Grabber Override options".</value>
   </data>
   <data name="chkGrabber_Always.ToolTip" xml:space="preserve">
     <value>If checked, My Films will choose the best match automatically.
@@ -1239,7 +1239,7 @@ You can set user defined options or switch to expert mode to
 modify the grabber script in detail.
 
 
-Remark: Changes to the Grabber Options will apply to the script,
+Remark: Changes to the Grabber options will apply to the script,
 so all My Films configs that use it, will be affected.
 If you want those settings to only apply to a certain My Films config, you should save the script
 with a separate name and set this as default grabber script.</value>
@@ -1266,7 +1266,7 @@ However, IMDb (full) script should support all options listed here.
 If you set no values, the default settings of the grabber
 will be used instead.
 The default settings (of the grabber script) can be changed by editing 
-the grabber script in the "My Films Grabber Interface" ("Grabber Options").
+the grabber script in the "My Films Grabber Interface" ("Grabber options").
 </value>
   </data>
   <data name="chkGrabber_ChooseScript.ToolTip" xml:space="preserve">

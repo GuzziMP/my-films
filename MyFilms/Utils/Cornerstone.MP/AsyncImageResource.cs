@@ -42,9 +42,8 @@
 
                 _active = value;
 
-                Thread newThread = new Thread(new ThreadStart(activeWorker));
-                newThread.Name = "AsyncImageResource.activeWorker";
-                newThread.Start();
+              Thread newThread = new Thread(ActiveWorker) {Name = "AsyncImageResource.ActiveWorker"};
+              newThread.Start();
             }
         }
         private bool _active = true;
@@ -59,7 +58,7 @@
             set { _delay = value; }
         } private int _delay = 250;
 
-        private void activeWorker() {
+        private void ActiveWorker() {
             lock (loadingLock) {
                 if (_active) {
                     // load the resource
@@ -124,15 +123,17 @@
                 if (value == null)
                     value = " ";
 
-                Thread newThread = new Thread(new ParameterizedThreadStart(setFilenameWorker));
-                newThread.Name = "AsyncImageResource.setFilenameWorker";
-                newThread.Start(value);
+              Thread newThread = new Thread(new ParameterizedThreadStart(SetFilenameWorker))
+              {
+                Name = "AsyncImageResource.SetFilenameWorker"
+              };
+              newThread.Start(value);
             }
         }
         string _filename = null;
 
         // Unloads the previous file and sets a new filename. 
-        private void setFilenameWorker(object newFilenameObj) {
+        private void SetFilenameWorker(object newFilenameObj) {
             int localToken = ++pendingToken;
             string oldFilename = _filename;
 

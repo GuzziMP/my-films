@@ -75,8 +75,7 @@ namespace MyFilmsPlugin.MyFilms.CatalogConverter
     {
       string WStrPath = System.IO.Path.GetDirectoryName(source);
       string destFile = WStrPath + "\\" + source.Substring(source.LastIndexOf(@"\") + 1, source.Length - source.LastIndexOf(@"\") - 5) + "_tmp.xml";
-      XmlTextWriter destXml = new XmlTextWriter(destFile, Encoding.Default);
-      destXml.Formatting = Formatting.Indented;
+      XmlTextWriter destXml = new XmlTextWriter(destFile, Encoding.Default) {Formatting = Formatting.Indented};
       destXml.WriteStartDocument();
       destXml.WriteStartElement("AntMovieCatalog");
       destXml.WriteStartElement("Catalog");
@@ -167,8 +166,8 @@ namespace MyFilmsPlugin.MyFilms.CatalogConverter
 
           foreach (XmlNode nodeTag in TagList.Cast<XmlNode>().Where(nodeTag => nodeTag.Attributes["FullName"] != null && nodeTag.Attributes["FullName"].Value != null))
           {
-            if (this.TagFullName.Length > 0) this.TagFullName += ", ";
-            this.TagFullName += nodeTag.Attributes["FullName"].Value;
+            if (TagFullName.Length > 0) TagFullName += ", ";
+            TagFullName += nodeTag.Attributes["FullName"].Value;
           }
 
           if (TagField.Length > 0)

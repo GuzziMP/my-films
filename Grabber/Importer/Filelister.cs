@@ -63,7 +63,7 @@ namespace Grabber.Importer
         if (System.IO.Directory.Exists(folder))
         {
           string[] sfiles = System.IO.Directory.GetFiles(folder, "*", System.IO.SearchOption.AllDirectories);
-          outList.AddRange(from t in sfiles where MediaPortal.Util.Utils.VideoExtensions.Contains(System.IO.Path.GetExtension(t).ToLowerInvariant()) select new PathPair(t.Substring(importPathLength).TrimStart('\\'), t));
+          outList.AddRange(from t in sfiles where GrabUtil.Extensions.Contains(System.IO.Path.GetExtension(t).ToLowerInvariant()) select new PathPair(t.Substring(importPathLength).TrimStart('\\'), t));
         }
       }
       catch (Exception ex)

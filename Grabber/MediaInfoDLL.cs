@@ -244,7 +244,7 @@ namespace Grabber
     {
       get
       {
-        string result = this.Get(StreamKind.Video, 0, "CodecID");
+        string result = Get(StreamKind.Video, 0, "CodecID");
         //LogMyFilms.Debug("Video Codec ID: ", result);
         return result.Length > 0 ? result : "-1";
       }
@@ -254,7 +254,7 @@ namespace Grabber
     {
       get
       {
-        string result = this.Get(StreamKind.Video, 0, "Format");
+        string result = Get(StreamKind.Video, 0, "Format");
         //LogMyFilms.Debug("Video Format: ", result);
         return result.Length > 0 ? result : "-1";
       }
@@ -264,7 +264,7 @@ namespace Grabber
     {
       get
       {
-        string result = this.Get(StreamKind.Video, 0, "Format_Profile");
+        string result = Get(StreamKind.Video, 0, "Format_Profile");
         //LogMyFilms.Debug("Video Format Profile: ", result);
         return result.Length > 0 ? result : "-1";
       }
@@ -274,7 +274,7 @@ namespace Grabber
     {
       get
       {
-        string result = this.Get(StreamKind.Video, 0, "BitRate");
+        string result = Get(StreamKind.Video, 0, "BitRate");
         //LogMyFilms.Debug("Video Bit Rate: ", result);
         return result.Length > 0 ? result : "-1";
       }
@@ -284,7 +284,7 @@ namespace Grabber
     {
       get
       {
-        string result = this.Get(StreamKind.Video, 0, "Width");
+        string result = Get(StreamKind.Video, 0, "Width");
         //LogMyFilms.Debug("Video Width: ", result);
         return result.Length > 0 ? result : "-1";
       }
@@ -294,7 +294,7 @@ namespace Grabber
     {
       get
       {
-        string result = this.Get(StreamKind.Video, 0, "Height");
+        string result = Get(StreamKind.Video, 0, "Height");
         //LogMyFilms.Debug("Video Height: ", result);
         return result.Length > 0 ? result : "-1";
       }
@@ -304,7 +304,7 @@ namespace Grabber
     {
       get
       {
-        string result = this.Get(StreamKind.Video, 0, "DisplayAspectRatio");
+        string result = Get(StreamKind.Video, 0, "DisplayAspectRatio");
         //LogMyFilms.Debug("Video Aspect Ratio: ", result);
         return result.Length > 0 ? result : "-1";
       }
@@ -314,7 +314,7 @@ namespace Grabber
     {
       get
       {
-        string result = this.Get(StreamKind.Video, 0, "Duration");
+        string result = Get(StreamKind.Video, 0, "Duration");
         //LogMyFilms.Debug("Video Duration: ", result);
         return result.Length > 0 ? result : "-1";
       }
@@ -324,7 +324,7 @@ namespace Grabber
     {
       get
       {
-        string result = this.Get(StreamKind.Video, 0, "FrameRate");
+        string result = Get(StreamKind.Video, 0, "FrameRate");
         //LogMyFilms.Debug("Video Framerate: ", result);
         return result.Length > 0 ? result : "-1";
       }
@@ -338,7 +338,7 @@ namespace Grabber
     {
       get
       {
-        string result = this.Get(StreamKind.Audio, 0, "CodecID");
+        string result = Get(StreamKind.Audio, 0, "CodecID");
         //LogMyFilms.Debug("Audio Codec ID: ", result);
         return result.Length > 0 ? result : "-1";
       }
@@ -348,7 +348,7 @@ namespace Grabber
     {
       get
       {
-        string result = this.Get(StreamKind.Audio, 0, "Format");
+        string result = Get(StreamKind.Audio, 0, "Format");
         //LogMyFilms.Debug("Audio Format: ", result);
         return result.Length > 0 ? result : "-1";
       }
@@ -358,7 +358,7 @@ namespace Grabber
     {
       get
       {
-        string result = this.Get(StreamKind.Audio, 0, "Format_Profile");
+        string result = Get(StreamKind.Audio, 0, "Format_Profile");
         //LogMyFilms.Debug("Audio Format Profile: ", result);
         return result.Length > 0 ? result : "-1";
       }
@@ -368,7 +368,7 @@ namespace Grabber
     {
       get
       {
-        string result = this.Get(StreamKind.Audio, 0, "BitRate");
+        string result = Get(StreamKind.Audio, 0, "BitRate");
         //LogMyFilms.Debug("Audio Bit Rate: ", result);
         return result.Length > 0 ? result : "-1";
       }
@@ -378,7 +378,7 @@ namespace Grabber
     {
       get
       {
-        string result = this.Get(StreamKind.Audio, 0, "StreamCount");
+        string result = Get(StreamKind.Audio, 0, "StreamCount");
         //LogMyFilms.Debug("Audio Stream Count: ", result);
         return result.Length > 0 ? result : "-1";
       }
@@ -388,7 +388,7 @@ namespace Grabber
     {
       get
       {
-        string result = this.Get(StreamKind.General, 0, "Audio_Codec_List");
+        string result = Get(StreamKind.General, 0, "Audio_Codec_List");
         //LogMyFilms.Debug("Audio Stream Count: ", result);
         return result.Length > 0 ? result : "-1";
       }
@@ -415,7 +415,7 @@ namespace Grabber
     {
       get
       {
-        string result = this.Get(StreamKind.General, 0, "TextCount");
+        string result = Get(StreamKind.General, 0, "TextCount");
         //LogMyFilms.Debug("Subtitle Count: ", result);
         return result.Length > 0 ? result : "-1";
       }
@@ -427,7 +427,7 @@ namespace Grabber
 
     public string GetAudioChannelCount(int stream)
     {
-      string result = this.Get(StreamKind.Audio, (int)stream, "Channel(s)");
+      string result = Get(StreamKind.Audio, (int)stream, "Channel(s)");
       //LogMyFilms.Debug(string.Format("Audio Channel Count [{0}]: {1}", stream.ToString(), result));
       return result;
     }

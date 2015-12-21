@@ -20,17 +20,16 @@
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #endregion
-namespace MyFilmsPlugin.MyFilms.Utils
+
+using System;
+using System.Drawing;
+using System.IO;
+using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Windows.Forms;
+
+namespace MyFilmsPlugin.Utils
 {
-  using System;
-  using System.Drawing;
-  using System.IO;
-  using System.Reflection;
-  using System.Runtime.InteropServices;
-  using System.Windows.Forms;
-
-  using MyFilmsPlugin.MyFilms.MyFilmsGUI;
-
   public class ImageFast
   {
     [DllImport("gdiplus.dll", CharSet = CharSet.Unicode)]
@@ -63,7 +62,7 @@ namespace MyFilmsPlugin.MyFilms.Utils
       if (string.IsNullOrEmpty(sourceimage))
       {
         if (!System.IO.File.Exists(path.Substring(0, path.LastIndexOf("\\") + 1) + "Default.jpg"))
-          MediaPortal.Util.Picture.CreateThumbnail(MyFilms.conf.DefaultCover, path.Substring(0, path.LastIndexOf("\\") + 1) + "\\Default.jpg", MyFilms.cacheThumbWith, MyFilms.cacheThumbHeight, 0, MediaPortal.Util.Thumbs.SpeedThumbsLarge);
+          MediaPortal.Util.Picture.CreateThumbnail(MyFilms.MyFilmsGUI.MyFilms.conf.DefaultCover, path.Substring(0, path.LastIndexOf("\\") + 1) + "\\Default.jpg", MyFilms.MyFilmsGUI.MyFilms.cacheThumbWith, MyFilms.MyFilmsGUI.MyFilms.cacheThumbHeight, 0, MediaPortal.Util.Thumbs.SpeedThumbsLarge);
         loadimage = path.Substring(0, path.LastIndexOf("\\") + 1) + "\\Default.jpg";
       }
       else loadimage = sourceimage;

@@ -10,10 +10,10 @@ namespace Grabber_Interface
   {
 
     // Lists that contain all nodes
-    public List<ListNode> listGen = new List<ListNode>();
-    public List<ListNode> listSearch = new List<ListNode>();
-    public List<ListNode> listDetail = new List<ListNode>();
-    public List<ListNode> listMapping = new List<ListNode>();
+    public List<ListNode> ListGen = new List<ListNode>();
+    public List<ListNode> ListSearch = new List<ListNode>();
+    public List<ListNode> ListDetail = new List<ListNode>();
+    public List<ListNode> ListMapping = new List<ListNode>();
 
     // Contructeur
     public XmlConf(string configFile)
@@ -31,17 +31,17 @@ namespace Grabber_Interface
 
       string MyFilmsSampleGrabber = Config.GetDirectoryInfo(Config.Dir.Config) + @"\MyFilmsSampleGrabber.xml";
 
-      var _xDoc = new XmlDocument();
-      var _str = new StreamReader(MyFilmsSampleGrabber, Encoding.UTF8);
+      var xDoc = new XmlDocument();
+      var str = new StreamReader(MyFilmsSampleGrabber, Encoding.UTF8);
       //StreamReader _str = new StreamReader(_stream, System.Text.Encoding.UTF8);
-      string _xmlStrings = string.Empty;
+      string xmlStrings = string.Empty;
 
-      while (_str.Peek() > 0)
+      while (str.Peek() > 0)
       {
-        _xmlStrings += _str.ReadLine();
+        xmlStrings += str.ReadLine();
       }
 
-      File.WriteAllText(configFile, _xmlStrings, Encoding.UTF8);
+      File.WriteAllText(configFile, xmlStrings, Encoding.UTF8);
       Init(configFile);
     }
 
@@ -89,7 +89,7 @@ namespace Grabber_Interface
 
     /// <summary>
     /// Adds a new element in the specified list.
-    /// Parameter List : 1 for listGen, 2 for listSearch, 3 for listDetail
+    /// Parameter List : 1 for ListGen, 2 for ListSearch, 3 for ListDetail
     /// </summary>
     private void SetList(int list, XmlNode node)
     {
@@ -135,7 +135,7 @@ namespace Grabber_Interface
       switch (list)
       {
         case 1:
-          listGen.Add(new ListNode(node.Name,
+          ListGen.Add(new ListNode(node.Name,
             XmlConvert.DecodeName(node.InnerText),
             att1 == null ? null : XmlConvert.DecodeName(att1.InnerText),
             att2 == null ? null : XmlConvert.DecodeName(att2.InnerText),
@@ -147,7 +147,7 @@ namespace Grabber_Interface
 
           break;
         case 2:
-          listSearch.Add(new ListNode(node.Name,
+          ListSearch.Add(new ListNode(node.Name,
             XmlConvert.DecodeName(node.InnerText),
             att1 == null ? null : XmlConvert.DecodeName(att1.InnerText),
             att2 == null ? null : XmlConvert.DecodeName(att2.InnerText),
@@ -158,7 +158,7 @@ namespace Grabber_Interface
             att7 == null ? null : XmlConvert.DecodeName(att7.InnerText)));
           break;
         case 3:
-          listDetail.Add(new ListNode(node.Name,
+          ListDetail.Add(new ListNode(node.Name,
             XmlConvert.DecodeName(node.InnerText),
             att1 == null ? null : XmlConvert.DecodeName(att1.InnerText),
             att2 == null ? null : XmlConvert.DecodeName(att2.InnerText),
@@ -169,7 +169,7 @@ namespace Grabber_Interface
             att7 == null ? null : XmlConvert.DecodeName(att7.InnerText)));
           break;
         case 4:
-          listMapping.Add(new ListNode(node.Name,
+          ListMapping.Add(new ListNode(node.Name,
             XmlConvert.DecodeName(node.InnerText),
             att1 == null ? null : XmlConvert.DecodeName(att1.InnerText),
             att2 == null ? null : XmlConvert.DecodeName(att2.InnerText),
@@ -184,16 +184,16 @@ namespace Grabber_Interface
 
     /// <summary>
     /// Recherche un élément dans la liste et le retourne
-    /// Paramètre list : 1 pour listGen, 2 pour listSearch, 3 pour listDetail
+    /// Paramètre list : 1 pour ListGen, 2 pour ListSearch, 3 pour ListDetail
     /// </summary>
     public ListNode find(List<ListNode> list, string name)
     {
-      ListNode _l = list.Find(l => l._Tag.Equals(name));
-      if (_l != null)
-        return _l;
-      _l = new ListNode(name, "", "", "", "", "", "", "", "");
-      list.Add(_l);
-      return _l;
+      ListNode listNode = list.Find(l => l.Tag.Equals(name));
+      if (listNode != null)
+        return listNode;
+      listNode = new ListNode(name, "", "", "", "", "", "", "", "");
+      list.Add(listNode);
+      return listNode;
     }
 
   }
@@ -244,55 +244,55 @@ namespace Grabber_Interface
       this.param7 = param7;
     }
 
-    public string _Tag
+    public string Tag
     {
       get { return tag; }
       set { tag = value; }
     }
 
-    public string _Value
+    public string Value
     {
       get { return this.value; }
       set { this.value = value; }
     }
 
-    public string _Param1
+    public string Param1
     {
       get { return param1; }
       set { param1 = value; }
     }
 
-    public string _Param2
+    public string Param2
     {
       get { return param2; }
       set { param2 = value; }
     }
 
-    public string _Param3
+    public string Param3
     {
       get { return param3; }
       set { param3 = value; }
     }
 
-    public string _Param4
+    public string Param4
     {
       get { return param4; }
       set { param4 = value; }
     }
 
-    public string _Param5
+    public string Param5
     {
       get { return param5; }
       set { param5 = value; }
     }
 
-    public string _Param6
+    public string Param6
     {
       get { return param6; }
       set { param6 = value; }
     }
 
-    public string _Param7
+    public string Param7
     {
       get { return param7; }
       set { param7 = value; }

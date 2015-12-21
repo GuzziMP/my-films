@@ -47,7 +47,6 @@ class MPR
 
   public static string GetUniversalName(string localPath)
   {
-    // The return value.
     string retVal = null;
 
     // The pointer in memory to the structure.
@@ -187,7 +186,7 @@ namespace Grabber.Importer
 
     public bool IsLocked()
     {
-      return fileInfo != null && this.IsLocked(fileInfo);
+      return fileInfo != null && IsLocked(fileInfo);
     }
   };
 
@@ -287,7 +286,7 @@ namespace Grabber.Importer
       string completeFilePath = filePath;
       if (isFolder) completeFilePath = completeFilePath + "\\";
 
-      var watcherItemsRemove = this.m_modifiedFilesList.Where(watcherItem => watcherItem.m_sFullPathFileName.StartsWith(filePath) && watcherItem.m_type == type).ToList();
+      var watcherItemsRemove = m_modifiedFilesList.Where(watcherItem => watcherItem.m_sFullPathFileName.StartsWith(filePath) && watcherItem.m_type == type).ToList();
       foreach (WatcherItem watcherItem in watcherItemsRemove)
         m_modifiedFilesList.Remove(watcherItem);
     }
@@ -318,27 +317,27 @@ namespace Grabber.Importer
         {
           foreach (PathPair pathPair in filesToRemove)
           {
-            this.RemoveFromModifiedFilesList(pathPair.m_sFull_FileName, WatcherItemType.Added, false);
+            RemoveFromModifiedFilesList(pathPair.m_sFull_FileName, WatcherItemType.Added, false);
             m_modifiedFilesList.Add(new WatcherItem(pathPair, WatcherItemType.Deleted));
           }
           foreach (PathPair pathPair in filesToAdd)
           {
-            this.RemoveFromModifiedFilesList(pathPair.m_sFull_FileName, WatcherItemType.Deleted, false);
+            RemoveFromModifiedFilesList(pathPair.m_sFull_FileName, WatcherItemType.Deleted, false);
             m_modifiedFilesList.Add(new WatcherItem(pathPair, WatcherItemType.Added));
           }
         }
         else
         {
           String sOldExtention = Path.GetExtension(e.OldFullPath);
-          if (MediaPortal.Util.Utils.VideoExtensions.IndexOf(sOldExtention) != -1)
+          if (GrabUtil.Extensions.Contains(sOldExtention))
           {
-            this.RemoveFromModifiedFilesList(e.OldFullPath, WatcherItemType.Added, false);
+            RemoveFromModifiedFilesList(e.OldFullPath, WatcherItemType.Added, false);
             m_modifiedFilesList.Add(new WatcherItem(sender as FileSystemWatcher, e, true));
           }
           String sNewExtention = Path.GetExtension(e.FullPath);
-          if (MediaPortal.Util.Utils.VideoExtensions.IndexOf(sNewExtention) != -1)
+          if (GrabUtil.Extensions.Contains(sNewExtention))
           {
-            this.RemoveFromModifiedFilesList(e.FullPath, WatcherItemType.Deleted, false);
+            RemoveFromModifiedFilesList(e.FullPath, WatcherItemType.Deleted, false);
             m_modifiedFilesList.Add(new WatcherItem(sender as FileSystemWatcher, e, false));
           }
         }
@@ -399,7 +398,7 @@ namespace Grabber.Importer
           */
 
           String sExtention = Path.GetExtension(e.FullPath);
-          if (MediaPortal.Util.Utils.VideoExtensions.IndexOf(sExtention) != -1)
+          if (GrabUtil.Extensions.Contains(sExtention))
           {
             RemoveFromModifiedFilesList(e.FullPath, e.ChangeType == WatcherChangeTypes.Deleted ? WatcherItemType.Added : WatcherItemType.Deleted, false);
             m_modifiedFilesList.Add(new WatcherItem(sender as FileSystemWatcher, e));
@@ -522,7 +521,7 @@ namespace Grabber.Importer
             //outList.AddRange(m_modifiedFilesList);
             //m_modifiedFilesList.Clear();
             if (outList.Count > 0)
-              this.Worker.ReportProgress(0, outList);
+              Worker.ReportProgress(0, outList);
           }
         }
       }
@@ -597,9 +596,9 @@ namespace Grabber.Importer
     void DoFileScan(List<String> scannedFolders, ref List<PathPair> previousScan)
     {
       LogMyFilms.Info("File Watcher: Performing File Scan on Import Paths for changes");
-
+      bool isFullscreen = false;
       // Check if Fullscreen Video is active as this can cause stuttering/dropped frames
-      bool isFullscreen = (MediaPortal.GUI.Library.GUIWindowManager.ActiveWindow == (int)MediaPortal.GUI.Library.GUIWindow.Window.WINDOW_FULLSCREEN_VIDEO || MediaPortal.GUI.Library.GUIWindowManager.ActiveWindow == (int)MediaPortal.GUI.Library.GUIWindow.Window.WINDOW_TVFULLSCREEN);
+      // bool isFullscreen = (MediaPortal.GUI.Library.GUIWindowManager.ActiveWindow == (int)MediaPortal.GUI.Library.GUIWindow.Window.WINDOW_FULLSCREEN_VIDEO || MediaPortal.GUI.Library.GUIWindowManager.ActiveWindow == (int)MediaPortal.GUI.Library.GUIWindow.Window.WINDOW_TVFULLSCREEN);
       if (isFullscreen)
       {
         LogMyFilms.Debug("File Watcher: Fullscreen Video has been detected, aborting file scan");

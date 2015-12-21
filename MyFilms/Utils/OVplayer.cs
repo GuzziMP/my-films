@@ -238,7 +238,6 @@ namespace MyFilmsPlugin.Utils
           {
             return GetPreferredQualityOption(downloadOptions, "BadQ");
           }
-          break;
         case "BadQ":
           options = downloadOptions.Where(o => o.Key.Contains("320x240 | mp4"));
           if (options.Any())
@@ -250,7 +249,6 @@ namespace MyFilmsPlugin.Utils
             // use any available ...
             return GetPreferredQualityOption(downloadOptions, "");
           }
-          break;
 
         default:
           // return any trailer, take last in the list, assuming that is best quality

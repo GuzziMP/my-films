@@ -21,16 +21,14 @@
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #endregion
 
-namespace MyFilmsPlugin.MyFilms.CatalogConverter
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Text;
+using System.Xml;
+
+namespace MyFilmsPlugin.CatalogConverter
 {
-  using System;
-  using System.Collections.Generic;
-  using System.Text;
-  using System.Xml;
-  using System.Globalization;
-
-  using MyFilmsPlugin.MyFilms.MyFilmsGUI;
-
   class XbmcNfo
   {
     public Dictionary<string, string> ProfilerDict;
@@ -76,11 +74,10 @@ namespace MyFilmsPlugin.MyFilms.CatalogConverter
     {
       if (TitleDelim.Length == 0)
         TitleDelim = "\\";
-      string[] wStrStorage = MyFilms.conf.StrDirStor.Split(new Char[] { ';' }); //The movie folders configured in setup to contain the movies ...
+      string[] wStrStorage = MyFilms.MyFilmsGUI.MyFilms.conf.StrDirStor.Split(new Char[] { ';' }); //The movie folders configured in setup to contain the movies ...
       string WStrPath = System.IO.Path.GetDirectoryName(source);
       string destFile = WStrPath + "\\" + source.Substring(source.LastIndexOf(@"\") + 1, source.Length - source.LastIndexOf(@"\") - 5) + ".xml";
-      XmlTextWriter destXml = new XmlTextWriter(destFile, Encoding.Default);
-      destXml.Formatting = Formatting.Indented;
+      XmlTextWriter destXml = new XmlTextWriter(destFile, Encoding.Default) {Formatting = Formatting.Indented};
       destXml.WriteStartDocument();
       destXml.WriteStartElement("AntMovieCatalog");
       destXml.WriteStartElement("Catalog");

@@ -84,10 +84,7 @@ namespace MyFilmsPlugin.MyFilms.Utils
   /// </summary>
   public class XmlSettings : IDisposable
   {
-    public XmlSettings(string fileName)
-      : this(fileName, true) { }
-
-    public XmlSettings(string fileName, bool isCached)
+    public XmlSettings(string fileName, bool isCached = true)
     {
       xmlFileName = Path.GetFileName(fileName).ToLowerInvariant();
 

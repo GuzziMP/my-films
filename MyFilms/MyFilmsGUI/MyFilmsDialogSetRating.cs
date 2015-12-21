@@ -100,7 +100,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
       if (control == BtnOk)
       {
         PageDestroy();
-        this.Result = ResultCode.Close;
+        Result = ResultCode.Close;
         return;
       }
       if (control == BtnMin)
@@ -146,7 +146,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
       AllocResources();
       InitControls();
 
-      this.LblHeading.Label = strLine;
+      LblHeading.Label = strLine;
     }
 
     public void SetHeading(int iString)

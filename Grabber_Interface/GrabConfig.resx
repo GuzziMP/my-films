@@ -2458,7 +2458,7 @@ certain characters from searchtitle (e.g. MoviePilot doesn't accept
 "-" char in search).
 This field allows you to "clean" your search expression.
 
-This pattern can also be used to cleanup media file names to strip e.g. multi part extensions.
+This pattern can also be used to cleanup media file names to strip e.g. multi part Extensions.
 
 You can uise standard expression or regex, for regex don't forget to start with '#REGEX#'.</value>
   </data>

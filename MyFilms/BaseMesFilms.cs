@@ -151,7 +151,7 @@ namespace MyFilmsPlugin.MyFilms
 
       if (UpdateWorker != null && UpdateWorker.IsBusy)
       {
-        TraktQueueTimer.Change(BaseMesFilms.TrakthandlerTimeout, Timeout.Infinite); // retry in 20 seconds
+        TraktQueueTimer.Change(TrakthandlerTimeout, Timeout.Infinite); // retry in 20 seconds
         return;
       }
       UpdateWorker = new BackgroundWorker { WorkerSupportsCancellation = true, WorkerReportsProgress = false };
@@ -256,8 +256,7 @@ namespace MyFilmsPlugin.MyFilms
 
     private static void CreateEmptyDataFile(string datafile)
     {
-      var destXml = new XmlTextWriter(datafile, System.Text.Encoding.Default);
-      destXml.Formatting = Formatting.Indented;
+      XmlTextWriter destXml = new XmlTextWriter(datafile, System.Text.Encoding.Default) {Formatting = Formatting.Indented};
       destXml.WriteStartDocument();
       destXml.WriteStartElement("MyFilmsData");
       destXml.WriteStartElement("Persons");
@@ -633,12 +632,12 @@ namespace MyFilmsPlugin.MyFilms
             {
               var tmpconf = new MyFilmsGUI.Configuration(config, false, true, null);
               if (StrFileType != "0") tmpconf.EnhancedWatchedStatusHandling = true;
-              //if (!_lockDict.ContainsKey(tmpconf.StrFileXml))_lockDict.Add(tmpconf.StrFileXml, new ReaderWriterLockSlim());
+              //if (!_lockDict.ContainsKey(tmpconf.strFileXml))_lockDict.Add(tmpconf.strFileXml, new ReaderWriterLockSlim());
               //_lockDict["string"].EnterWriteLock();
               DataLock.EnterReadLock();
               try
               {
-                // dataExport.ReadXml(tmpconf.StrFileXml);
+                // dataExport.ReadXml(tmpconf.strFileXml);
                 const int numberOfTries = 8;
                 const int timeIntervalBetweenTries = 250;
                 var tries = 0;
@@ -1021,7 +1020,7 @@ namespace MyFilmsPlugin.MyFilms
           string CatalogTmp = xmlConfig.ReadXmlConfig("MyFilms", config, "AntCatalogTemp", string.Empty);
           string FileType = xmlConfig.ReadXmlConfig("MyFilms", config, "CatalogType", "0");
           bool TraktEnabled = xmlConfig.ReadXmlConfig("MyFilms", config, "AllowTraktSync", false);
-          string StrDfltSelect = xmlConfig.ReadXmlConfig("MyFilms", config, "StrDfltSelect", string.Empty);
+          string StrDfltSelect = xmlConfig.ReadXmlConfig("MyFilms", config, "strDfltSelect", string.Empty);
           bool EnhancedWatchedStatusHandling = xmlConfig.ReadXmlConfig("MyFilms", config, "EnhancedWatchedStatusHandling", false);
           string GlobalUnwatchedOnlyValue = xmlConfig.ReadXmlConfig("MyFilms", config, "GlobalUnwatchedOnlyValue", "false");
           string WatchedField = xmlConfig.ReadXmlConfig("MyFilms", config, "WatchedField", "Checked");
@@ -1417,24 +1416,16 @@ namespace MyFilmsPlugin.MyFilms
 
     #region Public static methods ...
 
-    public static DataRow[] ReadDataMovies(string StrDfltSelect, string StrSelect, string StrSort, string StrSortSens)
+    public static DataRow[] ReadDataMovies(string strDfltSelect, string strSelect, string strSort, string strSortSens, bool all = false, bool doextrasort = false)
     {
-      return ReadDataMovies(StrDfltSelect, StrSelect, StrSort, StrSortSens, false);
-    }
-    public static DataRow[] ReadDataMovies(string StrDfltSelect, string StrSelect, string StrSort, string StrSortSens, bool all)
-    {
-      return ReadDataMovies(StrDfltSelect, StrSelect, StrSort, StrSortSens, false, false);
-    }
-    public static DataRow[] ReadDataMovies(string StrDfltSelect, string StrSelect, string StrSort, string StrSortSens, bool all, bool doextrasort)
-    {
-      // LogMyFilms.Debug("ReadDataMovies() - StrDfltSelect            = '" + StrDfltSelect + "'");
-      // LogMyFilms.Debug("ReadDataMovies() - StrSelect                = '" + StrSelect + "'");
-      // LogMyFilms.Debug("ReadDataMovies() - StrSort/StrSortSens, all = '" + StrSort + "/" + StrSortSens + "', '" + all + "', cached = '" + (data != null) + "'");
-      // LogMyFilms.Debug("ReadDataMovies() - Expression               = '" + StrDfltSelect + StrSelect + "|" + StrSort + " " + StrSortSens + "', all = '" + all + "', extrasort = '" + doextrasort + "', cached = '" + (data != null) + "'");
-      LogMyFilms.Debug("ReadDataMovies() - Started with Expression = '" + StrDfltSelect + StrSelect + "|" + StrSort + " " + StrSortSens + "', all = '" + all + "', extrasort = '" + doextrasort + "', cached = '" + (data != null) + "'");
+      // LogMyFilms.Debug("ReadDataMovies() - strDfltSelect            = '" + strDfltSelect + "'");
+      // LogMyFilms.Debug("ReadDataMovies() - strSelect                = '" + strSelect + "'");
+      // LogMyFilms.Debug("ReadDataMovies() - strSort/strSortSens, all = '" + strSort + "/" + strSortSens + "', '" + all + "', cached = '" + (data != null) + "'");
+      // LogMyFilms.Debug("ReadDataMovies() - Expression               = '" + strDfltSelect + strSelect + "|" + strSort + " " + strSortSens + "', all = '" + all + "', extrasort = '" + doextrasort + "', cached = '" + (data != null) + "'");
+      LogMyFilms.Debug("ReadDataMovies() - Started with Expression = '" + strDfltSelect + strSelect + "|" + strSort + " " + strSortSens + "', all = '" + all + "', extrasort = '" + doextrasort + "', cached = '" + (data != null) + "'");
       var watchReadMovies = new Stopwatch(); watchReadMovies.Reset(); watchReadMovies.Start();
 
-      if (StrSelect.Length == 0) StrSelect = MyFilms.conf.StrTitle1 + " not like ''";
+      if (strSelect.Length == 0) strSelect = MyFilms.conf.StrTitle1 + " not like ''";
 
       if (data == null) InitData();
 
@@ -1442,72 +1433,72 @@ namespace MyFilmsPlugin.MyFilms
       try
       {
         // DB field replacements for sorting - currently only used for "Date" - in the future might be used for "DateFile" and "DateWatched" too ...
-        switch (StrSort)
+        switch (strSort)
         {
           case "Date":
-            StrSort = "DateAdded";
+            strSort = "DateAdded";
             LogMyFilms.Debug("ReadDataMovies() - Sort field replacement: Date -> DateAdded");
             break;
         }
-        movies = data.Movie.Select(StrDfltSelect + StrSelect, StrSort + " " + StrSortSens);
+        movies = data.Movie.Select(strDfltSelect + strSelect, strSort + " " + strSortSens);
         if (movies.Length == 0 && all)
         {
-          StrSelect = MyFilms.conf.StrTitle1 + " not like ''";
+          strSelect = MyFilms.conf.StrTitle1 + " not like ''";
           LogMyFilms.Debug("ReadDataMovies() - Switching to full list ...");
-          movies = data.Movie.Select(StrDfltSelect + StrSelect, StrSort + " " + StrSortSens);
+          movies = data.Movie.Select(strDfltSelect + strSelect, strSort + " " + strSortSens);
         }
         #region Additional sorting ...
         if (doextrasort)
         {
           var watchReadMoviesSort = new Stopwatch(); watchReadMoviesSort.Reset(); watchReadMoviesSort.Start();
-          MyFilms.FieldType fieldType = MyFilms.GetFieldType(StrSort);
-          Type columnType = MyFilms.GetColumnType(StrSort);
+          MyFilms.FieldType fieldType = MyFilms.GetFieldType(strSort);
+          Type columnType = MyFilms.GetColumnType(strSort);
           string strColumnType = (columnType == null) ? "<invalid>" : columnType.ToString();
 
-          if (!string.IsNullOrEmpty(StrSort) && columnType == typeof(string)) // don't apply special sorting on "native" types - only on string types !
+          if (!string.IsNullOrEmpty(strSort) && columnType == typeof(string)) // don't apply special sorting on "native" types - only on string types !
           {
-            LogMyFilms.Debug("ReadDataMovies() - sorting fieldtype = '" + fieldType + "', vartype = '" + strColumnType + "', sortfield = '" + StrSort + "', sortascending = '" + StrSortSens + "'");
+            LogMyFilms.Debug("ReadDataMovies() - sorting fieldtype = '" + fieldType + "', vartype = '" + strColumnType + "', sortfield = '" + strSort + "', sortascending = '" + strSortSens + "'");
             Watch.Reset(); Watch.Start();
             switch (fieldType)
             {
               case MyFilms.FieldType.AlphaNumeric:
-                if (StrSortSens == " ASC")
+                if (strSortSens == " ASC")
                 {
                   IComparer myComparer = new MyFilms.AlphanumComparatorFast();
-                  Array.Sort<DataRow>(movies, (a, b) => myComparer.Compare(a[StrSort], b[StrSort]));
+                  Array.Sort<DataRow>(movies, (a, b) => myComparer.Compare(a[strSort], b[strSort]));
                 }
                 else
                 {
                   IComparer myComparer = new MyFilms.myReverserAlphanumComparatorFast();
-                  Array.Sort<DataRow>(movies, (a, b) => myComparer.Compare(a[StrSort], b[StrSort]));
+                  Array.Sort<DataRow>(movies, (a, b) => myComparer.Compare(a[strSort], b[strSort]));
                   //r.Reverse();
                 }
                 break;
               #region Date and Decimal types are never used, as we do additional sorting for alphanumeric (string) values only !
               case MyFilms.FieldType.Date:
-                if (StrSortSens == " ASC")
+                if (strSortSens == " ASC")
                 {
                   IComparer myComparer = new MyFilms.myDateComparer();
-                  Array.Sort<DataRow>(movies, (a, b) => myComparer.Compare(a[StrSort], b[StrSort]));
+                  Array.Sort<DataRow>(movies, (a, b) => myComparer.Compare(a[strSort], b[strSort]));
                 }
                 else
                 {
                   IComparer myComparer = new MyFilms.myDateReverseComparer();
-                  Array.Sort<DataRow>(movies, (a, b) => myComparer.Compare(a[StrSort], b[StrSort]));
+                  Array.Sort<DataRow>(movies, (a, b) => myComparer.Compare(a[strSort], b[strSort]));
                   //IComparer myComparer = new myDateComparer();
-                  //Array.Sort<DataRow>(r, (a, b) => myComparer.Compare(b[StrSort], a[StrSort]));
+                  //Array.Sort<DataRow>(r, (a, b) => myComparer.Compare(b[strSort], a[strSort]));
                 }
                 break;
               case MyFilms.FieldType.Decimal:
-                if (StrSortSens == " ASC")
+                if (strSortSens == " ASC")
                 {
                   IComparer myComparer = new MyFilms.myRatingComparer();
-                  Array.Sort<DataRow>(movies, (a, b) => myComparer.Compare(a[StrSort], b[StrSort]));
+                  Array.Sort<DataRow>(movies, (a, b) => myComparer.Compare(a[strSort], b[strSort]));
                 }
                 else
                 {
                   IComparer myComparer = new MyFilms.myRatingComparer();
-                  Array.Sort<DataRow>(movies, (a, b) => myComparer.Compare(b[StrSort], a[StrSort]));
+                  Array.Sort<DataRow>(movies, (a, b) => myComparer.Compare(b[strSort], a[strSort]));
                   //r.Reverse();
                 }
                 break;
@@ -1517,7 +1508,7 @@ namespace MyFilmsPlugin.MyFilms
           }
           else
           {
-            LogMyFilms.Debug("ReadDataMovies() - additional sorting skipped - sorting fieldtype = '" + fieldType + "', vartype = '" + strColumnType + "', sortfield = '" + StrSortSens + "', sortascending = '" + StrSort + "'");
+            LogMyFilms.Debug("ReadDataMovies() - additional sorting skipped - sorting fieldtype = '" + fieldType + "', vartype = '" + strColumnType + "', sortfield = '" + strSortSens + "', sortascending = '" + strSort + "'");
           }
         }
         #endregion
@@ -1532,17 +1523,17 @@ namespace MyFilmsPlugin.MyFilms
       return movies;
     }
 
-    public static void LoadMyFilms(string StrFileXml)
+    public static void LoadMyFilms(string strFileXml)
     {
-      if (!File.Exists(StrFileXml))
+      if (!File.Exists(strFileXml))
       {
-        LogMyFilms.Error(string.Format("LoadMyFilms() - the DB file {0} does not exist !", StrFileXml));
-        throw new Exception(string.Format("The DB file {0} does not exist !", StrFileXml));
+        LogMyFilms.Error(string.Format("LoadMyFilms() - the DB file {0} does not exist !", strFileXml));
+        throw new Exception(string.Format("The DB file {0} does not exist !", strFileXml));
       }
       var watchReadMovies = new Stopwatch(); watchReadMovies.Reset(); watchReadMovies.Start();
-      var success = LoadMyFilmsFromDisk(StrFileXml);
+      var success = LoadMyFilmsFromDisk(strFileXml);
       watchReadMovies.Stop();
-      LogMyFilms.Debug("LoadMyFilms() - Finished ... (success = '" + success + "') (" + (watchReadMovies.ElapsedMilliseconds) + " ms)");
+      LogMyFilms.Debug("LoadMyFilms() - Finished ... (success = '" + success + "') (" + watchReadMovies.ElapsedMilliseconds + " ms)");
     }
 
     public static void UnloadMyFilms()
@@ -1771,8 +1762,8 @@ namespace MyFilmsPlugin.MyFilms
         string[] roleSeparator = { string.Empty, string.Empty, string.Empty, string.Empty, string.Empty };
         //bool TraktEnabled = XmlConfig.ReadXmlConfig("MyFilms", config, "AllowTraktSync", false);
         //bool RecentAddedAPIEnabled = XmlConfig.ReadXmlConfig("MyFilms", config, "AllowRecentAddedAPI", false);
-        string strDfltSelect = xmlConfig.ReadXmlConfig("MyFilms", config, "StrDfltSelect", string.Empty);
-        string strSelect = xmlConfig.ReadXmlConfig("MyFilms", config, "StrSelect", string.Empty);
+        string strDfltSelect = xmlConfig.ReadXmlConfig("MyFilms", config, "strDfltSelect", string.Empty);
+        string strSelect = xmlConfig.ReadXmlConfig("MyFilms", config, "strSelect", string.Empty);
         string strTitle1 = xmlConfig.ReadXmlConfig("MyFilms", config, "AntTitle1", string.Empty);
 
 
@@ -1832,12 +1823,10 @@ namespace MyFilmsPlugin.MyFilms
               ArrayList wtab = BaseSearchString(champselect, listSeparator, roleSeparator);
               for (int wi = 0; wi < wtab.Count; wi++)
               {
-                wTableau.Add(wtab[wi].ToString().Trim());
+                wTableau.Add(wi.ToString().Trim());
               }
             }
-            catch (Exception)
-            {
-            }
+            catch (Exception) { }
           }
           wTableau.Sort(0, wTableau.Count, null);
 
@@ -1873,32 +1862,13 @@ namespace MyFilmsPlugin.MyFilms
     #region API for Most Recent movies
 
     /// <summary>
-    /// returns the 3 most recent movies based on conditions
-    /// </summary>        
-    public static List<MFMovie> GetMostRecent(MostRecentType type)
-    {
-      return GetMostRecent(type, 30, 3);
-    }
-
-    /// <summary>
-    /// returns the most recent movies based on conditions
-    /// </summary>
-    /// <param name="type">most recent type</param>
-    /// <param name="days">number of days to look back in database</param>
-    /// <param name="limit">number of results to return</param>        
-    public static List<MFMovie> GetMostRecent(MostRecentType type, int days, int limit)
-    {
-      return GetMostRecent(type, days, limit, false);
-    }
-
-    /// <summary>
     /// returns the most recent movies based on conditions
     /// </summary>
     /// <param name="type">most recent type</param>
     /// <param name="days">number of days to look back in database</param>
     /// <param name="limit">number of results to return</param>
     /// <param name="unwatchedOnly">only get unwatched episodes (only used with recent added type)</param>
-    public static List<MFMovie> GetMostRecent(MostRecentType type, int days, int limit, bool unwatchedOnly)
+    public static List<MFMovie> GetMostRecent(MostRecentType type, int days = 30, int limit = 3, bool unwatchedOnly = false)
     {
       string enumtype = Enum.GetName(typeof(MostRecentType), type);
       LogMyFilms.Debug("GetMostRecent() - Called with type = '" + enumtype + "', days = '" + days + "', limit = '" + limit + "', unwatchedonly = '" + unwatchedOnly + "'");

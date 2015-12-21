@@ -21,6 +21,9 @@
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #endregion
 
+using MyFilmsPlugin.CatalogConverter;
+using MyFilmsPlugin.Utils;
+
 namespace MyFilmsPlugin.MyFilms.Configuration
 {
   using System;
@@ -443,7 +446,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
 
     private void ButImg_Click(object sender, EventArgs e)
     {
-      this.folderBrowserDialog1.SelectedPath = !String.IsNullOrEmpty(this.MesFilmsImg.Text) ? this.MesFilmsImg.Text : String.Empty;
+      folderBrowserDialog1.SelectedPath = !String.IsNullOrEmpty(MesFilmsImg.Text) ? MesFilmsImg.Text : String.Empty;
       folderBrowserDialog1.Description = "Select Cover Images Path";
       if (folderBrowserDialog1.ShowDialog(this) == DialogResult.OK)
       {
@@ -506,7 +509,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
         return;
       }
 
-      foreach (MFview.ViewRow viewRow in Enumerable.Where(this.MyCustomViews.View, viewRow => string.IsNullOrEmpty(viewRow.DBfield)))
+      foreach (MFview.ViewRow viewRow in Enumerable.Where(MyCustomViews.View, viewRow => string.IsNullOrEmpty(viewRow.DBfield)))
       {
         MessageBox.Show("No DB field is set for Custom View '" + viewRow.Label + "' - this is required - delete that view or add missing config!", "Configuration", MessageBoxButtons.OK, MessageBoxIcon.Stop);
         return;
@@ -1005,7 +1008,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
       if (CatalogType.SelectedIndex == 1)
       {
         XmlConfig.WriteXmlConfig("MyFilms", Config_Name.Text, "OnlyFile", chkDVDprofilerOnlyFile.Checked);
-        if (this.chkDVDprofilerMergeWithGenreField.Checked)
+        if (chkDVDprofilerMergeWithGenreField.Checked)
           XmlConfig.WriteXmlConfig("MyFilms", Config_Name.Text, "DVDPTagField", "Category");
         else
           XmlConfig.RemoveEntry("MyFilms", Config_Name.Text, "DVDPTagField");
@@ -1037,7 +1040,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
       XmlConfig.WriteXmlConfig("MyFilms", Config_Name.Text, string.Format("AntViewIndex{0}", index), viewRow.Index);
       XmlConfig.WriteXmlConfig("MyFilms", Config_Name.Text, string.Format("AntViewSortFieldViewType{0}", index), viewRow.SortFieldViewType);
       XmlConfig.WriteXmlConfig("MyFilms", Config_Name.Text, string.Format("AntViewSortDirectionView{0}", index), viewRow.SortDirectionView);
-      XmlConfig.WriteXmlConfig("MyFilms", Config_Name.Text, string.Format("AntViewLayoutView{0}", index), this.GetLayoutFromName(viewRow.LayoutView));
+      XmlConfig.WriteXmlConfig("MyFilms", Config_Name.Text, string.Format("AntViewLayoutView{0}", index), GetLayoutFromName(viewRow.LayoutView));
     }
 
     private void RemoveView(int index)

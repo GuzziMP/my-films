@@ -185,7 +185,7 @@ namespace Grabber
         if (!File.Exists(outputThumb)) // No thumb in share although it should be there
         {
           LogMyFilms.Debug("VideoThumbCreator: No thumb in share {0} - trying to create one with arguments: {1}", outputThumb, extractorArgs);
-          Success = Utils.StartProcess(ExtractorPath, extractorArgs, tempPath, 60000, true, GetMtnConditions());
+          Success = GrabUtil.StartProcess(ExtractorPath, extractorArgs, tempPath, 60000, true, GetMtnConditions());
           if (Success)
           {
             LogMyFilms.Debug("First try successful !");
@@ -195,7 +195,7 @@ namespace Grabber
             // Maybe the pre-gap was too large or not enough sharp & light scenes could be caught
             Thread.Sleep(250);
             LogMyFilms.Debug("First try failed - trying fallback with arguments: {0}", extractorFallbackArgs);
-            Success = Utils.StartProcess(ExtractorPath, extractorFallbackArgs, tempPath, 120000, true, GetMtnConditions());
+            Success = GrabUtil.StartProcess(ExtractorPath, extractorFallbackArgs, tempPath, 120000, true, GetMtnConditions());
             if (Success)
             {
               LogMyFilms.Debug("Second try successful !");
@@ -225,7 +225,7 @@ namespace Grabber
             }
           }
           Thread.Sleep(250); // give the system a few IO cycles
-          Utils.KillProcess(Path.ChangeExtension(ExtractApp, null)); // make sure there's no process hanging
+          GrabUtil.KillProcess(Path.ChangeExtension(ExtractApp, null)); // make sure there's no process hanging
           try
           {
             // remove the _s which mtn appends to its files
@@ -395,7 +395,7 @@ namespace Grabber
             || (!LeaveShareThumb && !File.Exists(aThumbPath))) // No thumb cached and no chance to find it in share
         {
           //LogMyFilms.Debug("VideoThumbCreator: No thumb in share {0} - trying to create one with arguments: {1}", ShareThumb, ExtractorArgs);
-          success = Utils.StartProcess(ExtractorPath, extractorArgs, tempPath, 45000, true, GetMtnConditions());
+          success = GrabUtil.StartProcess(ExtractorPath, extractorArgs, tempPath, 45000, true, GetMtnConditions());
           if (success)
           {
             LogMyFilms.Debug("First try successful !");
@@ -404,7 +404,7 @@ namespace Grabber
           {
             // Maybe the pre-gap was too large or not enough sharp & light scenes could be caught
             Thread.Sleep(250);
-            success = Utils.StartProcess(ExtractorPath, extractorFallbackArgs, tempPath, 90000, true, GetMtnConditions());
+            success = GrabUtil.StartProcess(ExtractorPath, extractorFallbackArgs, tempPath, 90000, true, GetMtnConditions());
             if (success)
             {
               LogMyFilms.Debug("Second try successful !");
@@ -417,7 +417,7 @@ namespace Grabber
           // give the system a few IO cycles
           Thread.Sleep(250);
           // make sure there's no process hanging
-          Utils.KillProcess(Path.ChangeExtension(ExtractApp, null));
+          GrabUtil.KillProcess(Path.ChangeExtension(ExtractApp, null));
           try
           {
             // remove the _s which mdn appends to its files
@@ -506,9 +506,9 @@ namespace Grabber
 
     #region Private methods
 
-    private static Utils.ProcessFailedConditions GetMtnConditions()
+    private static GrabUtil.ProcessFailedConditions GetMtnConditions()
     {
-      var mtnStat = new Utils.ProcessFailedConditions();
+      var mtnStat = new GrabUtil.ProcessFailedConditions();
       // The input file is shorter than pre- and post-recording time
       mtnStat.AddCriticalOutString("net duration after -B & -E is negative");
       mtnStat.AddCriticalOutString("all rows're skipped?");

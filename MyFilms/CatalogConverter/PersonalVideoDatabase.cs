@@ -21,16 +21,15 @@
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #endregion
 
-namespace MyFilmsPlugin.MyFilms.CatalogConverter
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Text;
+using System.Xml;
+using Grabber;
+
+namespace MyFilmsPlugin.CatalogConverter
 {
-  using System;
-  using System.Collections.Generic;
-  using System.Text;
-  using System.Xml;
-  using System.Globalization;
-
-  using Grabber;
-
   class PersonalVideoDatabase
   {
     public Dictionary<string, string> ProfilerDict;
@@ -81,8 +80,7 @@ namespace MyFilmsPlugin.MyFilms.CatalogConverter
         TitleDelim = "\\";
       string WStrPath = System.IO.Path.GetDirectoryName(source);
       string destFile = WStrPath + "\\" + source.Substring(source.LastIndexOf(@"\") + 1, source.Length - source.LastIndexOf(@"\") - 5) + "_tmp.xml";
-      XmlTextWriter destXml = new XmlTextWriter(destFile, Encoding.Default);
-      destXml.Formatting = Formatting.Indented;
+      XmlTextWriter destXml = new XmlTextWriter(destFile, Encoding.Default) {Formatting = Formatting.Indented};
       destXml.WriteStartDocument();
       destXml.WriteStartElement("AntMovieCatalog");
       destXml.WriteStartElement("Catalog");

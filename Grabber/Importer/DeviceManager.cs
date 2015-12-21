@@ -504,7 +504,7 @@ namespace Grabber.Importer
 
     public static bool IsOpticalDrive(string path)
     {
-      DriveInfo driveInfo = DeviceManager.GetDriveInfo(path);
+      DriveInfo driveInfo = GetDriveInfo(path);
       return (driveInfo != null && driveInfo.IsOptical());
     }
 

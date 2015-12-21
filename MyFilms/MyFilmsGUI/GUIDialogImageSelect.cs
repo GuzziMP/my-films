@@ -119,8 +119,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
     public new void Add(string strLabel)
     {
       int iItemIndex = ListItems.Count + 1;
-      GUIListItem pItem = new GUIListItem();
-      pItem.ItemId = iItemIndex;
+      GUIListItem pItem = new GUIListItem {ItemId = iItemIndex};
       ListItems.Add(pItem);
 
       base.Add(strLabel);

@@ -47,12 +47,12 @@ namespace ShareWatcherHelper
     public DelayedEvent(FileSystemEventArgs args)
     {
       Delayed = false;
-      this._args = args;
+      _args = args;
     }
 
     public FileSystemEventArgs Args
     {
-      get { return this._args; }
+      get { return _args; }
     }
 
     public bool Delayed { get; set; }
@@ -66,8 +66,8 @@ namespace ShareWatcherHelper
       }
       else
       {
-        FileSystemEventArgs eO1 = this._args;
-        RenamedEventArgs reO1 = this._args as RenamedEventArgs;
+        FileSystemEventArgs eO1 = _args;
+        RenamedEventArgs reO1 = _args as RenamedEventArgs;
         FileSystemEventArgs eO2 = delayedEvent._args;
         RenamedEventArgs reO2 = delayedEvent._args as RenamedEventArgs;
         // The events are equal only if they are of the same type (reO1 and reO2
@@ -114,20 +114,20 @@ namespace ShareWatcherHelper
 
     public DelayedFileSystemWatcher()
     {
-      this._fileSystemWatcher = new FileSystemWatcher();
-      this.Initialize();
+      _fileSystemWatcher = new FileSystemWatcher();
+      Initialize();
     }
 
     public DelayedFileSystemWatcher(string path)
     {
-      this._fileSystemWatcher = new FileSystemWatcher(path);
-      this.Initialize();
+      _fileSystemWatcher = new FileSystemWatcher(path);
+      Initialize();
     }
 
     public DelayedFileSystemWatcher(string path, string filter)
     {
-      this._fileSystemWatcher = new FileSystemWatcher(path, filter);
-      this.Initialize();
+      _fileSystemWatcher = new FileSystemWatcher(path, filter);
+      Initialize();
     }
 
     // Summary:
@@ -139,18 +139,18 @@ namespace ShareWatcherHelper
     //     is true.
     public bool EnableRaisingEvents
     {
-      get { return this._fileSystemWatcher.EnableRaisingEvents; }
+      get { return _fileSystemWatcher.EnableRaisingEvents; }
       set
       {
-        this._fileSystemWatcher.EnableRaisingEvents = value;
+        _fileSystemWatcher.EnableRaisingEvents = value;
         if (value)
         {
-          this._serverTimer.Start();
+          _serverTimer.Start();
         }
         else
         {
-          this._serverTimer.Stop();
-          this._events.Clear();
+          _serverTimer.Stop();
+          _events.Clear();
         }
       }
     }
@@ -164,8 +164,8 @@ namespace ShareWatcherHelper
     //     The filter string. The default is "*.*" (Watches all files.)
     public string Filter
     {
-      get { return this._fileSystemWatcher.Filter; }
-      set { this._fileSystemWatcher.Filter = value; }
+      get { return _fileSystemWatcher.Filter; }
+      set { _fileSystemWatcher.Filter = value; }
     }
 
     //
@@ -178,8 +178,8 @@ namespace ShareWatcherHelper
     //     is false.
     public bool IncludeSubdirectories
     {
-      get { return this._fileSystemWatcher.IncludeSubdirectories; }
-      set { this._fileSystemWatcher.IncludeSubdirectories = value; }
+      get { return _fileSystemWatcher.IncludeSubdirectories; }
+      set { _fileSystemWatcher.IncludeSubdirectories = value; }
     }
 
     //
@@ -190,8 +190,8 @@ namespace ShareWatcherHelper
     //     The internal buffer size. The default is 8192 (8K).
     public int InternalBufferSize
     {
-      get { return this._fileSystemWatcher.InternalBufferSize; }
-      set { this._fileSystemWatcher.InternalBufferSize = value; }
+      get { return _fileSystemWatcher.InternalBufferSize; }
+      set { _fileSystemWatcher.InternalBufferSize = value; }
     }
 
     //
@@ -208,8 +208,8 @@ namespace ShareWatcherHelper
     //     values.
     public NotifyFilters NotifyFilter
     {
-      get { return this._fileSystemWatcher.NotifyFilter; }
-      set { this._fileSystemWatcher.NotifyFilter = value; }
+      get { return _fileSystemWatcher.NotifyFilter; }
+      set { _fileSystemWatcher.NotifyFilter = value; }
     }
 
     //
@@ -225,8 +225,8 @@ namespace ShareWatcherHelper
     //     invalid path characters.
     public string Path
     {
-      get { return this._fileSystemWatcher.Path; }
-      set { this._fileSystemWatcher.Path = value; }
+      get { return _fileSystemWatcher.Path; }
+      set { _fileSystemWatcher.Path = value; }
     }
 
     //
@@ -240,8 +240,8 @@ namespace ShareWatcherHelper
     //     The default is null.
     public ISynchronizeInvoke SynchronizingObject
     {
-      get { return this._fileSystemWatcher.SynchronizingObject; }
-      set { this._fileSystemWatcher.SynchronizingObject = value; }
+      get { return _fileSystemWatcher.SynchronizingObject; }
+      set { _fileSystemWatcher.SynchronizingObject = value; }
     }
 
     // Summary:
@@ -275,7 +275,7 @@ namespace ShareWatcherHelper
     //     or used by another component. The initialization occurs at run time.
     public void BeginInit()
     {
-      this._fileSystemWatcher.BeginInit();
+      _fileSystemWatcher.BeginInit();
     }
 
     //
@@ -289,7 +289,7 @@ namespace ShareWatcherHelper
     //     unmanaged resources.
     public void Dispose()
     {
-      this.Uninitialize();
+      Uninitialize();
     }
 
     //
@@ -298,7 +298,7 @@ namespace ShareWatcherHelper
     //     used by another component. The initialization occurs at run time.
     public void EndInit()
     {
-      this._fileSystemWatcher.EndInit();
+      _fileSystemWatcher.EndInit();
     }
 
     //
@@ -310,9 +310,9 @@ namespace ShareWatcherHelper
     //     A System.IO.FileSystemEventArgs that contains the event data.
     protected void OnChanged(FileSystemEventArgs e)
     {
-      if (this.Changed != null)
+      if (Changed != null)
       {
-        this.Changed(this, e);
+        Changed(this, e);
       }
     }
 
@@ -325,9 +325,9 @@ namespace ShareWatcherHelper
     //     A System.IO.FileSystemEventArgs that contains the event data.
     protected void OnCreated(FileSystemEventArgs e)
     {
-      if (this.Created != null)
+      if (Created != null)
       {
-        this.Created(this, e);
+        Created(this, e);
       }
     }
 
@@ -340,9 +340,9 @@ namespace ShareWatcherHelper
     //     A System.IO.FileSystemEventArgs that contains the event data.
     protected void OnDeleted(FileSystemEventArgs e)
     {
-      if (this.Deleted != null)
+      if (Deleted != null)
       {
-        this.Deleted(this, e);
+        Deleted(this, e);
       }
     }
 
@@ -355,9 +355,9 @@ namespace ShareWatcherHelper
     //     An System.IO.ErrorEventArgs that contains the event data.
     protected void OnError(ErrorEventArgs e)
     {
-      if (this.Error != null)
+      if (Error != null)
       {
-        this.Error(this, e);
+        Error(this, e);
       }
     }
 
@@ -370,9 +370,9 @@ namespace ShareWatcherHelper
     //     A System.IO.RenamedEventArgs that contains the event data.
     protected void OnRenamed(RenamedEventArgs e)
     {
-      if (this.Renamed != null)
+      if (Renamed != null)
       {
-        this.Renamed(this, e);
+        Renamed(this, e);
       }
     }
 
@@ -422,43 +422,43 @@ namespace ShareWatcherHelper
 
     private void Initialize()
     {
-      this._events = ArrayList.Synchronized(new ArrayList(32));
-      this._fileSystemWatcher.Changed += new FileSystemEventHandler(this.FileSystemEventHandler);
-      this._fileSystemWatcher.Created += new FileSystemEventHandler(this.FileSystemEventHandler);
-      this._fileSystemWatcher.Deleted += new FileSystemEventHandler(this.FileSystemEventHandler);
-      this._fileSystemWatcher.Error += new ErrorEventHandler(this.ErrorEventHandler);
-      this._fileSystemWatcher.Renamed += new RenamedEventHandler(this.RenamedEventHandler);
-      this._serverTimer = new Timer(this._msConsolidationInterval);
-      this._serverTimer.Elapsed += new ElapsedEventHandler(this.ElapsedEventHandler);
-      this._serverTimer.AutoReset = true;
-      this._serverTimer.Enabled = this._fileSystemWatcher.EnableRaisingEvents;
+      _events = ArrayList.Synchronized(new ArrayList(32));
+      _fileSystemWatcher.Changed += new FileSystemEventHandler(FileSystemEventHandler);
+      _fileSystemWatcher.Created += new FileSystemEventHandler(FileSystemEventHandler);
+      _fileSystemWatcher.Deleted += new FileSystemEventHandler(FileSystemEventHandler);
+      _fileSystemWatcher.Error += new ErrorEventHandler(ErrorEventHandler);
+      _fileSystemWatcher.Renamed += new RenamedEventHandler(RenamedEventHandler);
+      _serverTimer = new Timer(_msConsolidationInterval);
+      _serverTimer.Elapsed += new ElapsedEventHandler(ElapsedEventHandler);
+      _serverTimer.AutoReset = true;
+      _serverTimer.Enabled = _fileSystemWatcher.EnableRaisingEvents;
     }
 
     private void Uninitialize()
     {
-      if (this._fileSystemWatcher != null)
+      if (_fileSystemWatcher != null)
       {
-        this._fileSystemWatcher.Dispose();
+        _fileSystemWatcher.Dispose();
       }
-      if (this._serverTimer != null)
+      if (_serverTimer != null)
       {
-        this._serverTimer.Dispose();
+        _serverTimer.Dispose();
       }
     }
 
     private void FileSystemEventHandler(object sender, FileSystemEventArgs e)
     {
-      this._events.Add(new DelayedEvent(e));
+      _events.Add(new DelayedEvent(e));
     }
 
     private void ErrorEventHandler(object sender, ErrorEventArgs e)
     {
-      this.OnError(e);
+      OnError(e);
     }
 
     private void RenamedEventHandler(object sender, RenamedEventArgs e)
     {
-      this._events.Add(new DelayedEvent(e));
+      _events.Add(new DelayedEvent(e));
     }
 
     private void ElapsedEventHandler(Object sender, ElapsedEventArgs e)
@@ -466,36 +466,36 @@ namespace ShareWatcherHelper
       // We don't fire the events inside the lock. We will queue them here until
       // the code exits the locks.
       Queue eventsToBeFired = null;
-      if (Monitor.TryEnter(this._enterThread))
+      if (Monitor.TryEnter(_enterThread))
       {
         // Only one thread at a time is processing the events                
         try
         {
           eventsToBeFired = new Queue(32);
           // Lock the collection while processing the events
-          lock (this._events.SyncRoot)
+          lock (_events.SyncRoot)
           {
             DelayedEvent current = null;
-            for (int i = 0; i < this._events.Count; i++)
+            for (int i = 0; i < _events.Count; i++)
             {
-              current = this._events[i] as DelayedEvent;
+              current = _events[i] as DelayedEvent;
               if (current.Delayed)
               {
                 // This event has been delayed already so we can fire it
                 // We just need to remove any duplicates
-                for (int j = i + 1; j < this._events.Count; j++)
+                for (int j = i + 1; j < _events.Count; j++)
                 {
-                  if (current.IsDuplicate(this._events[j]))
+                  if (current.IsDuplicate(_events[j]))
                   {
                     // Removing later duplicates
-                    this._events.RemoveAt(j);
+                    _events.RemoveAt(j);
                     j--; // Don't skip next event
                   }
                 }
                 // Add the event to the list of events to be fired
                 eventsToBeFired.Enqueue(current);
                 // Remove it from the current list
-                this._events.RemoveAt(i);
+                _events.RemoveAt(i);
                 i--; // Don't skip next event
               }
               else
@@ -509,22 +509,22 @@ namespace ShareWatcherHelper
         }
         finally
         {
-          Monitor.Exit(this._enterThread);
+          Monitor.Exit(_enterThread);
         }
       }
       // else - this timer event was skipped, processing will happen during the next timer event
 
       // Now fire all the events if any events are in eventsToBeFired
-      this.RaiseEvents(eventsToBeFired);
+      RaiseEvents(eventsToBeFired);
     }
 
     public int ConsolidationInterval
     {
-      get { return this._msConsolidationInterval; }
+      get { return _msConsolidationInterval; }
       set
       {
-        this._msConsolidationInterval = value;
-        this._serverTimer.Interval = value;
+        _msConsolidationInterval = value;
+        _serverTimer.Interval = value;
       }
     }
 
@@ -539,16 +539,16 @@ namespace ShareWatcherHelper
           switch (de.Args.ChangeType)
           {
             case WatcherChangeTypes.Changed:
-              this.OnChanged(de.Args);
+              OnChanged(de.Args);
               break;
             case WatcherChangeTypes.Created:
-              this.OnCreated(de.Args);
+              OnCreated(de.Args);
               break;
             case WatcherChangeTypes.Deleted:
-              this.OnDeleted(de.Args);
+              OnDeleted(de.Args);
               break;
             case WatcherChangeTypes.Renamed:
-              this.OnRenamed(de.Args as RenamedEventArgs);
+              OnRenamed(de.Args as RenamedEventArgs);
               break;
           }
         }

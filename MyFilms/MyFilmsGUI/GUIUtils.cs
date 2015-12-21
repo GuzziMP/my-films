@@ -200,7 +200,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
     /// <returns>True if yes was clicked, False if no was clicked</returns>
     public static bool ShowYesNoDialog(string heading, string lines)
     {
-      return ShowCustomYesNoDialog(heading, lines, null, null, false);
+      return ShowCustomYesNoDialog(heading, lines, null, null);
     }
 
     /// <summary>
@@ -217,26 +217,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
     /// This method may become obsolete in the future if media portal adds more dialogs.
     /// </summary>
     /// <returns>True if yes was clicked, False if no was clicked</returns>
-    public static bool ShowCustomYesNoDialog(string heading, string lines, string yesLabel, string noLabel)
-    {
-      return ShowCustomYesNoDialog(heading, lines, yesLabel, noLabel, false, 0);
-    }
-
-    /// <summary>
-    /// Displays a yes/no dialog with custom labels for the buttons.
-    /// This method may become obsolete in the future if media portal adds more dialogs.
-    /// </summary>
-    /// <returns>True if yes was clicked, False if no was clicked</returns>
-    public static bool ShowCustomYesNoDialog(string heading, string lines, string yesLabel, string noLabel, bool defaultYes)
-    {
-      return ShowCustomYesNoDialog(heading, lines, yesLabel, noLabel, defaultYes);
-    }
-    /// <summary>
-    /// Displays a yes/no dialog with custom labels for the buttons.
-    /// This method may become obsolete in the future if media portal adds more dialogs.
-    /// </summary>
-    /// <returns>True if yes was clicked, False if no was clicked</returns>
-    public static bool ShowCustomYesNoDialog(string heading, string lines, string yesLabel, string noLabel, bool defaultYes, int timeout)
+    public static bool ShowCustomYesNoDialog(string heading, string lines, string yesLabel, string noLabel, bool defaultYes = false, int timeout = 0)
     {
       bool result = false;
       if (GUIGraphicsContext.form.InvokeRequired)
@@ -564,11 +545,13 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
 
         foreach (MultiSelectionItem multiSelectionItem in items)
         {
-          GUIListItem item = new GUIListItem();
-          item.Label = multiSelectionItem.ItemTitle;
-          item.Label2 = multiSelectionItem.ItemTitle2;
-          item.MusicTag = multiSelectionItem.Tag;
-          item.Selected = multiSelectionItem.Selected;
+          GUIListItem item = new GUIListItem
+          {
+            Label = multiSelectionItem.ItemTitle,
+            Label2 = multiSelectionItem.ItemTitle2,
+            MusicTag = multiSelectionItem.Tag,
+            Selected = multiSelectionItem.Selected
+          };
 
           dlgMultiSelect.Add(item);
         }
@@ -580,11 +563,13 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
           for (int i = 0; i < items.Count; i++)
           {
             MultiSelectionItem item = items[i];
-            MultiSelectionItem newMultiSelectionItem = new MultiSelectionItem();
-            newMultiSelectionItem.ItemTitle = item.ItemTitle;
-            newMultiSelectionItem.ItemTitle2 = item.ItemTitle2;
-            newMultiSelectionItem.ItemID = item.ItemID;
-            newMultiSelectionItem.Tag = item.Tag;
+            MultiSelectionItem newMultiSelectionItem = new MultiSelectionItem
+            {
+              ItemTitle = item.ItemTitle,
+              ItemTitle2 = item.ItemTitle2,
+              ItemID = item.ItemID,
+              Tag = item.Tag
+            };
             try
             {
               newMultiSelectionItem.Selected = dlgMultiSelect.ListItems[i].Selected;

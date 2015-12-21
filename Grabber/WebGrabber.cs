@@ -30,7 +30,7 @@ namespace Grabber
       AllowUnsafeHeader = false;
       Debug = false;
       Method = "GET";
-      UserAgent = "MF/" + Assembly.GetExecutingAssembly().GetName().Version.ToString();
+      UserAgent = "MF/" + Assembly.GetExecutingAssembly().GetName().Version;
       TimeoutIncrement = 1000;
       Timeout = 5000;
       MaxRetries = 3;
@@ -43,7 +43,7 @@ namespace Grabber
       AllowUnsafeHeader = false;
       Debug = false;
       Method = "GET";
-      UserAgent = "MF/" + Assembly.GetExecutingAssembly().GetName().Version.ToString();
+      UserAgent = "MF/" + Assembly.GetExecutingAssembly().GetName().Version;
       TimeoutIncrement = 1000;
       Timeout = 5000;
       MaxRetries = 3;
@@ -106,7 +106,7 @@ namespace Grabber
 
           try
           {
-            this.Response = (HttpWebResponse)this.Request.GetResponse();
+            Response = (HttpWebResponse)Request.GetResponse();
             completed = true;
           }
           catch (WebException e)
@@ -332,7 +332,7 @@ namespace Grabber
       }
       catch (Exception e)
       {
-        if (e.GetType() == typeof(ThreadAbortException))
+        if (e is ThreadAbortException)
           throw e;
 
         LogMyFilms.Error("Unsafe header parsing setting change failed.");

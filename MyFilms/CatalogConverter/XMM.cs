@@ -124,18 +124,22 @@ namespace MyFilmsPlugin.MyFilms.CatalogConverter
       //string Disks, 
       //string Picture
     }
-    public string ConvertXMM(string source, string folderimage, string DestinationTagline, string DestinationTags, string DestinationCertification, string DestinationWriter, bool OnlyFile)
+    public string ConvertXMM(string source, string folderimage, string destinationTagline, string destinationTags, string destinationCertification, string destinationWriter, bool onlyFile)
     {
       string WStrPath = System.IO.Path.GetDirectoryName(source);
       string destFile = WStrPath + "\\" +
                         source.Substring(source.LastIndexOf(@"\") + 1, source.Length - source.LastIndexOf(@"\") - 5) +
                         "_tmp.xml";
 
-      XmlWriterSettings settings = new XmlWriterSettings();
-      settings.Indent = true; //          ' indent the output and insert line breaks
-      settings.Encoding = Encoding.Default;
-      settings.NewLineOnAttributes = true; //' start each attribute on a new line
-      settings.IndentChars = ("    ");
+      XmlWriterSettings settings = new XmlWriterSettings
+      {
+        Indent = true,
+        Encoding = Encoding.Default,
+        NewLineOnAttributes = true,
+        IndentChars = ("    ")
+      };
+      //          ' indent the output and insert line breaks
+      //' start each attribute on a new line
       settings.NewLineOnAttributes = false;
       //settings.NewLineChars = ControlChars.CrLf & ControlChars.CrLf; //' use two Return characters instead of one
       //XmlWriter destXml = XmlWriter.Create(destFile, settings);
@@ -158,7 +162,7 @@ namespace MyFilmsPlugin.MyFilms.CatalogConverter
           XmlNodeList dvdList = doc.DocumentElement.SelectNodes("/XMM_Movie_Database/Movie");
           foreach (XmlNode nodeDVD in dvdList)
           {
-            // HTMLUtil htmlUtil = new HTMLUtil();
+            // HtmlUtil htmlUtil = new HtmlUtil();
 
             destXml.WriteStartElement("Movie");
 
@@ -380,17 +384,17 @@ namespace MyFilmsPlugin.MyFilms.CatalogConverter
             //string Description, 
             XmlNode nodePlot = nodeDVD.SelectSingleNodeFast("Plot");
             string DescriptionMerged = string.Empty;
-            if (DestinationTagline == "Description")
+            if (destinationTagline == "Description")
             {
               if (DescriptionMerged.Length > 0) DescriptionMerged += System.Environment.NewLine;
               DescriptionMerged += Tagline;
             }
-            if (DestinationTags == "Description")
+            if (destinationTags == "Description")
             {
               if (DescriptionMerged.Length > 0) DescriptionMerged += System.Environment.NewLine;
               DescriptionMerged += Tags;
             }
-            if (DestinationCertification == "Description")
+            if (destinationCertification == "Description")
             {
               if (DescriptionMerged.Length > 0) DescriptionMerged += System.Environment.NewLine;
               DescriptionMerged += Certification;
@@ -405,17 +409,17 @@ namespace MyFilmsPlugin.MyFilms.CatalogConverter
             //string Comments, 
             XmlNode nodeComments = nodeDVD.SelectSingleNodeFast("Comments");
             string CommentsMerged = string.Empty;
-            if (DestinationTagline == "Comments")
+            if (destinationTagline == "Comments")
             {
               if (CommentsMerged.Length > 0) CommentsMerged += System.Environment.NewLine;
               CommentsMerged += Tagline;
             }
-            if (DestinationTags == "Comments")
+            if (destinationTags == "Comments")
             {
               if (CommentsMerged.Length > 0) CommentsMerged += System.Environment.NewLine;
               CommentsMerged += Tags;
             }
-            if (DestinationCertification == "Comments")
+            if (destinationCertification == "Comments")
             {
               if (CommentsMerged.Length > 0) CommentsMerged += System.Environment.NewLine;
               CommentsMerged += Certification;

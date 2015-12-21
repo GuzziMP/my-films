@@ -54,7 +54,7 @@ namespace MyFilmsPlugin.MyFilms.Utils
       MemoryStream cypherTexteMem = new MemoryStream();
 
       CryptoStream cStream = new CryptoStream(cypherTexteMem,
-      rj.CreateEncryptor(this.clef, this.vect), CryptoStreamMode.Write);
+      rj.CreateEncryptor(clef, vect), CryptoStreamMode.Write);
 
       byte[] textebrutByte = new UnicodeEncoding().GetBytes(TexteBrut);
 
@@ -84,7 +84,7 @@ namespace MyFilmsPlugin.MyFilms.Utils
       if (cypherTexte.Length == 0)
         return string.Empty;
       MemoryStream cypherTexteMem = new MemoryStream(new UnicodeEncoding().GetBytes(cypherTexte));
-      CryptoStream cStream = new CryptoStream(cypherTexteMem, rj.CreateDecryptor(this.clef, this.vect), CryptoStreamMode.Read);
+      CryptoStream cStream = new CryptoStream(cypherTexteMem, rj.CreateDecryptor(clef, vect), CryptoStreamMode.Read);
       MemoryStream textebrutMem = new MemoryStream();
 
       do

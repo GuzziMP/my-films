@@ -137,14 +137,16 @@ namespace MyFilmsPlugin.DataBase
       {
         if (s.Contains(":"))
         {
-          var userstate = new UserState((string)EnhancedWatchedValue(s, Type.Username));
-          userstate.UserRating = (decimal)EnhancedWatchedValue(s, Type.Rating);
-          userstate.WatchedCount = (int)EnhancedWatchedValue(s, Type.Count);
-          userstate.Watched = userstate.WatchedCount > 0;
-          userstate.WatchedDate = (DateTime)(EnhancedWatchedValue(s, Type.Datewatched));
-          userstate.ResumeData = (int)(EnhancedWatchedValue(s, Type.Resume));
-          // LogMyFilms.Debug("LoadUserStates() - loading state for user '" + userstate.UserName + "', rating = '" + userstate.UserRating + "', count = '" + userstate.WatchedCount + "', watched = '" + userstate.Watched + "', watcheddate = '" + userstate.WatchedDate + "'");
+          UserState userstate = new UserState((string) EnhancedWatchedValue(s, Type.Username))
+          {
+            UserRating = (decimal) EnhancedWatchedValue(s, Type.Rating),
+            WatchedCount = (int) EnhancedWatchedValue(s, Type.Count),
+            Watched = (int) EnhancedWatchedValue(s, Type.Count) > 0,
+            WatchedDate = (DateTime) (EnhancedWatchedValue(s, Type.Datewatched)),
+            ResumeData = (int) (EnhancedWatchedValue(s, Type.Resume))
+          };
           MultiUserStates.Add(userstate);
+          // LogMyFilms.Debug("LoadUserStates() - loading state for user '" + userstate.UserName + "', rating = '" + userstate.UserRating + "', count = '" + userstate.WatchedCount + "', watched = '" + userstate.Watched + "', watcheddate = '" + userstate.WatchedDate + "'");
         }
       }
     }

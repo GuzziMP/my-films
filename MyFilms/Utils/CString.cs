@@ -71,14 +71,6 @@ namespace MyFilmsPlugin.MyFilms.Utils
 
     /// <summary>Non-static version of function below. Operates on NewString object</summary>
     public string Mid(int index) { return Mid(myString, index); }
-    /// <summary>Returns right part of a string</summary>
-    /// <param name="source">string to split</param>
-    /// <param name="index">Position in string to return from to end of string</param>
-    /// <returns>Returns right part of the string</returns>
-    public static string Mid(string source, int index)
-    {
-      return Mid(source, index, 0);
-    }
 
 
     /// <summary>Non-static version of function below. Operates on NewString object</summary>
@@ -88,7 +80,7 @@ namespace MyFilmsPlugin.MyFilms.Utils
     /// <param name="index">Position in string to start extract</param>
     /// <param name="length">Number of characters to extract. If 0 extract all to end</param>
     /// <returns>Returns middle part of string</returns>
-    public static string Mid(string source, int index, int length)
+    public static string Mid(string source, int index, int length = 0)
     {
       if (source == null) throw new ArgumentNullException("source");
       if (index >= 0 && index < source.Length)
