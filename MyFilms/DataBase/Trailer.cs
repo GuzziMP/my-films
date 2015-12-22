@@ -1,7 +1,7 @@
-namespace MyFilmsPlugin.MyFilms
-{
-  using System;
+using System;
 
+namespace MyFilmsPlugin.DataBase
+{
   [Serializable]
   public class Trailer
   {

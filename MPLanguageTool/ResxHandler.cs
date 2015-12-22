@@ -27,21 +27,21 @@ namespace MPLanguageTool
 {
   internal class ResxHandler
   {
-    private static string BuildFileName(string languageID)
+    private static string BuildFileName(string languageId)
     {
-      if (languageID == null)
+      if (languageId == null)
       {
-        return frmMain.languagePath + "\\MediaPortal.DeployTool.resx";
+        return FrmMain.LanguagePath + "\\MediaPortal.DeployTool.resx";
       }
-      return frmMain.languagePath + "\\MediaPortal.DeployTool." + languageID + ".resx";
+      return FrmMain.LanguagePath + "\\MediaPortal.DeployTool." + languageId + ".resx";
     }
 
-    public static NameValueCollection Load(string languageID)
+    public static NameValueCollection Load(string languageId)
     {
-      string xml = BuildFileName(languageID);
+      string xml = BuildFileName(languageId);
       if (!File.Exists(xml))
       {
-        return languageID == null ? null : new NameValueCollection();
+        return languageId == null ? null : new NameValueCollection();
       }
       NameValueCollection translations = new NameValueCollection();
       XmlDocument doc = new XmlDocument();

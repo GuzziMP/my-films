@@ -21,18 +21,15 @@
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #endregion
 
-namespace MyFilmsPlugin.MyFilms.CatalogConverter
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Xml;
+using Grabber;
+
+namespace MyFilmsPlugin.CatalogConverter
 {
-  using System;
-  using System.Collections.Generic;
-  using System.IO;
-  using System.Linq;
-  using System.Text;
-  using System.Web;
-  using System.Xml;
-
-  using Grabber;
-
   class DvdProfiler
   {
     public Dictionary<string, string> ProfilerDict;

@@ -13,11 +13,10 @@ using MediaPortal.Configuration;
 using MediaPortal.GUI.Library;
 using MediaPortal.Player;
 using System.Threading;
+using MyFilmsPlugin.MyFilmsGUI;
 
 namespace MyFilmsPlugin.Utils
 {
-  using MyFilmsPlugin.MyFilms.MyFilmsGUI;
-
   using PlayerFactory = ExternalPlugins::OnlineVideos.MediaPortal1.Player.PlayerFactory;
 
   public class OVplayer
@@ -96,7 +95,7 @@ namespace MyFilmsPlugin.Utils
             var dlg = (MediaPortal.Dialogs.GUIDialogMenu)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_MENU);
             if (dlg == null) return false;
             dlg.Reset();
-            dlg.SetHeading(MyFilmsPlugin.MyFilms.Utils.GUILocalizeStrings.Get(10798994)); // Select quality ...
+            dlg.SetHeading(GUILocalizeStrings.Get(10798994)); // Select quality ...
             foreach (KeyValuePair<string, string> availableTrailerFile in availableTrailerFiles)
             {
               dlg.Add(availableTrailerFile.Key);

@@ -24,15 +24,15 @@
 
 #endregion
 
-namespace MyFilmsPlugin.MyFilms.Utils
-{
-  using System;
-  using System.Linq;
-  using System.Net;
-  using System.Net.Sockets;
-  using System.Net.NetworkInformation;
-  using System.Runtime.InteropServices;
+using System;
+using System.Linq;
+using System.Net;
+using System.Net.NetworkInformation;
+using System.Net.Sockets;
+using System.Runtime.InteropServices;
 
+namespace MyFilmsPlugin.Utils
+{
   public class WakeOnLanManager
   {
     #region Constants

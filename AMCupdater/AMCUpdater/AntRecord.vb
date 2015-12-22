@@ -2,6 +2,7 @@ Imports System.Windows.Forms
 Imports System.Globalization
 Imports Grabber
 Imports System.Xml
+Imports Grabber.Data
 Imports Grabber.Util
 
 Public Class AntRecord
@@ -1879,7 +1880,7 @@ Public Class AntRecord
                     If CurrentSettings.Use_Grabber_For_Fanart = False Then
                         'use fanart TMDB loader
                         If _internetLookupOk = True And CurrentSettings.Prohibit_Internet_Lookup = False Then
-                            Dim fanart As List(Of Grabber.DbMovieInfo)
+                            Dim fanart As List(Of DbMovieInfo)
                             Dim Gb As Grabber.Grabber_URLClass = New Grabber.Grabber_URLClass
                             fanart = Gb.GetFanart(title, ttitle, year, director, _internetSearchHintImdbId, CurrentSettings.Movie_Fanart_Path, True, False, CurrentSettings.Master_Title, CurrentSettings.Movie_PersonArtwork_Path, CurrentSettings.Movie_Fanart_Number_Limit, CurrentSettings.Movie_Fanart_Resolution_Min, CurrentSettings.Movie_Fanart_Resolution_Max)
                             ' if there is exact = one match ... get backdrops
@@ -1894,10 +1895,10 @@ Public Class AntRecord
                                 ' get person images, if enabled ...
                                 If CurrentSettings.Load_Person_Images_With_Fanart = True And CurrentSettings.Movie_PersonArtwork_Path.Length > 0 And Directory.Exists(CurrentSettings.Movie_PersonArtwork_Path) Then
                                     Dim filenameperson As String = String.Empty
-                                    Dim listepersons As List(Of Grabber.DbPersonInfo) = fanart(0).Persons
-                                    For Each person As Grabber.DbPersonInfo In listepersons
-                                        Dim TheMoviedb As New Grabber.TheMoviedb()
-                                        Dim persondetails As Grabber.DbPersonInfo = TheMoviedb.GetPersonsById(person.Id, String.Empty)
+                                    Dim listepersons As List(Of DbPersonInfo) = fanart(0).Persons
+                                    For Each person As DbPersonInfo In listepersons
+                                        Dim TheMoviedb As New TheMoviedb()
+                                        Dim persondetails As DbPersonInfo = TheMoviedb.GetPersonsById(person.Id, String.Empty)
                                         If persondetails.Images.Count > 0 Then
                                             For Each image As String In persondetails.Images
                                                 If System.IO.File.Exists(System.IO.Path.Combine(CurrentSettings.Movie_PersonArtwork_Path, persondetails.Name + ".jpg")) Then

@@ -7,7 +7,6 @@ using MediaPortal.GUI.Library;
 
 namespace MyFilmsPlugin.Utils
 {
-  using MyFilmsPlugin.MyFilms.MyFilmsGUI;
   using MyFilmsPlugin.MyFilmsGUI;
 
   public class MenuNavigationObject

@@ -29,10 +29,10 @@ namespace Grabber_Interface
       //Assembly _ass = Assembly.GetExecutingAssembly();
       //Stream _stream = _ass.GetManifestResourceStream(_ass.GetName().Name + ".MyFilmsSample.xml");
 
-      string MyFilmsSampleGrabber = Config.GetDirectoryInfo(Config.Dir.Config) + @"\MyFilmsSampleGrabber.xml";
+      string myFilmsSampleGrabber = Config.GetDirectoryInfo(Config.Dir.Config) + @"\MyFilmsSampleGrabber.xml";
 
       var xDoc = new XmlDocument();
-      var str = new StreamReader(MyFilmsSampleGrabber, Encoding.UTF8);
+      var str = new StreamReader(myFilmsSampleGrabber, Encoding.UTF8);
       //StreamReader _str = new StreamReader(_stream, System.Text.Encoding.UTF8);
       string xmlStrings = string.Empty;
 
@@ -47,7 +47,6 @@ namespace Grabber_Interface
 
     private void Init(string configFile)
     {
-      //Loading conf file
       var doc = new XmlDocument();
       doc.Load(configFile);
 
@@ -56,8 +55,7 @@ namespace Grabber_Interface
 
       for (int i = 0; i < l.Count; i++)
       {
-        if (l.Item(i).ParentNode.Name == "Section"
-            && !l.Item(i).Name.Equals("URLSearch") && !l.Item(i).Name.Equals("Details") && !l.Item(i).Name.Equals("Mapping"))
+        if (l.Item(i).ParentNode.Name == "Section" && !l.Item(i).Name.Equals("URLSearch") && !l.Item(i).Name.Equals("Details") && !l.Item(i).Name.Equals("Mapping"))
           SetList(1, l.Item(i));
       }
 
@@ -127,10 +125,6 @@ namespace Grabber_Interface
             att7 = node.Attributes.Item(i);
             break;
         }
-        //if (i == 0)
-        //      att1 = node.Attributes.Item(i);
-        //  else
-        //      att2 = node.Attributes.Item(i);
       }
       switch (list)
       {
@@ -220,27 +214,19 @@ namespace Grabber_Interface
     {
       this.tag = tag;
       this.value = value;
-      if (param1 == null)
-        param1 = "";
+      if (param1 == null) param1 = "";
       this.param1 = param1;
-      if (param2 == null)
-        param2 = "";
+      if (param2 == null) param2 = "";
       this.param2 = param2;
-
-      if (param3 == null)
-        param3 = "";
+      if (param3 == null) param3 = "";
       this.param3 = param3;
-      if (param4 == null)
-        param4 = "";
+      if (param4 == null) param4 = "";
       this.param4 = param4;
-      if (param5 == null)
-        param5 = "";
+      if (param5 == null) param5 = "";
       this.param5 = param5;
-      if (param6 == null)
-        param6 = "";
+      if (param6 == null) param6 = "";
       this.param6 = param6;
-      if (param7 == null)
-        param7 = "";
+      if (param7 == null) param7 = "";
       this.param7 = param7;
     }
 

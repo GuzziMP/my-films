@@ -53,16 +53,17 @@
 #endregion
 
 #region using
+
 using System;
 using System.IO;
 using System.Xml;
-using MediaPortal.Configuration; // For recover install MediaPortal path
+using Grabber;
+using MediaPortal.Configuration;
+
 #endregion
 
-namespace MyFilmsPlugin.MyFilms.Utils
+namespace MyFilmsPlugin.Utils
 {
-  using Grabber;
-
   class XmlConfig
   {
 
@@ -148,9 +149,9 @@ namespace MyFilmsPlugin.MyFilms.Utils
       //Recover profile node
       XmlElement profile = configxml.DocumentElement;
       //Create section if doesn't exist
-      String XPath = @"/profile/section[@name='" + Section + "']";
-      XmlNodeList ListSection = configxml.SelectNodes(XPath);
-      if (ListSection.Count < 1)
+      String xPath = @"/profile/section[@name='" + Section + "']";
+      XmlNodeList listSection = configxml.SelectNodes(xPath);
+      if (listSection.Count < 1)
       {
         CreateSection(Section);
       }
@@ -158,9 +159,9 @@ namespace MyFilmsPlugin.MyFilms.Utils
       XmlNode section = profile.SelectSingleNodeFast("section[@name='" + Section + "']");
 
       //Create Entry if doesn't exist
-      XPath = @"/profile/section[@name='" + Section + "']/entry[@name='" + Entry + "']";
-      XmlNodeList ListEntry = configxml.SelectNodes(XPath);
-      if (ListEntry.Count < 1)
+      xPath = @"/profile/section[@name='" + Section + "']/entry[@name='" + Entry + "']";
+      XmlNodeList listEntry = configxml.SelectNodes(xPath);
+      if (listEntry.Count < 1)
       {
         CreateEntry(Section, Entry);
       }
@@ -294,11 +295,11 @@ namespace MyFilmsPlugin.MyFilms.Utils
 
       //Posit on value
       String xPath = @"/NewDataSet/Values[@option='" + option + "']";
-      XmlNodeList ListEntry = configxml.SelectNodes(xPath);
+      XmlNodeList listEntry = configxml.SelectNodes(xPath);
 
       // If value exist, return it otherwise, return default value
-      if (ListEntry.Count > 0)
-        value = ListEntry.Item(0).SelectSingleNodeFast("value").InnerText;
+      if (listEntry.Count > 0)
+        value = listEntry.Item(0).SelectSingleNodeFast("value").InnerText;
 
       return value;
     }
@@ -322,10 +323,10 @@ namespace MyFilmsPlugin.MyFilms.Utils
 
       //Posit on value
       String xPath = @"/NewDataSet/Values[@option='" + option + "']";
-      XmlNodeList ListEntry = configxml.SelectNodes(xPath);
+      XmlNodeList listEntry = configxml.SelectNodes(xPath);
 
       // If value exist, select it and store new value
-      if (ListEntry.Count > 0) ListEntry.Item(0).SelectSingleNodeFast("value").InnerText = value;
+      if (listEntry.Count > 0) listEntry.Item(0).SelectSingleNodeFast("value").InnerText = value;
 
       //Save xml config file  
       configxml.Save(EntireFilenameConfig(fileName));

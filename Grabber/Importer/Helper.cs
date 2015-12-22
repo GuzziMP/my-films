@@ -23,16 +23,13 @@
 
 using System;
 using System.Collections.Generic;
-using MediaPortal.GUI.Library;
-using MediaPortal.Util;
-using MediaPortal.Ripper;
 using System.IO;
 using System.Xml;
+using System.Linq;
 
 namespace Grabber.Importer.Helpers
 {
-  using System.Linq;
-
+  
   public class Helper
   {
     #region List<T> Methods

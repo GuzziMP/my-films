@@ -21,16 +21,15 @@
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #endregion
 
-namespace MyFilmsPlugin.MyFilms.CatalogConverter
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Text;
+using System.Xml;
+using MediaPortal.Util;
+
+namespace MyFilmsPlugin.CatalogConverter
 {
-  using System;
-  using System.Collections.Generic;
-  using System.Text;
-  using System.Xml;
-  using System.Globalization;
-
-  using MediaPortal.Util;
-
   class XMM
   {
     public Dictionary<string, string> ProfilerDict;

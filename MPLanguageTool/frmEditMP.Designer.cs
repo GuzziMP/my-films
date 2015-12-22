@@ -1,6 +1,6 @@
 namespace MPLanguageTool
 {
-  partial class frmEditMP
+  partial class FrmEditMp
   {
     /// <summary>
     /// Required designer variable.
@@ -231,7 +231,7 @@ namespace MPLanguageTool
         this.btnOK.UseVisualStyleBackColor = true;
         this.btnOK.Click += new System.EventHandler(this.btnOK_Click);
         // 
-        // frmEditMP
+        // FrmEditMp
         // 
         this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -240,7 +240,7 @@ namespace MPLanguageTool
         this.Controls.Add(this.splitContainer1);
         this.MaximizeBox = false;
         this.MinimizeBox = false;
-        this.Name = "frmEditMP";
+        this.Name = "FrmEditMp";
         this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
         this.Text = "Edit translation";
         this.Shown += new System.EventHandler(this.frmEdit_Shown);

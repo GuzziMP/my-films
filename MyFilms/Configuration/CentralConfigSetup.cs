@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Windows.Forms;
+using MyFilmsPlugin.Utils;
+using MediaPortal.Configuration;
 
 namespace MyFilmsPlugin.Configuration
 {
-  using MediaPortal.Configuration;
-
-  using MyFilms.Utils;
-
   public partial class CentralConfigSetup : Form
   {
     public CentralConfigSetup()

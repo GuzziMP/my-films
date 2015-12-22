@@ -40,6 +40,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{06EE5814-F9DD-4C91-B40C-AD5141E40B82}"
 	ProjectSection(SolutionItems) = preProject
 		Installer\MyFilms-12.xmp2 = Installer\MyFilms-12.xmp2
+		SolutionBuild.bat = SolutionBuild.bat
+		VersionInfo.cs.tmpl = VersionInfo.cs.tmpl
+		VersionInfo.vb.tmpl = VersionInfo.vb.tmpl
+		Versionmpe-maker.tmpl = Versionmpe-maker.tmpl
 	EndProjectSection
 EndProject
 Global

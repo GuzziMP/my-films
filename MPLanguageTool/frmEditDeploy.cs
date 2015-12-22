@@ -23,9 +23,9 @@ using System.Windows.Forms;
 
 namespace MPLanguageTool
 {
-  public partial class frmEditDeploy : Form
+  public partial class FrmEditDeploy : Form
   {
-    public frmEditDeploy()
+    public FrmEditDeploy()
     {
       InitializeComponent();
     }
@@ -40,7 +40,7 @@ namespace MPLanguageTool
 
     public string GetTranslation()
     {
-      return this.edValue.Text == "" ? null : this.edValue.Text;
+      return edValue.Text == "" ? null : edValue.Text;
     }
 
     private void btnOK_Click(object sender, EventArgs e)

@@ -99,9 +99,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Externals\Mediaportal\DirectShowLib.dll</HintPath>
     </Reference>
-    <Reference Include="NLog, Version=3.2.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\NLog.3.2.0.0\lib\net40\NLog.dll</HintPath>
+      <HintPath>..\packages\NLog.4.2.3\lib\net40\NLog.dll</HintPath>
     </Reference>
     <Reference Include="OnlineVideos, Version=1.6.1.2835, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -157,6 +157,7 @@
     <Compile Include="Configuration\CentralConfigSetup.Designer.cs">
       <DependentUpon>CentralConfigSetup.cs</DependentUpon>
     </Compile>
+    <Compile Include="DataBase\MFMovie.cs" />
     <Compile Include="DataBase\MFview.cs">
       <DependentUpon>MFview.xsd</DependentUpon>
       <SubType>Component</SubType>
@@ -209,7 +210,6 @@
     <Compile Include="DataBase\MultiUserData.cs" />
     <Compile Include="DataBase\OnlineMovie.cs" />
     <Compile Include="DataBase\OnlinePerson.cs" />
-    <Compile Include="MFMovie.cs" />
     <Compile Include="MyFilmsGUI\Configuration.cs" />
     <Compile Include="MyFilmsGUI\GUIBackgroundTask.cs" />
     <Compile Include="MyFilmsGUI\GUIDialogImageSelect.cs" />
@@ -221,9 +221,6 @@
     <Compile Include="MyFilmsGUI\MyFilmsCoverManager.cs" />
     <Compile Include="MyFilmsGUI\MyFilmsDetail.cs" />
     <Compile Include="MyFilmsGUI\MyFilmsDialogSetRating.cs" />
-    <Compile Include="MyFilmsSettings.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Properties\VersionInfo.cs" />
     <Compile Include="DataBase\Trailer.cs" />
     <Compile Include="Utils\Cornerstone.MP\AsyncImageResource.cs" />
@@ -240,6 +237,7 @@
     <Compile Include="CatalogConverter\MovieCollector.cs" />
     <Compile Include="CatalogConverter\MyMovies.cs" />
     <Compile Include="Utils\Logos.cs" />
+    <Compile Include="Utils\MyFilmsSettings.cs" />
     <Compile Include="Utils\NavigationObject.cs" />
     <Compile Include="Utils\OVplayer.cs" />
     <Compile Include="Utils\PerfWatch.cs" />

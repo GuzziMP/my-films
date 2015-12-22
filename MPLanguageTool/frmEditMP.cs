@@ -23,9 +23,9 @@ using System.Windows.Forms;
 
 namespace MPLanguageTool
 {
-  public partial class frmEditMP : Form
+  public partial class FrmEditMp : Form
   {
-    public frmEditMP()
+    public FrmEditMp()
     {
       InitializeComponent();
     }
@@ -44,12 +44,12 @@ namespace MPLanguageTool
 
     public string GetTranslation()
     {
-      return String.IsNullOrEmpty(this.edValue.Text) ? null : this.edValue.Text;
+      return String.IsNullOrEmpty(edValue.Text) ? null : edValue.Text;
     }
 
     public string GetPrefixTranslation()
     {
-      return String.IsNullOrEmpty(this.edValue.Text) ? null : this.textBox1.Text;
+      return String.IsNullOrEmpty(edValue.Text) ? null : textBox1.Text;
     }
 
     private void btnOK_Click(object sender, EventArgs e)

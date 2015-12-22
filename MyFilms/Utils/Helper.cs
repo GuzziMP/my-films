@@ -21,38 +21,27 @@
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #endregion
 
-namespace MyFilmsPlugin.MyFilms.Utils
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Data;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Security.Cryptography;
+using System.Text;
+using System.Threading;
+using MediaPortal.GUI.Library;
+using MediaPortal.Ripper;
+using MediaPortal.Util;
+
+namespace MyFilmsPlugin.Utils
 {
   extern alias ExternalPlugins;
-  using System;
-  using System.Collections;
-  using System.Data;
-  using System.Drawing.Imaging;
-  using System.IO;
-  using System.Collections.Generic;
-  using System.Linq;
-  using System.Net;
-  using System.Diagnostics;
-  using System.Runtime.InteropServices;
-  using System.Text;
-  using System.Threading;
-
-  using MediaPortal.Configuration;
-  using MediaPortal.GUI.Library;
-  using MediaPortal.Util;
-  using MediaPortal.Ripper;
-
-  using System.Globalization;
-  using System.Reflection;
-  using System.Security.Cryptography;
-
-  using ExternalPlugins::TraktPlugin;
-  using ExternalPlugins::TraktPlugin.TraktAPI.DataStructures;
-  using System.Xml;
-  using FileIO = Microsoft.VisualBasic;
-
   using ConnectionState = ExternalPlugins::TraktPlugin.TraktAPI.Enums.ConnectionState;
-  using System.Drawing;
 
   #region String Extension Methods
   public static class StringExtensions
@@ -78,10 +67,9 @@ namespace MyFilmsPlugin.MyFilms.Utils
     {
       char[] cInput = input.ToCharArray();
       int removed = 0;
-      bool isRemoved = false;
       for (int i = 0; i < cInput.Length; i++)
       {
-        isRemoved = false;
+        bool isRemoved = false;
         for (int j = 0; j < SpecialCharsFromTo.Length; j += 2)
         {
           if (cInput[i] >= SpecialCharsFromTo[j] && cInput[i] <= SpecialCharsFromTo[j + 1])
@@ -112,7 +100,7 @@ namespace MyFilmsPlugin.MyFilms.Utils
     {
       return textInfo.ToTitleCase(input.ToLower());
     }
-    static TextInfo textInfo = System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo;
+    static TextInfo textInfo = Thread.CurrentThread.CurrentCulture.TextInfo;
 
     public static string ToSHA1Hash(this string password)
     {
@@ -120,8 +108,8 @@ namespace MyFilmsPlugin.MyFilms.Utils
       if (string.IsNullOrEmpty(password)) return string.Empty;
 
       byte[] buffer = Encoding.Default.GetBytes(password);
-      var cryptoTransformSHA1 = new SHA1CryptoServiceProvider();
-      return BitConverter.ToString(cryptoTransformSHA1.ComputeHash(buffer)).Replace("-", "");
+      SHA1CryptoServiceProvider cryptoTransformSha1 = new SHA1CryptoServiceProvider();
+      return BitConverter.ToString(cryptoTransformSha1.ComputeHash(buffer)).Replace("-", "");
     }
 
     public static string EscapeLikeValue(string valueWithoutWildcards)
@@ -295,7 +283,7 @@ namespace MyFilmsPlugin.MyFilms.Utils
       return result;
     }
 
-    public static T getElementFromList<T, P>(P currPropertyValue, string PropertyName, int indexOffset, List<T> elements)
+    public static T getElementFromList<T, P>(P currPropertyValue, string propertyName, int indexOffset, List<T> elements)
     {
       // takes care of "looping"
       if (elements.Count == 0) return default(T);
@@ -305,7 +293,7 @@ namespace MyFilmsPlugin.MyFilms.Utils
       {
         try
         {
-          value = (P)elements[i].GetType().InvokeMember(PropertyName, System.Reflection.BindingFlags.GetProperty | System.Reflection.BindingFlags.GetField, null, elements[i], null);
+          value = (P)elements[i].GetType().InvokeMember(propertyName, BindingFlags.GetProperty | BindingFlags.GetField, null, elements[i], null);
           if (value.Equals(currPropertyValue))
           {
             indexToGet = i + indexOffset;
@@ -330,7 +318,7 @@ namespace MyFilmsPlugin.MyFilms.Utils
       {
         try
         {
-          results.Add((P)elem.GetType().InvokeMember(PropertyNameToGet, System.Reflection.BindingFlags.GetProperty | System.Reflection.BindingFlags.GetField, null, elem, null));
+          results.Add((P)elem.GetType().InvokeMember(PropertyNameToGet, BindingFlags.GetProperty | BindingFlags.GetField, null, elem, null));
         }
         catch (Exception)
         {
@@ -415,7 +403,7 @@ namespace MyFilmsPlugin.MyFilms.Utils
       for (int f = 0; f < filenames.Count; f++)
       {
         bool wasCached = false;
-        if ((wasCached = nonExistingFiles.Contains(filenames[f])) || !System.IO.File.Exists(filenames[f]))
+        if ((wasCached = nonExistingFiles.Contains(filenames[f])) || !File.Exists(filenames[f]))
         {
           if (!wasCached)
           {
@@ -434,7 +422,7 @@ namespace MyFilmsPlugin.MyFilms.Utils
     /// </summary>
     /// <param name="milliseconds"></param>
     /// <returns></returns>
-    public static System.String MSToMMSS(double milliseconds)
+    public static String MSToMMSS(double milliseconds)
     {
       TimeSpan t = new TimeSpan(0, 0, 0, 0, (int)milliseconds);
       //cs1 anomalies or no disc/data available -> -:- 
@@ -459,7 +447,7 @@ namespace MyFilmsPlugin.MyFilms.Utils
       if (path1 == null) return path2;
       if (path2 == null) return path1;
       if (path2.Length > 0 && (path2[0] == '\\' || path2[0] == '/')) path2 = path2.Substring(1);
-      return System.IO.Path.Combine(path1, path2);
+      return Path.Combine(path1, path2);
     }
 
     /// <summary>
@@ -669,7 +657,7 @@ namespace MyFilmsPlugin.MyFilms.Utils
     /// <returns>Returns true if file is a image</returns>
     public static bool IsImageFile(string filename)
     {
-      string extension = System.IO.Path.GetExtension(filename).ToLower();
+      string extension = Path.GetExtension(filename).ToLower();
       return VirtualDirectory.IsImageFile(extension);
     }
 
@@ -803,29 +791,29 @@ namespace MyFilmsPlugin.MyFilms.Utils
         {
           if (a.GetName().Name == name && a.GetName().Version >= ver)
           {
-            LogMyFilms.Debug(string.Format("Assembly '{0}' with Version '{1}' is available and loaded.", name, a.GetName().Version));
+            LogMyFilms.Debug("Assembly '{0}' with Version '{1}' is available and loaded.", name, a.GetName().Version);
             result = true;
             break;
           }
         }
         catch
         {
-          LogMyFilms.Debug(string.Format("Assembly.GetName() call failed for '{0}'!\n", a.Location));
+          LogMyFilms.Debug("Assembly.GetName() call failed for '{0}'!\n", a.Location);
         }
 
       if (!result && !onlymatchingversion)
       {
-        LogMyFilms.Debug(string.Format("Assembly {0} is not loaded (not available?), trying to load it manually...", name));
+        LogMyFilms.Debug("Assembly {0} is not loaded (not available?), trying to load it manually...", name);
         try
         {
           //Assembly assembly = AppDomain.CurrentDomain.Reflection(new AssemblyName(name));
           Assembly assembly = Assembly.ReflectionOnlyLoad(name);
-          LogMyFilms.Debug(string.Format("Assembly {0} is available and loaded successfully.", name));
+          LogMyFilms.Debug("Assembly {0} is available and loaded successfully.", name);
           result = true;
         }
         catch (Exception e)
         {
-          LogMyFilms.Debug(string.Format("Assembly {0} is unavailable, load unsuccessful: {1}:{2}", name, e.GetType(), e.Message));
+          LogMyFilms.Debug("Assembly {0} is unavailable, load unsuccessful: {1}:{2}", name, e.GetType(), e.Message);
         }
       }
 
@@ -930,7 +918,7 @@ namespace MyFilmsPlugin.MyFilms.Utils
     internal static string GetTraktUser()
     {
       if (IsTraktAvailableAndEnabled) 
-        return TraktSettings.Username;
+        return ExternalPlugins::TraktPlugin.TraktSettings.Username;
       else
         return string.Empty;
     }
@@ -941,7 +929,7 @@ namespace MyFilmsPlugin.MyFilms.Utils
       var userlist = new List<string>();
       if (IsTraktAvailableAndEnabled)
       {
-        if (TraktSettings.UserLogins.Count > 0) userlist.AddRange(TraktSettings.UserLogins.Select(user => user.Username));
+        if (ExternalPlugins::TraktPlugin.TraktSettings.UserLogins.Count > 0) userlist.AddRange(ExternalPlugins::TraktPlugin.TraktSettings.UserLogins.Select(user => user.Username));
         return userlist;
       }
       return null;
@@ -949,14 +937,14 @@ namespace MyFilmsPlugin.MyFilms.Utils
 
     internal static bool ChangeTraktUser(string newUserName)
     {
-      if (TraktSettings.UserLogins.Count == 0) return false;
+      if (ExternalPlugins::TraktPlugin.TraktSettings.UserLogins.Count == 0) return false;
 
-      foreach (var userlogin in TraktSettings.UserLogins.Where(userlogin => userlogin.Username == newUserName))
+      foreach (var userlogin in ExternalPlugins::TraktPlugin.TraktSettings.UserLogins.Where(userlogin => userlogin.Username == newUserName))
       {
-        TraktSettings.AccountStatus = ConnectionState.Pending;
-        TraktSettings.Username = userlogin.Username;
-        TraktSettings.Password = userlogin.Password;
-        if (TraktSettings.AccountStatus == ConnectionState.Connected)
+        ExternalPlugins::TraktPlugin.TraktSettings.AccountStatus = ConnectionState.Pending;
+        ExternalPlugins::TraktPlugin.TraktSettings.Username = userlogin.Username;
+        ExternalPlugins::TraktPlugin.TraktSettings.Password = userlogin.Password;
+        if (ExternalPlugins::TraktPlugin.TraktSettings.AccountStatus == ConnectionState.Connected)
           return true;
       }
       return false;
@@ -974,9 +962,9 @@ namespace MyFilmsPlugin.MyFilms.Utils
         {
           try
           {
-            if (TraktSettings.Username == username)
+            if (ExternalPlugins::TraktPlugin.TraktSettings.Username == username)
             {
-              status = TraktSettings.AccountStatus == ConnectionState.Connected ? "online" : "offline";
+              status = ExternalPlugins::TraktPlugin.TraktSettings.AccountStatus == ConnectionState.Connected ? "online" : "offline";
             }
           }
           catch (Exception ex)
@@ -1000,7 +988,7 @@ namespace MyFilmsPlugin.MyFilms.Utils
       try
       {
         Directory.CreateDirectory(Path.GetDirectoryName(localFile));
-        if (!File.Exists(localFile) || MyFilmsPlugin.Utils.ImageFast.FastFromFile(localFile) == null)
+        if (!File.Exists(localFile) || ImageFast.FastFromFile(localFile) == null)
         {
           LogMyFilms.Debug("Downloading new file from: " + url);
           webClient.DownloadFile(url, localFile);
@@ -1055,7 +1043,7 @@ namespace MyFilmsPlugin.MyFilms.Utils
             }
           }
         }
-        catch (System.IO.IOException)
+        catch (IOException)
         {
           // LogMyFilms.DebugException("IsFileUsedbyAnotherProcess() - cannot open file: '" + exp.Message + "'", exp);
           return true;
@@ -1254,9 +1242,11 @@ namespace MyFilmsPlugin.MyFilms.Utils
 
       foreach (string d in Environment.GetLogicalDrives())
       {
-        var drv = new Drive();
-        drv.Path = d;
-        drv.Type = Utils.getDriveType(d);
+        var drv = new Drive
+        {
+          Path = d,
+          Type = MediaPortal.Util.Utils.getDriveType(d)
+        };
 
         if (drv.Type == DriveTypes.CD_DVD)
         {

@@ -21,25 +21,23 @@
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #endregion
 
-namespace MyFilmsPlugin.MyFilms.Utils
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading;
+using DirectShowLib;
+using DirectShowLib.Dvd;
+using MediaPortal.GUI.Library;
+
+namespace MyFilmsPlugin.Utils
 {
-  using System;
-  using System.Collections;
-  using System.Collections.Generic;
-  using System.ComponentModel;
-  using System.Globalization;
-  using System.IO;
-  using System.Linq;
-  using System.Reflection;
-  using System.Text;
-  using System.Text.RegularExpressions;
-  using System.Threading;
-
-  using MediaPortal.GUI.Library;
-
-  using DirectShowLib;
-  using DirectShowLib.Dvd;
-
   class Utility
   {
     #region Ctor / Private variables
@@ -683,7 +681,7 @@ namespace MyFilmsPlugin.MyFilms.Utils
       }
       catch (Exception e)
       {
-        LogMyFilms.Error("Error while retrieving disc id for: " + path, e);
+        LogMyFilms.Error(e, "Error while retrieving disc id for: " + path);
       }
       return discID;
     }
@@ -722,7 +720,7 @@ namespace MyFilmsPlugin.MyFilms.Utils
               if (e.GetType() == typeof(ThreadAbortException))
                 throw e;
 
-              LogMyFilms.DebugException("Disc ID: Failed, Path='" + vtsPath + "', Format='" + self.ToString() + "' ", e);
+              LogMyFilms.Debug(e, "Disc ID: Failed, Path='" + vtsPath + "', Format='" + self.ToString() + "' ");
             }
           }
           break;

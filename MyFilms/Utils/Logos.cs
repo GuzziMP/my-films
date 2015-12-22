@@ -21,25 +21,21 @@
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #endregion
 
-using System.ComponentModel;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Data;
 using System.Diagnostics;
-using MyFilmsPlugin.Utils;
+using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
+using MediaPortal.Configuration;
+using MediaPortal.GUI.Library;
+using MyFilmsPlugin.MyFilmsGUI;
 
-namespace MyFilmsPlugin.MyFilms.Utils
+namespace MyFilmsPlugin.Utils
 {
-  using System;
-  using System.IO;
-  using System.Collections;
-  using System.Collections.Generic;
-  using System.Data;
-  using System.Drawing;
-  using System.Linq;
-  using System.Text.RegularExpressions;
-
-  using MediaPortal.Configuration;
-  using MediaPortal.GUI.Library;
-  using MyFilmsGUI;
-
   public class Logos
   {
     private static NLog.Logger LogMyFilms = NLog.LogManager.GetCurrentClassLogger();  //log
@@ -138,7 +134,7 @@ namespace MyFilmsPlugin.MyFilms.Utils
             LogosPath = Config.GetDirectoryInfo(Config.Dir.Config) + LogosPath;
           }
         }
-        if (LogosPath.LastIndexOf("\\", System.StringComparison.Ordinal) != LogosPath.Length - 1)
+        if (LogosPath.LastIndexOf("\\", StringComparison.Ordinal) != LogosPath.Length - 1)
           LogosPath = LogosPath + "\\";
         Spacer = xmlConfig.ReadXmlConfig(activeLogoConfigFile, "ID0000", "Spacing", 1);
         Country = xmlConfig.ReadXmlConfig(activeLogoConfigFile, "ID0000", "Country", string.Empty);
@@ -230,7 +226,7 @@ namespace MyFilmsPlugin.MyFilms.Utils
       {
         LogMyFilms.Debug("Logo picture to be added " + fileLogoName);
         string skinName = GUIGraphicsContext.Skin.Substring(GUIGraphicsContext.Skin.LastIndexOf("\\", StringComparison.Ordinal) + 1);
-        fileLogoName = id == MyFilms.ID_MyFilms
+        fileLogoName = id == MyFilmsGUI.MyFilms.ID_MyFilms
                          ? "MyFilms_" + skinName + "_M" + LogoConfigOverride + fileLogoName + ".png"
                          : "MyFilms_" + skinName + "_D" + LogoConfigOverride + fileLogoName + ".png";
         int wHeight = 0;
@@ -461,7 +457,7 @@ namespace MyFilmsPlugin.MyFilms.Utils
               else
               {
                 // if (r[field].ToString().ToLower().CompareTo(value.ToLower()) > 0) return true;
-                IComparer myComparer = new MyFilms.AlphanumComparatorFast();
+                IComparer myComparer = new MyFilmsGUI.MyFilms.AlphanumComparatorFast();
                 return myComparer.Compare(r[field].ToString().ToLower(), value.ToLower()) > 0;
               }
           }
@@ -481,7 +477,7 @@ namespace MyFilmsPlugin.MyFilms.Utils
               else
               {
                 // if (!(r[field].ToString().ToLower().CompareTo(value.ToLower()) > 0)) return true;
-                IComparer myComparer = new MyFilms.AlphanumComparatorFast();
+                IComparer myComparer = new MyFilmsGUI.MyFilms.AlphanumComparatorFast();
                 return myComparer.Compare(r[field].ToString().ToLower(), value.ToLower()) < 0;
               }
           }

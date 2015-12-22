@@ -3,8 +3,6 @@
 
 namespace MyFilmsPlugin.MyFilmsGUI
 {
-  using MyFilmsPlugin.MyFilms.MyFilmsGUI;
-
   public class MFView
   {
     private static NLog.Logger LogMyFilms = NLog.LogManager.GetCurrentClassLogger();  //log

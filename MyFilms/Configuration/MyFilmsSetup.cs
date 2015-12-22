@@ -21,41 +21,31 @@
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #endregion
 
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Diagnostics;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Reflection;
+using System.Threading;
+using System.Windows.Forms;
+using System.Xml;
+using Grabber;
+using IWshRuntimeLibrary;
+using MediaPortal.Configuration;
 using MyFilmsPlugin.CatalogConverter;
+using MyFilmsPlugin.DataBase;
 using MyFilmsPlugin.Utils;
+using TaskScheduler;
 
-namespace MyFilmsPlugin.MyFilms.Configuration
+namespace MyFilmsPlugin.Configuration
 {
-  using System;
-  using System.Collections;
-  using System.Collections.Generic;
-  using System.ComponentModel;
-  using System.Data;
-  using System.Diagnostics;
-  using System.Globalization;
-  using System.IO;
-  using System.Linq;
-  using System.Net;
-  using System.Reflection;
-  using System.Threading;
-  using System.Windows.Forms;
-  using System.Xml;
-
-  using Grabber;
-
-  using IWshRuntimeLibrary;
-
-  using MediaPortal.Configuration;
-
-  using MyFilmsPlugin.Configuration;
-  using MyFilmsPlugin.DataBase;
-  using MyFilmsPlugin.MyFilms.CatalogConverter;
-  using MyFilmsPlugin.MyFilms.MyFilmsGUI;
-  using MyFilmsPlugin.MyFilms.Utils;
-
-  using TaskScheduler;
-
-  using AntMovieCatalog = MyFilmsPlugin.DataBase.AntMovieCatalog;
+  using AntMovieCatalog = DataBase.AntMovieCatalog;
 
   public partial class MyFilmsSetup : Form
   {
@@ -4733,7 +4723,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
       MyFilmsInputBox input = new MyFilmsInputBox
         {
           // preset to central config client only, if central config is available
-          SetupType = !syncFromServerOnStartup || myFilmsCentralConfigDir.Length == 0 ? (int)MyFilms.SetupType.Local : (int)MyFilms.SetupType.CentralClient,
+          SetupType = !syncFromServerOnStartup || myFilmsCentralConfigDir.Length == 0 ? (int)MyFilmsGUI.MyFilms.SetupType.Local : (int)MyFilmsGUI.MyFilms.SetupType.CentralClient,
           Text = "MyFilms - Setup Wizard",
           UseNfoGrabber = false,
           CatalogTypeSelectedIndex = 10,
@@ -4747,7 +4737,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
 
       if (input.DialogResult != DialogResult.OK) return; // stop, of user did not confirm new configuration
 
-      if (input.SetupType == (int)MyFilms.SetupType.CentralClient)
+      if (input.SetupType == (int)MyFilmsGUI.MyFilms.SetupType.CentralClient)
       {
         #region setup for network client
 
@@ -4832,7 +4822,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
         return;
       }
 
-      if (input.SetupType == (int)MyFilms.SetupType.CentralMaster)
+      if (input.SetupType == (int)MyFilmsGUI.MyFilms.SetupType.CentralMaster)
       {
         #region ask the user for the network location for the myfilms server directory
 
@@ -4925,7 +4915,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
       string catalogDirectory = "";
       switch (input.SetupType)
       {
-        case (int)MyFilms.SetupType.Local:
+        case (int)MyFilmsGUI.MyFilms.SetupType.Local:
           catalogDirectory = MyFilmsSettings.GetPath(MyFilmsSettings.Path.MyFilmsPath) + @"\catalog";
           if (!Directory.Exists(catalogDirectory))
           {
@@ -4936,7 +4926,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
             }
           }
           break;
-        case (int)MyFilms.SetupType.CentralMaster:
+        case (int)MyFilmsGUI.MyFilms.SetupType.CentralMaster:
           catalogDirectory = Path.Combine(myFilmsCentralConfigDir, "catalog");
           if (!Directory.Exists(catalogDirectory))
           {
@@ -4947,7 +4937,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
             }
           }
           break;
-        case (int)MyFilms.SetupType.CentralClient:
+        case (int)MyFilmsGUI.MyFilms.SetupType.CentralClient:
           break;
       }
       
@@ -5070,10 +5060,10 @@ namespace MyFilmsPlugin.MyFilms.Configuration
       string fanartDirectory = "";
       switch (input.SetupType)
       {
-        case (int)MyFilms.SetupType.Local:
+        case (int)MyFilmsGUI.MyFilms.SetupType.Local:
           fanartDirectory = MyFilmsSettings.GetPath(MyFilmsSettings.Path.MyFilmsThumbsPath) + @"\Fanart";
           break;
-        case (int)MyFilms.SetupType.CentralMaster:
+        case (int)MyFilmsGUI.MyFilms.SetupType.CentralMaster:
           fanartDirectory = Path.Combine(myFilmsCentralConfigDir, "Fanart");
           break;
       }
@@ -5083,10 +5073,10 @@ namespace MyFilmsPlugin.MyFilms.Configuration
       string artistImagesDirectory = "";
       switch (input.SetupType)
       {
-        case (int)MyFilms.SetupType.Local:
+        case (int)MyFilmsGUI.MyFilms.SetupType.Local:
           artistImagesDirectory = MyFilmsSettings.GetPath(MyFilmsSettings.Path.MyFilmsThumbsPath) + @"\PersonImages";
           break;
-        case (int)MyFilms.SetupType.CentralMaster:
+        case (int)MyFilmsGUI.MyFilms.SetupType.CentralMaster:
           artistImagesDirectory = Path.Combine(myFilmsCentralConfigDir, "PersonImages");
           break;
       }
@@ -5102,11 +5092,11 @@ namespace MyFilmsPlugin.MyFilms.Configuration
       string viewImagesDirectory = MyFilmsSettings.GetPath(MyFilmsSettings.Path.ViewImages);
       switch (input.SetupType)
       {
-        case (int)MyFilms.SetupType.Local:
+        case (int)MyFilmsGUI.MyFilms.SetupType.Local:
           viewImagesDirectory = MyFilmsSettings.GetPath(MyFilmsSettings.Path.ViewImages);
           if (!Directory.Exists(viewImagesDirectory)) { try { Directory.CreateDirectory(viewImagesDirectory); } catch { } }
           break;
-        case (int)MyFilms.SetupType.CentralMaster:
+        case (int)MyFilmsGUI.MyFilms.SetupType.CentralMaster:
           viewImagesDirectory = Path.Combine(myFilmsCentralConfigDir, "ViewImages");
           try
           {
@@ -5227,10 +5217,10 @@ namespace MyFilmsPlugin.MyFilms.Configuration
           string moviepath = "";
           switch (input.SetupType)
           {
-            case (int)MyFilms.SetupType.Local:
+            case (int)MyFilmsGUI.MyFilms.SetupType.Local:
               moviepath = MyFilmsSettings.GetPath(MyFilmsSettings.Path.MyFilmsPath) + @"\SampleMovies";
               break;
-            case (int)MyFilms.SetupType.CentralMaster:
+            case (int)MyFilmsGUI.MyFilms.SetupType.CentralMaster:
               moviepath = Path.Combine(myFilmsCentralConfigDir, "Movies");
               break;
           }
@@ -5434,7 +5424,7 @@ namespace MyFilmsPlugin.MyFilms.Configuration
 
       #endregion
 
-      if (input.SetupType == (int)MyFilms.SetupType.CentralMaster)
+      if (input.SetupType == (int)MyFilmsGUI.MyFilms.SetupType.CentralMaster)
       {
         #region upload to network if "central master" setup was chosen
 
@@ -5480,14 +5470,14 @@ namespace MyFilmsPlugin.MyFilms.Configuration
 
       switch (input.SetupType)
       {
-        case (int)MyFilms.SetupType.Local:
-        case (int)MyFilms.SetupType.CentralMaster:
+        case (int)MyFilmsGUI.MyFilms.SetupType.Local:
+        case (int)MyFilmsGUI.MyFilms.SetupType.CentralMaster:
           if (newCatalog && IsAMCcatalogType(CatalogType.SelectedIndex))
           {
             launchAMCmanager();
           }
           break;
-        case (int)MyFilms.SetupType.CentralClient:
+        case (int)MyFilmsGUI.MyFilms.SetupType.CentralClient:
           break;
         default:
           break;

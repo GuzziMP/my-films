@@ -28,9 +28,6 @@ namespace ShareWatcherHelper
   using System.IO;
   using System.Threading;
   using System.Timers;
-
-  using MediaPortal.GUI.Library;
-  using MediaPortal.Services;
   using Timer = System.Timers.Timer;
 
   public class ShareWatcherHelper

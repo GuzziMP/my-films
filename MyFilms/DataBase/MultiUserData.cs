@@ -6,8 +6,6 @@ namespace MyFilmsPlugin.DataBase
 {
   using System.Globalization;
 
-  using MyFilms.MyFilmsGUI;
-
   public class MultiUserData
   {
     private static NLog.Logger LogMyFilms = NLog.LogManager.GetCurrentClassLogger();
@@ -40,10 +38,10 @@ namespace MyFilmsPlugin.DataBase
 
     public UserState GetGlobalState()
     {
-      var global = new UserState(MyFilms.GlobalUsername)
+      var global = new UserState(MyFilmsGUI.MyFilms.GlobalUsername)
         { WatchedCount = 0, UserRating = NoRating, WatchedDate = NoWatchedDate, ResumeData = 0 };
 
-      foreach (UserState userState in MultiUserStates.FindAll(x => x.UserName != MyFilms.GlobalUsername))
+      foreach (UserState userState in MultiUserStates.FindAll(x => x.UserName != MyFilmsGUI.MyFilms.GlobalUsername))
       {
         global.WatchedCount += userState.WatchedCount;
         if (userState.WatchedDate > global.WatchedDate) global.WatchedDate = userState.WatchedDate;

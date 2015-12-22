@@ -1,4 +1,4 @@
-﻿namespace MyFilmsPlugin.MyFilms.Configuration
+﻿namespace MyFilmsPlugin.Configuration
 {
     partial class MyFilmsInputBox
     {

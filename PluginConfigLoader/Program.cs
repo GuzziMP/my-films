@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
@@ -78,13 +77,13 @@ namespace PluginConfigLoader {
                 // Get list of assemblies to load with plugin
                 string[] assemblySplits = trimmedArgument2.Split('=');
                 if (assemblySplits.Length == 2)                
-                    assemblies = assemblySplits[1].ToString().Split(';');
+                    assemblies = assemblySplits[1].Split(';');
             }
             
             return true;
         }
 
-        public static void LoadPluginConfiguration() {
+        private static void LoadPluginConfiguration() {
             if (!File.Exists(pluginFile)) {
                 string message = string.Format("Plugin not found: {0}", pluginFile);
                 ShowMessage(message, MsgBoxIcon.INFO);

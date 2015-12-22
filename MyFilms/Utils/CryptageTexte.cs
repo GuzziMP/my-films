@@ -21,13 +21,13 @@
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #endregion
 
-namespace MyFilmsPlugin.MyFilms.Utils
-{
-  using System;
-  using System.IO;
-  using System.Text;
-  using System.Security.Cryptography;
+using System;
+using System.IO;
+using System.Security.Cryptography;
+using System.Text;
 
+namespace MyFilmsPlugin.Utils
+{
   public class Crypto
   {
     readonly byte[] clef = { 0xAD, 0x24, 0xFE, 0x58, 0xC5, 0x81, 0x37, 0xB4, 0xF9, 0x97, 0x23, 0xD2, 0x13, 0x86, 0xBB, 0xA7 };
@@ -43,20 +43,20 @@ namespace MyFilmsPlugin.MyFilms.Utils
     /// <summary>
     /// Fonction de cryptage : elle necessite en argument une chaîne de caractères,
     /// et renvoie une chaîne de caractères cryptée (cipher-text).
-    /// <param name=" TexteBrut"></param>
+    /// <param name=" texteBrut"></param>
     /// <returns name="string CypherTexte"></returns>
     /// </summary>
     // ***************************************************************************
 
-    public string Crypter(string TexteBrut)
+    public string Crypter(string texteBrut)
     {
-      if (TexteBrut.Length == 0) return string.Empty;
+      if (texteBrut.Length == 0) return string.Empty;
       MemoryStream cypherTexteMem = new MemoryStream();
 
       CryptoStream cStream = new CryptoStream(cypherTexteMem,
       rj.CreateEncryptor(clef, vect), CryptoStreamMode.Write);
 
-      byte[] textebrutByte = new UnicodeEncoding().GetBytes(TexteBrut);
+      byte[] textebrutByte = new UnicodeEncoding().GetBytes(texteBrut);
 
       cStream.Write(textebrutByte, 0, textebrutByte.Length);
       cStream.Close();

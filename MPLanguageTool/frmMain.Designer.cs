@@ -2,7 +2,7 @@ using System.ComponentModel;
 
 namespace MPLanguageTool
 {
-  partial class frmMain
+  partial class FrmMain
   {
     #region Windows Form Designer generated code
 
@@ -245,7 +245,7 @@ namespace MPLanguageTool
       this.openMyFilmsToolStripMenuItem.Text = "MyFilms";
       this.openMyFilmsToolStripMenuItem.Click += new System.EventHandler(this.openMyFilmsToolStripMenuItem_Click);
       // 
-      // frmMain
+      // FrmMain
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -257,7 +257,7 @@ namespace MPLanguageTool
       this.Controls.Add(this.gv);
       this.Controls.Add(this.menuStrip1);
       this.MainMenuStrip = this.menuStrip1;
-      this.Name = "frmMain";
+      this.Name = "FrmMain";
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
       this.Text = "MPLanguageTool";
       this.WindowState = System.Windows.Forms.FormWindowState.Maximized;

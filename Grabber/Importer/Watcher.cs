@@ -227,14 +227,14 @@ namespace Grabber.Importer
           switch (info.DriveType)
           {
             case DriveType.CDRom:
-              LogMyFilms.Info(string.Format("File Watcher: Skipping CD/DVD drive: {0}", sRoot));
+              LogMyFilms.Info("File Watcher: Skipping CD/DVD drive: {0}", sRoot);
               break;
             case DriveType.Network:
-              LogMyFilms.Info(string.Format("File Watcher: Adding watcher on folder: {0}", folder));
+              LogMyFilms.Info("File Watcher: Adding watcher on folder: {0}", folder);
               m_ScannedFolders.Add(folder);
               break;
             default:
-              LogMyFilms.Info(string.Format("File Watcher: Adding watcher on folder: {0}", folder));
+              LogMyFilms.Info("File Watcher: Adding watcher on folder: {0}", folder);
               m_WatchedFolders.Add(folder);
               break;
           }
@@ -242,7 +242,7 @@ namespace Grabber.Importer
         catch (ArgumentException)
         {
           // this has to be a UNC path
-          LogMyFilms.Info(string.Format("File Watcher: Adding watcher on folder: {0}", folder));
+          LogMyFilms.Info("File Watcher: Adding watcher on folder: {0}", folder);
           m_ScannedFolders.Add(folder);
         }
       }

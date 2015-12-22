@@ -23,12 +23,14 @@
 
 #endregion
 
-namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
+using MediaPortal.GUI.Library;
+using GUILocalizeStrings = MyFilmsPlugin.Utils.GUILocalizeStrings;
+
+namespace MyFilmsPlugin.MyFilmsGUI
 {
-  using MediaPortal.GUI.Library;
   //using MediaPortal.Dialogs;
   //using Action = MediaPortal.GUI.Library.Action;
-  using GUILocalizeStrings = MyFilmsPlugin.MyFilms.Utils.GUILocalizeStrings;
+  using GUILocalizeStrings = GUILocalizeStrings;
 
 
   /// <summary>
@@ -50,17 +52,17 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
 
     [SkinControl(2)]
     protected GUIFadeLabel LblHeading = null;
-    [SkinControlAttribute(4)]
+    [SkinControl(4)]
     protected GUILabelControl LblName = null;
-    [SkinControlAttribute(5)]
+    [SkinControl(5)]
     protected GUILabelControl LblRating = null;
-    [SkinControlAttribute(10)]
+    [SkinControl(10)]
     protected GUIButtonControl BtnPlus = null;
-    [SkinControlAttribute(11)]
+    [SkinControl(11)]
     protected GUIButtonControl BtnMin = null;
-    [SkinControlAttribute(12)]
+    [SkinControl(12)]
     protected GUIButtonControl BtnOk = null;
-    [SkinControlAttribute(100)]
+    [SkinControl(100)]
     protected GUIImageList ImgStar = null;
 
     public MyFilmsDialogSetRating()

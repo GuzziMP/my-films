@@ -1,10 +1,9 @@
-﻿namespace MyFilmsPlugin.MyFilms.Configuration
+﻿using System;
+using System.Windows.Forms;
+using MyFilmsPlugin.Utils;
+
+namespace MyFilmsPlugin.Configuration
 {
-  using System;
-  using System.Windows.Forms;
-
-  using Utils;
-
   public partial class MyFilmsInputBox : Form
     {
         public MyFilmsInputBox()

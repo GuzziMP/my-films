@@ -23,20 +23,16 @@
 
 #endregion
 
-using System.Linq;
-using MediaPortal.Util;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Globalization;
+using MediaPortal.Configuration;
+using MediaPortal.GUI.Library;
+using MediaPortal.Localisation;
 
-namespace MyFilmsPlugin.MyFilms.Utils
+namespace MyFilmsPlugin.Utils
 {
-  using System;
-  using System.Globalization;
-  using System.Collections;
-  using System.Collections.Generic;
-
-  using MediaPortal.GUI.Library;
-  using MediaPortal.Configuration;
-  using MediaPortal.Localisation;
-
   /// <summary>
   /// This class will hold all text used in the application
   /// The text is loaded for the current language from
@@ -148,7 +144,7 @@ namespace MyFilmsPlugin.MyFilms.Utils
       {
         return String.Format(translation, parameters);
       }
-      catch (System.FormatException e)
+      catch (FormatException e)
       {
         LogMyFilms.Error("Error formatting translation with id {0}", dwCode);
         LogMyFilms.Error("Unformatted translation: {0}", translation);

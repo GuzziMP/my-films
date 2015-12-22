@@ -2,7 +2,7 @@
 using System.Threading;
 using MediaPortal.GUI.Library;
 
-namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
+namespace MyFilmsPlugin.MyFilmsGUI
 {
   internal class GUIBackgroundTask
   {

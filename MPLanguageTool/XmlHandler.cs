@@ -24,6 +24,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Xml;
 using System.IO;
+using System.Linq;
 
 namespace MPLanguageTool
 {
@@ -39,49 +40,49 @@ namespace MPLanguageTool
     private static string TextAttribute = string.Empty;
     // if the Text is not in Innertext, but in an attribute (MPII does it that way)
 
-    public static string BuildFileName(string languageID, bool ReturnFullPath)
+    public static string BuildFileName(string languageId, bool returnFullPath)
     {
-      string LangDefaultID = "en";
-      string LangPrefix = string.Empty;
-      switch (frmMain.LangType)
+      string langDefaultId = "en";
+      string langPrefix = string.Empty;
+      switch (FrmMain.LangType)
       {
-        case frmMain.StringsType.MovingPictures:
-        case frmMain.StringsType.TvSeries:
-          LangDefaultID = "en-US";
+        case FrmMain.StringsType.MovingPictures:
+        case FrmMain.StringsType.TvSeries:
+          langDefaultId = "en-US";
           break;
-        case frmMain.StringsType.MediaPortal_1:
-        case frmMain.StringsType.MediaPortal_II:
-        case frmMain.StringsType.MpTagThat:
-        case frmMain.StringsType.MyFilms:
-          LangPrefix = "strings_";
+        case FrmMain.StringsType.MediaPortal_1:
+        case FrmMain.StringsType.MediaPortal_II:
+        case FrmMain.StringsType.MpTagThat:
+        case FrmMain.StringsType.MyFilms:
+          langPrefix = "strings_";
           break;
       }
-      if (languageID != null)
+      if (languageId != null)
       {
-        LangDefaultID = languageID;
+        langDefaultId = languageId;
       }
-      return ReturnFullPath
-               ? frmMain.languagePath + "\\" + LangPrefix + LangDefaultID + ".xml"
-               : LangPrefix + LangDefaultID + ".xml";
+      return returnFullPath
+               ? FrmMain.LanguagePath + "\\" + langPrefix + langDefaultId + ".xml"
+               : langPrefix + langDefaultId + ".xml";
     }
 
     public static void InitializeXmlValues()
     {
-      switch (frmMain.LangType)
+      switch (FrmMain.LangType)
       {
-        case frmMain.StringsType.MediaPortal_1:
-        case frmMain.StringsType.MyFilms:
-          MainNodeSelection = "/Language/Section";
+        case FrmMain.StringsType.MediaPortal_1:
+        case FrmMain.StringsType.MyFilms:
+          MainNodeSelection = "/Language/section";
           SingleNodeSelection = "String";
           Field = "id";
           Prefix = "prefix";
           break;
-        case frmMain.StringsType.MovingPictures:
+        case FrmMain.StringsType.MovingPictures:
           MainNodeSelection = "/strings";
           SingleNodeSelection = "string";
           Field = "Field";
           break;
-        case frmMain.StringsType.TvSeries:
+        case FrmMain.StringsType.TvSeries:
           MainNodeSelection = "/strings";
           SingleNodeSelection = "string";
           Field = "Field";
@@ -90,19 +91,19 @@ namespace MPLanguageTool
       }
     }
 
-    public static void InitializeXmlValues(string Section)
+    public static void InitializeXmlValues(string section)
     {
-      switch (frmMain.LangType)
+      switch (FrmMain.LangType)
       {
-        case frmMain.StringsType.MediaPortal_II:
-          MainNodeSelection = "/Language/Section[@Name='" + Section + "']";
+        case FrmMain.StringsType.MediaPortal_II:
+          MainNodeSelection = "/Language/section[@Name='" + section + "']";
           SingleNodeSelection = "String";
           Field = "Name";
           TextAttribute = "Text";
           break;
 
-        case frmMain.StringsType.MpTagThat:
-          MainNodeSelection = "/Language/Section[@name='" + Section + "']";
+        case FrmMain.StringsType.MpTagThat:
+          MainNodeSelection = "/Language/section[@name='" + section + "']";
           SingleNodeSelection = "String";
           Field = "id";
           break;
@@ -110,13 +111,13 @@ namespace MPLanguageTool
     }
 
     // Load Original Label to Translate
-    public static DataTable Load(string languageID, out Dictionary<string, DataRow> originalMapping)
+    public static DataTable Load(string languageId, out Dictionary<string, DataRow> originalMapping)
     {
       originalMapping = new Dictionary<string, DataRow>();
-      string xml = BuildFileName(languageID, true);
+      string xml = BuildFileName(languageId, true);
       if (!File.Exists(xml))
       {
-        return languageID == null ? null : new DataTable();
+        return languageId == null ? null : new DataTable();
       }
 
       DataTable translations = new DataTable();
@@ -145,17 +146,17 @@ namespace MPLanguageTool
           foreach (XmlNode keyNode in nodes)
           {
             string prefixValue = "";
-            string node_id = keyNode.Attributes[Field].Value;
+            string nodeId = keyNode.Attributes[Field].Value;
 
             // MPII has always 2 attributes
-            if (keyNode.Attributes.Count == 2 && frmMain.LangType != frmMain.StringsType.MediaPortal_II)
+            if (keyNode.Attributes.Count == 2 && FrmMain.LangType != FrmMain.StringsType.MediaPortal_II)
             {
               prefixValue = keyNode.Attributes[Prefix].Value;
             }
 
             DataRow row = translations.NewRow();
-            row[0] = node_id;
-            if (frmMain.LangType == frmMain.StringsType.MediaPortal_II)
+            row[0] = nodeId;
+            if (FrmMain.LangType == FrmMain.StringsType.MediaPortal_II)
             {
               row[1] = keyNode.Attributes[TextAttribute].Value;
             }
@@ -169,7 +170,7 @@ namespace MPLanguageTool
 
 
             translations.Rows.Add(row);
-            originalMapping.Add(node_id, row);
+            originalMapping.Add(nodeId, row);
           }
         }
       }
@@ -177,10 +178,9 @@ namespace MPLanguageTool
     }
 
     // Load Translations
-    public static DataTable Load_Translation(string languageID, DataTable originalTranslation,
-                                             Dictionary<string, DataRow> originalMapping)
+    public static DataTable Load_Translation(string languageId, DataTable originalTranslation, Dictionary<string, DataRow> originalMapping)
     {
-      string xml = BuildFileName(languageID, true);
+      string xml = BuildFileName(languageId, true);
       DataTable translations = new DataTable();
 
       DataColumn col0 = new DataColumn("id", Type.GetType("System.String"));
@@ -197,14 +197,14 @@ namespace MPLanguageTool
 
       if (!File.Exists(xml))
       {
-        if (languageID == null)
+        if (languageId == null)
         {
           return null;
         }
         //
         // Create a empty xml file as placeholder
         //
-        Save(languageID, "", translations);
+        Save(languageId, "", translations);
       }
 
       Dictionary<string, DataRow> translationMapping = new Dictionary<string, DataRow>();
@@ -219,17 +219,17 @@ namespace MPLanguageTool
           foreach (XmlNode keyNode in nodes)
           {
             string prefixValue = "";
-            string node_id = keyNode.Attributes[Field].Value;
+            string nodeId = keyNode.Attributes[Field].Value;
 
             // MPII has always 2 attributes
-            if (keyNode.Attributes.Count == 2 && frmMain.LangType != frmMain.StringsType.MediaPortal_II)
+            if (keyNode.Attributes.Count == 2 && FrmMain.LangType != FrmMain.StringsType.MediaPortal_II)
             {
               prefixValue = keyNode.Attributes[Prefix].Value;
             }
 
             DataRow row = translations.NewRow();
-            row[0] = node_id;
-            if (frmMain.LangType == frmMain.StringsType.MediaPortal_II)
+            row[0] = nodeId;
+            if (FrmMain.LangType == FrmMain.StringsType.MediaPortal_II)
             {
               row[1] = keyNode.Attributes[TextAttribute].Value;
             }
@@ -247,11 +247,11 @@ namespace MPLanguageTool
             //MessageBox.Show("Loading xml strings (node_id = " + node_id + ")");
             //
             translations.Rows.Add(row);
-            if (translationMapping.ContainsKey(node_id.Trim()))
+            if (translationMapping.ContainsKey(nodeId.Trim()))
             {
-              MessageBox.Show("Error in translation file !\n ID = '" + node_id.ToString() + "', String = '" + row[1].ToString() + "'", "Language File Importer", MessageBoxButtons.OK, MessageBoxIcon.Error);
+              MessageBox.Show("Error in translation file !\n ID = '" + nodeId + "', String = '" + row[1] + "'", "Language File Importer", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            translationMapping.Add(node_id.Trim(), row);
+            translationMapping.Add(nodeId.Trim(), row);
           }
         }
       }
@@ -277,7 +277,7 @@ namespace MPLanguageTool
       XmlDocument doc = new XmlDocument();
       doc.Load(xml);
 
-      List<string> Sections = new List<string>();
+      List<string> sections = new List<string>();
 
       if (doc.DocumentElement != null)
       {
@@ -285,26 +285,20 @@ namespace MPLanguageTool
 
         if (nodes != null)
         {
-          foreach (XmlNode keyNode in nodes)
-          {
-            if (keyNode.Attributes.Count > 0)
-            {
-              Sections.Add(keyNode.Attributes[attribute].Value);
-            }
-          }
+          sections.AddRange(from XmlNode keyNode in nodes where keyNode.Attributes.Count > 0 select keyNode.Attributes[attribute].Value);
         }
       }
-      return Sections;
+      return sections;
     }
 
     /// <summary>
     /// Validates, if we have a valid XML Document
     /// </summary>
-    /// <param name="languageID"></param>
+    /// <param name="languageId"></param>
     /// <returns></returns>
-    private static bool IsValidDocument(string languageID)
+    private static bool IsValidDocument(string languageId)
     {
-      string xml = BuildFileName(languageID, true);
+      string xml = BuildFileName(languageId, true);
       if (!File.Exists(xml))
       {
         return false;
@@ -324,27 +318,27 @@ namespace MPLanguageTool
     }
 
     // Save file
-    public static void Save(string languageID, string LanguageNAME, DataTable translations)
+    public static void Save(string languageId, string languageName, DataTable translations)
     {
-      string xml = BuildFileName(languageID, true);
+      string xml = BuildFileName(languageId, true);
       // Don't init the Streamwriter here, as it will clear the file content.
       // When saving multiple sections language files like MP2 or MPTagThat this causes troubles
       StreamWriter writer;
-      switch (frmMain.LangType)
+      switch (FrmMain.LangType)
       {
-        case frmMain.StringsType.MediaPortal_1:
-        case frmMain.StringsType.MyFilms:
+        case FrmMain.StringsType.MediaPortal_1:
+        case FrmMain.StringsType.MyFilms:
           writer = new StreamWriter(xml, false, Encoding.UTF8);
           writer.Write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-          writer.Write("<Language name=\"" + LanguageNAME + "\" characters=\"" + getMaxCharsForLanguageID(languageID) +
+          writer.Write("<Language name=\"" + languageName + "\" characters=\"" + GetMaxCharsForLanguageId(languageId) +
                        "\">\n");
-          writer.Write("  <Section name=\"unmapped\">\n");
-          writer.Write("  </Section>\n");
+          writer.Write("  <section name=\"unmapped\">\n");
+          writer.Write("  </section>\n");
           writer.Write("</Language>\n");
           writer.Close();
           break;
-        case frmMain.StringsType.MediaPortal_II:
-          if (!IsValidDocument(languageID))
+        case FrmMain.StringsType.MediaPortal_II:
+          if (!IsValidDocument(languageId))
           {
             writer = new StreamWriter(xml, false, Encoding.UTF8);
             writer.Write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
@@ -355,8 +349,8 @@ namespace MPLanguageTool
             writer.Close();
           }
           break;
-        case frmMain.StringsType.MpTagThat:
-          if (!IsValidDocument(languageID))
+        case FrmMain.StringsType.MpTagThat:
+          if (!IsValidDocument(languageId))
           {
             writer = new StreamWriter(xml, false, Encoding.UTF8);
             writer.Write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
@@ -370,21 +364,21 @@ namespace MPLanguageTool
             writer.Close();
           }
           break;
-        case frmMain.StringsType.MovingPictures:
+        case FrmMain.StringsType.MovingPictures:
           writer = new StreamWriter(xml, false, Encoding.UTF8);
           writer.Write("<?xml version=\"1.0\" encoding=\"iso-8859-1\"?>\n");
           writer.Write("<!-- Moving Pictures translation file -->\n");
-          writer.Write("<!-- " + LanguageNAME + " -->\n");
+          writer.Write("<!-- " + languageName + " -->\n");
           writer.Write("<!-- Note: English is the fallback for any strings not found in other languages -->\n");
           writer.Write("  <strings>\n");
           writer.Write("  </strings>\n");
           writer.Close();
           break;
-        case frmMain.StringsType.TvSeries:
+        case FrmMain.StringsType.TvSeries:
           writer = new StreamWriter(xml, false, Encoding.UTF8);
           writer.Write("<?xml version=\"1.0\" encoding=\"iso-8859-1\"?>\n");
           writer.Write("<!-- MP-TV-Series translation file -->\n");
-          writer.Write("<!-- " + LanguageNAME + " -->\n");
+          writer.Write("<!-- " + languageName + " -->\n");
           writer.Write("<!-- Note: English is the fallback for any strings not found in other languages -->\n");
           writer.Write("  <strings>\n");
           writer.Write("  </strings>\n");
@@ -400,13 +394,13 @@ namespace MPLanguageTool
         // we have a new node, which got never translated
         // so let's add it
         string attrName = string.Empty;
-        switch (frmMain.LangType)
+        switch (FrmMain.LangType)
         {
-          case frmMain.StringsType.MediaPortal_II:
+          case FrmMain.StringsType.MediaPortal_II:
             attrName = "Name";
             break;
 
-          case frmMain.StringsType.MpTagThat:
+          case FrmMain.StringsType.MpTagThat:
             attrName = "name";
             break;
         }
@@ -414,7 +408,7 @@ namespace MPLanguageTool
         int startIndex = MainNodeSelection.IndexOf("'") + 1;
         int endIndex = MainNodeSelection.LastIndexOf("'");
         string sectionName = MainNodeSelection.Substring(startIndex, endIndex - startIndex);
-        nRoot = doc.CreateElement("Section");
+        nRoot = doc.CreateElement("section");
         XmlAttribute attr = nRoot.OwnerDocument.CreateAttribute(attrName);
         attr.InnerText = sectionName;
         nRoot.Attributes.Append(attr);
@@ -442,7 +436,7 @@ namespace MPLanguageTool
         if (!String.IsNullOrEmpty(row["Translated"].ToString()))
         {
           // MPII does have the translation in an attribute and not inner text
-          if (frmMain.LangType == frmMain.StringsType.MediaPortal_II)
+          if (FrmMain.LangType == FrmMain.StringsType.MediaPortal_II)
           {
             attr = nValue.OwnerDocument.CreateAttribute(TextAttribute);
             attr.InnerText = row["Translated"].ToString();
@@ -458,11 +452,11 @@ namespace MPLanguageTool
       doc.Save(xml);
     }
 
-    private static int getMaxCharsForLanguageID(string languageID)
+    private static int GetMaxCharsForLanguageId(string languageId)
     {
       int maxChars;
 
-      switch (languageID)
+      switch (languageId)
       {
         case "cs": //Czech
         case "hu": //Hungarian

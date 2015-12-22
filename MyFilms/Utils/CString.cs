@@ -21,12 +21,12 @@
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #endregion
 
-namespace MyFilmsPlugin.MyFilms.Utils
-{
-  using System;
-  using System.Collections.Generic;
-  using System.Globalization;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
 
+namespace MyFilmsPlugin.Utils
+{
   /// <summary>
   /// Implementing String Methods
   /// </summary>
@@ -49,10 +49,7 @@ namespace MyFilmsPlugin.MyFilms.Utils
     public static string Left(string source, int length)
     {
       if (source == null) throw new ArgumentNullException("source");
-      if (length > 0 && length < source.Length)
-        return source.Substring(0, length);
-      else
-        return source;
+      return length > 0 && length < source.Length ? source.Substring(0, length) : source;
     }
 
     /// <summary>Non-static version of function below. Operates on NewString object</summary>
@@ -63,10 +60,7 @@ namespace MyFilmsPlugin.MyFilms.Utils
     /// <returns>Returns right part of the string OR complete original string if length less than 1 or greater than string length</returns>
     public static string Right(string source, int length)
     {
-      if (length > 0 && length < source.Length)
-        return source.Substring(source.Length - length);
-      else
-        return source;
+      return length > 0 && length < source.Length ? source.Substring(source.Length - length) : source;
     }
 
     /// <summary>Non-static version of function below. Operates on NewString object</summary>
@@ -180,7 +174,7 @@ namespace MyFilmsPlugin.MyFilms.Utils
       index = -iLen;
       do
       {
-        index = (asChars) ? source.IndexOfAny(sFindArray, index + 1) : source.IndexOf(findText, index + iLen);
+        index = asChars ? source.IndexOfAny(sFindArray, index + 1) : source.IndexOf(findText, index + iLen);
         count++;
       } while (index >= 0);
       return count;
@@ -290,17 +284,14 @@ namespace MyFilmsPlugin.MyFilms.Utils
     /// <returns>New string with replacements</returns>
     public static string NPosReplaceString(string findText, string replaceText, string source, int count)
     {
-      string source2;
-
       if (findText == null) throw new ArgumentNullException("findText");
       if (replaceText == null) throw new ArgumentNullException("replaceText");
       if (source == null) throw new ArgumentNullException("source");
 
-      source2 = NPosRight(findText, source, count, false, false);
-      if (source2.Length != 0)
-        return source.Substring(0, source.Length - source2.Length) + source2.Replace(findText, replaceText);
-      else
-        return source;
+      string source2 = NPosRight(findText, source, count, false, false);
+      return source2.Length != 0
+        ? source.Substring(0, source.Length - source2.Length) + source2.Replace(findText, replaceText)
+        : source;
     }
 
 
@@ -316,8 +307,6 @@ namespace MyFilmsPlugin.MyFilms.Utils
     /// <returns>New string with replacements</returns>
     public static string PosReplaceString(string startText, string endText, string replaceText, string source, int index)
     {
-      int pEnd;
-
       if (startText == null) throw new ArgumentNullException("startText");
       if (endText == null) throw new ArgumentNullException("endText");
       if (replaceText == null) throw new ArgumentNullException("replaceText");
@@ -329,6 +318,7 @@ namespace MyFilmsPlugin.MyFilms.Utils
         index = source.IndexOf(startText, index);
         if (index == -1) break;
 
+        int pEnd;
         if (endText.Length != 0)
         {
           pEnd = source.IndexOf(endText, index + 1);
@@ -424,19 +414,16 @@ namespace MyFilmsPlugin.MyFilms.Utils
     {
       if (source == null) throw new ArgumentNullException("source");
 
-      if (source.Length == 1)
-      {
-        return source;
-      }
-      else
-      {
-        return Reverse(source.Substring(1)) + source.Substring(0, 1);
-      }
+      return source.Length == 1 ? source : Reverse(source.Substring(1)) + source.Substring(0, 1);
     }
 
     /// <summary>Converts any multiple adjacent spaces to a single space</summary>
     /// <returns>The trimmed string</returns>
-    public string TrimToSingleSpace() { return TrimToSingleSpace(myString); }
+    public string TrimToSingleSpace()
+    {
+      return TrimToSingleSpace(myString);
+    }
+
     public static string TrimToSingleSpace(string source)
     {
       int intPos;

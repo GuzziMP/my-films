@@ -1,6 +1,5 @@
 ﻿using System.Reflection;
 using System.Runtime.InteropServices;
-using MediaPortal.Common.Utils;
 
 // Les informations générales relatives à un assembly dépendent de 
 // l'ensemble d'attributs suivant. Changez les valeurs de ces attributs pour modifier les informations
@@ -31,7 +30,3 @@ using MediaPortal.Common.Utils;
 //
 //[assembly: AssemblyVersion("5.0.2.1372")]
 //[assembly: AssemblyFileVersion("5.0.2.1372")]
-
-[assembly: CompatibleVersion("1.6.100.0", "1.1.6.27644")]
-//[assembly: UsesSubsystem("MP.Config")]
-//[assembly: UsesSubsystem("MP.DB")]

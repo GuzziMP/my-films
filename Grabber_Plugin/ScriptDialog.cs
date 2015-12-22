@@ -4,7 +4,7 @@ namespace MyVideoGrabber
   using System.Text;
   using System.Windows.Forms;
   using System.Xml;
-
+  using System.IO;
   using MediaPortal.Configuration;
 
   public partial class MultiGrabberForm : Form
@@ -13,16 +13,18 @@ namespace MyVideoGrabber
     {
       InitializeComponent();
       System.Reflection.Assembly asm = System.Reflection.Assembly.GetExecutingAssembly();
-      this.label_Version.Text = "V" + asm.GetName().Version.ToString();
+      label_Version.Text = "V" + asm.GetName().Version;
     }
 
     private void button3_Click(object sender, EventArgs e)
     {
-      System.Windows.Forms.OpenFileDialog openFileDialog1 = new OpenFileDialog();
-      openFileDialog1.RestoreDirectory = true;
-      openFileDialog1.InitialDirectory = Config.GetFolder(Config.Dir.Config) + "\\MyVideoGrabberScripts";
+      OpenFileDialog openFileDialog1 = new OpenFileDialog
+      {
+        RestoreDirectory = true,
+        InitialDirectory = Config.GetFolder(Config.Dir.Config) + "\\MyVideoGrabberScripts",
+        Filter = "Load xml (*.xml)|*.xml"
+      };
 
-      openFileDialog1.Filter = "Load xml (*.xml)|*.xml";
       if (openFileDialog1.ShowDialog() == DialogResult.OK)
       {
         listView1.Items.Add(openFileDialog1.FileName);
@@ -32,8 +34,10 @@ namespace MyVideoGrabber
 
     private void button1_Click(object sender, EventArgs e)
     {
-      var tw = new XmlTextWriter(Config.GetFolder(Config.Dir.Config) + "\\MyVideoGrabber.xml", UTF8Encoding.UTF8);
-      tw.Formatting = Formatting.Indented;
+      var tw = new XmlTextWriter(Config.GetFolder(Config.Dir.Config) + "\\MyVideoGrabber.xml", Encoding.UTF8)
+      {
+        Formatting = Formatting.Indented
+      };
       tw.WriteStartDocument(true);
       tw.WriteStartElement("Profile");
       tw.WriteStartElement("Section");
@@ -51,17 +55,17 @@ namespace MyVideoGrabber
       tw.Flush();
       tw.Close();
 
-      this.Close();
+      Close();
     }
 
     private void button2_Click(object sender, EventArgs e)
     {
-      this.Close();
+      Close();
     }
 
     private void MyVideoGrabberForm_Load(object sender, EventArgs e)
     {
-      if (System.IO.File.Exists(Config.GetFolder(Config.Dir.Config) + "\\MyVideoGrabber.xml") == true)
+      if (File.Exists(Config.GetFolder(Config.Dir.Config) + "\\MyVideoGrabber.xml"))
       {
         XmlDocument doc = new XmlDocument();
         doc.Load(Config.GetFolder(Config.Dir.Config) + "\\MyVideoGrabber.xml");

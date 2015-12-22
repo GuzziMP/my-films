@@ -1,20 +1,17 @@
 ﻿using System;
-using System.Reflection;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Threading;
 using MediaPortal.Configuration;
 using MediaPortal.Dialogs;
 using MediaPortal.GUI.Library;
-using System.Threading;
-using System.Collections;
-using System.Linq;
+using MediaPortal.Video.Database;
+using GUILocalizeStrings = MyFilmsPlugin.Utils.GUILocalizeStrings;
 
-namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
+namespace MyFilmsPlugin.MyFilmsGUI
 {
-
-  using MediaPortal.Video.Database;
-
-  using MyFilmsPlugin.MyFilms.Utils;
-
   public static class GUIUtils
   {
     private static NLog.Logger LogMyFilms = NLog.LogManager.GetCurrentClassLogger(); //log

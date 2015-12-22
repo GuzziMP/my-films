@@ -8,25 +8,25 @@ namespace Grabber.Util
   {
     public HtmlUtil() { }
 
-    public int FindTag(string strHTML, string strTag, ref string strtagFound, int iPos)
+    public int FindTag(string strHtml, string strTag, ref string strtagFound, int iPos)
     {
-      if (iPos < 0 || iPos >= strHTML.Length) return -1;
-      string strHTMLLow = strHTML;
+      if (iPos < 0 || iPos >= strHtml.Length) return -1;
+      string strHtmlLow = strHtml;
       string strTagLow = strTag;
-      strHTMLLow = strHTMLLow.ToLowerInvariant();
+      strHtmlLow = strHtmlLow.ToLowerInvariant();
       strTagLow = strTagLow.ToLowerInvariant();
       strtagFound = "";
-      int iStart = strHTMLLow.IndexOf(strTag, iPos);
+      int iStart = strHtmlLow.IndexOf(strTag, iPos);
       if (iStart < 0) return -1;
-      int iEnd = strHTMLLow.IndexOf(">", iStart);
-      if (iEnd < 0) iEnd = (int)strHTMLLow.Length;
-      strtagFound = strHTMLLow.Substring(iStart, (iEnd + 1) - iStart);
+      int iEnd = strHtmlLow.IndexOf(">", iStart);
+      if (iEnd < 0) iEnd = strHtmlLow.Length;
+      strtagFound = strHtmlLow.Substring(iStart, (iEnd + 1) - iStart);
       return iStart;
     }
 
-    public int FindClosingTag(string strHTML, string strTag, ref string strtagFound, int iPos)
+    public int FindClosingTag(string strHtml, string strTag, ref string strtagFound, int iPos)
     {
-      string strHTMLLow = strHTML.ToLowerInvariant();
+      string strHTMLLow = strHtml.ToLowerInvariant();
       string strTagLow = strTag.ToLowerInvariant();
       strtagFound = "";
       int iStart = strHTMLLow.IndexOf("</" + strTag, iPos);
@@ -39,7 +39,7 @@ namespace Grabber.Util
       }
 
       int iEnd = strHTMLLow.IndexOf(">", iStart);
-      if (iEnd < 0) iEnd = (int)strHTMLLow.Length;
+      if (iEnd < 0) iEnd = strHTMLLow.Length;
       strtagFound = strHTMLLow.Substring(iStart, (iEnd + 1) - iStart);
       return iStart;
     }
@@ -66,7 +66,7 @@ namespace Grabber.Util
       strValue = strTagAndValue;
       int iStart = strTagAndValue.IndexOf(strTag);
       if (iStart < 0) return;
-      iStart += (int)strTag.Length;
+      iStart += strTag.Length;
       while (strTagAndValue[iStart + 1] == 0x20 || strTagAndValue[iStart + 1] == 0x27 ||
              strTagAndValue[iStart + 1] == 34) iStart++;
       int iEnd = iStart + 1;
@@ -78,37 +78,37 @@ namespace Grabber.Util
       }
     }
 
-    public void RemoveTags(ref string strHTML)
+    public void RemoveTags(ref string strHtml)
     {
       int iNested = 0;
       string strReturn = "";
-      for (int i = 0; i < (int)strHTML.Length; ++i)
+      for (int i = 0; i < strHtml.Length; ++i)
       {
-        if (strHTML[i] == '<') iNested++;
-        else if (strHTML[i] == '>') iNested--;
+        if (strHtml[i] == '<') iNested++;
+        else if (strHtml[i] == '>') iNested--;
         else
         {
           if (0 == iNested)
           {
-            strReturn += strHTML[i];
+            strReturn += strHtml[i];
           }
         }
       }
-      strHTML = strReturn;
+      strHtml = strReturn;
     }
 
-    public string ConvertHTMLToAnsi(string strHTML)
+    public string ConvertHTMLToAnsi(string strHtml)
     {
       string strippedHtml = string.Empty;
-      ConvertHTMLToAnsi(strHTML, out strippedHtml);
+      ConvertHTMLToAnsi(strHtml, out strippedHtml);
       return strippedHtml;
     }
 
-    public void ConvertHTMLToAnsi(string strHTML, out string strStripped)
+    public void ConvertHTMLToAnsi(string strHtml, out string strStripped)
     {
       strStripped = "";
       //	    int i=0; 
-      if (strHTML.Length == 0)
+      if (strHtml.Length == 0)
       {
         strStripped = "";
         return;
@@ -116,7 +116,7 @@ namespace Grabber.Util
       //int iAnsiPos=0;
       StringWriter writer = new StringWriter();
 
-      System.Web.HttpUtility.HtmlDecode(strHTML, writer);
+      HttpUtility.HtmlDecode(strHtml, writer);
 
       String DecodedString = writer.ToString();
       strStripped = DecodedString.Replace("<br>", "\n");
@@ -125,19 +125,19 @@ namespace Grabber.Util
       /*
             string szAnsi = "";
 
-            while (i < (int)strHTML.Length )
+            while (i < (int)strHtml.Length )
             {
-              char kar=strHTML[i];
+              char kar=strHtml[i];
               if (kar=='&')
               {
-                if (strHTML[i+1]=='#')
+                if (strHtml[i+1]=='#')
                 {
                   int ipos=0;
                   i+=2;
                   string szDigit="";
-                  while ( ipos < 12 && i<strHTML.Length && Char.IsDigit(strHTML[i])) 
+                  while ( ipos < 12 && i<strHtml.Length && Char.IsDigit(strHtml[i])) 
                   {
-                    szDigit+=strHTML[i];
+                    szDigit+=strHtml[i];
                     ipos++;
                     i++;
                   }
@@ -149,9 +149,9 @@ namespace Grabber.Util
                   i++;
                   int ipos=0;
                   string szKey="";
-                  while (i<strHTML.Length && strHTML[i] != ';' && ipos < 12)
+                  while (i<strHtml.Length && strHtml[i] != ';' && ipos < 12)
                   {
-                    szKey+=Char.ToLower(strHTML[i]);
+                    szKey+=Char.ToLower(strHtml[i]);
                     ipos++;
                     i++;
                   }

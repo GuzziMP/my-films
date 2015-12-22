@@ -1,19 +1,20 @@
 ﻿using System.Collections.Generic;
-using MediaPortal.GUI.Library;
 using MediaPortal.Dialogs;
+using MediaPortal.GUI.Library;
+using GUILocalizeStrings = MyFilmsPlugin.Utils.GUILocalizeStrings;
 
-namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
+namespace MyFilmsPlugin.MyFilmsGUI
 {
   public class GUIDialogImageSelect : GUIDialogSelect2
   {
     #region Skin attributes
-    [SkinControlAttribute(3)]
+    [SkinControl(3)]
     public GUIListControl SelectionList = null;
 
-    [SkinControlAttribute(10)]
+    [SkinControl(10)]
     protected GUIButtonControl btnOK = null;
 
-    [SkinControlAttribute(11)]
+    [SkinControl(11)]
     protected GUIButtonControl btnCancel = null;
     #endregion
 
@@ -51,7 +52,7 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
 
     public override string GetModuleName()
     {
-      return Utils.GUILocalizeStrings.Get(MyFilms.ID_MyFilmsDialogImageSelect);
+      return GUILocalizeStrings.Get(MyFilms.ID_MyFilmsDialogImageSelect);
     }
 
     protected override void OnClicked(int controlId, GUIControl control, MediaPortal.GUI.Library.Action.ActionType actionType)

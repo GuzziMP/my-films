@@ -23,42 +23,40 @@
 
 using System;
 using System.Collections.Generic;
-using MediaPortal.GUI.Library;
-using MediaPortal.Dialogs;
-using Action = MediaPortal.GUI.Library.Action;
 using System.ComponentModel;
+using System.Data;
 using System.Drawing;
-using MyFilmsPlugin.MyFilms.Utils;
-using GUILocalizeStrings = MyFilmsPlugin.MyFilms.Utils.GUILocalizeStrings;
+using System.IO;
+using MediaPortal.Dialogs;
+using MediaPortal.GUI.Library;
+using MyFilmsPlugin.Utils;
+using Action = MediaPortal.GUI.Library.Action;
+using GUILocalizeStrings = MyFilmsPlugin.Utils.GUILocalizeStrings;
 
-namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
+namespace MyFilmsPlugin.MyFilmsGUI
 {
-  using System.Data;
-  using System.IO;
-  using MyFilmsPlugin.Utils;
-
   class MyFilmsCoverManager : GUIWindow
   {
     private static NLog.Logger LogMyFilms = NLog.LogManager.GetCurrentClassLogger();
 
     #region Skin Controls
 
-    [SkinControlAttribute(50)]
+    [SkinControl(50)]
     protected GUIFacadeControl MFacade = null;
 
-    [SkinControlAttribute(2)]
+    [SkinControl(2)]
     protected GUIButtonControl ButtonLayouts = null;
 
-    [SkinControlAttribute(11)]
+    [SkinControl(11)]
     protected GUILabelControl LabelResolution = null;
 
-    [SkinControlAttribute(12)]
+    [SkinControl(12)]
     protected GUIButtonControl ButtonFilters = null;
 
-    [SkinControlAttribute(13)]
+    [SkinControl(13)]
     protected GUIButtonControl ButtonDownloadCover = null;
 
-    [SkinControlAttribute((int)MyFilms.Controls.CTRL_GuiWaitCursor)]
+    [SkinControl((int)MyFilms.Controls.CTRL_GuiWaitCursor)]
     protected GUIAnimation SearchAnimation = null;
 
     #endregion

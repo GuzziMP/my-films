@@ -24,10 +24,11 @@ using System.Collections.Generic;
 using System.Data;
 using System.Windows.Forms;
 using System.Globalization;
+using System.Linq;
 
 namespace MPLanguageTool
 {
-  public partial class frmMain : Form
+  public partial class FrmMain : Form
   {
     #region Variables
 
@@ -36,43 +37,31 @@ namespace MPLanguageTool
     private Dictionary<string, DataRow> originalMapping;
     private CultureInfo culture;
 
-    public static string languagePath;
+    public static string LanguagePath;
     public static StringsType LangType;
 
     #endregion
 
-    public frmMain()
+    public FrmMain()
     {
       InitializeComponent();
     }
 
     private int GetUntranslatedCountDeployTool()
     {
-      int count = 0;
-      foreach (DataGridViewRow row in gv.Rows)
-      {
-        if (row.Cells[1].Value == null)
-          count++;
-      }
-      return count;
+      return gv.Rows.Cast<DataGridViewRow>().Count(row => row.Cells[1].Value == null);
     }
 
     private int GetUntranslatedCountMediaPortal()
     {
-      int count = 0;
-      foreach (DataGridViewRow row in gv2.Rows)
-      {
-        if (String.IsNullOrEmpty(row.Cells[2].Value.ToString()))
-          count++;
-      }
-      return count;
+      return gv2.Rows.Cast<DataGridViewRow>().Count(row => String.IsNullOrEmpty(row.Cells[2].Value.ToString()));
     }
 
     private void gv_CellMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
     {
       string key = (string)gv.Rows[e.RowIndex].Cells[0].Value;
       string value = (string)gv.Rows[e.RowIndex].Cells[1].Value;
-      frmEditDeploy dlg = new frmEditDeploy();
+      FrmEditDeploy dlg = new FrmEditDeploy();
       if (dlg.ShowDialog(key, value, defaultTranslations[key]) == DialogResult.OK)
       {
         string trans = dlg.GetTranslation();
@@ -94,7 +83,7 @@ namespace MPLanguageTool
       string valueTranslated = (string)gv2.Rows[e.RowIndex].Cells[2].Value;
       string prefixOriginal = (string)gv2.Rows[e.RowIndex].Cells[3].Value;
       string prefixTranslated = (string)gv2.Rows[e.RowIndex].Cells[4].Value;
-      frmEditMP dlg = new frmEditMP();
+      FrmEditMp dlg = new FrmEditMp();
       if (dlg.ShowDialog(key, valueTranslated, valueOriginal, prefixTranslated, prefixOriginal) == DialogResult.OK)
       {
         string trans = dlg.GetTranslation();
@@ -125,7 +114,7 @@ namespace MPLanguageTool
       if (folderBrowserDialog1.ShowDialog() == DialogResult.Cancel)
         return;
 
-      languagePath = folderBrowserDialog1.SelectedPath;
+      LanguagePath = folderBrowserDialog1.SelectedPath;
       // check if selected path contains the default resx file
       defaultTranslations = ResxHandler.Load(null);
 
@@ -137,7 +126,7 @@ namespace MPLanguageTool
           "MPLanguageTool -- Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         if (folderBrowserDialog1.ShowDialog() == DialogResult.Cancel)
           return;
-        languagePath = folderBrowserDialog1.SelectedPath;
+        LanguagePath = folderBrowserDialog1.SelectedPath;
         defaultTranslations = ResxHandler.Load(null);
       }
 
@@ -223,18 +212,18 @@ namespace MPLanguageTool
 
       if (folderBrowserDialog1.ShowDialog() == DialogResult.Cancel)
         return;
-      languagePath = folderBrowserDialog1.SelectedPath;
+      LanguagePath = folderBrowserDialog1.SelectedPath;
 
       // check if selected path contains the default translation file
       // if not show folderbrowserdlg until user cancels or selects a path that contains it 
-      while (!System.IO.File.Exists(System.IO.Path.Combine(languagePath, tmpFileName)))
+      while (!System.IO.File.Exists(System.IO.Path.Combine(LanguagePath, tmpFileName)))
       {
         MessageBox.Show(
           "The file [" + tmpFileName + "] could not be found.\nThe LanguageTool does not work without it.",
           "MPLanguageTool -- Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         if (folderBrowserDialog1.ShowDialog() == DialogResult.Cancel)
           return;
-        languagePath = folderBrowserDialog1.SelectedPath;
+        LanguagePath = folderBrowserDialog1.SelectedPath;
       }
 
       switch (LangType)
@@ -261,7 +250,7 @@ namespace MPLanguageTool
                         "MPLanguageTool -- Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         if (folderBrowserDialog1.ShowDialog() == DialogResult.Cancel)
           return;
-        languagePath = folderBrowserDialog1.SelectedPath;
+        LanguagePath = folderBrowserDialog1.SelectedPath;
         originalTranslations = XmlHandler.Load(null, out originalMapping);
       }
 
@@ -286,11 +275,11 @@ namespace MPLanguageTool
     /// <summary>
     /// Load the section
     /// </summary>
-    /// <param name="languageID"></param>
+    /// <param name="languageId"></param>
     /// <returns></returns>
-    private DataTable LoadSection(string languageID)
+    private DataTable LoadSection(string languageId)
     {
-      return XmlHandler.Load(languageID, out originalMapping);
+      return XmlHandler.Load(languageId, out originalMapping);
     }
 
     /// <summary>
@@ -310,7 +299,7 @@ namespace MPLanguageTool
       // Count Not Translated
       for (int z = 0; z < translations.Rows.Count; z++)
       {
-        if (String.IsNullOrEmpty((translations.Rows[z]["Translated"].ToString())))
+        if (String.IsNullOrEmpty(translations.Rows[z]["Translated"].ToString()))
         {
           gv2.Rows[z].Cells[0].Style.ForeColor = System.Drawing.Color.Red;
           gv2.Rows[z].Cells[1].Style.ForeColor = System.Drawing.Color.Red;
@@ -344,8 +333,8 @@ namespace MPLanguageTool
           break;
       }
 
-      IEnumerable<string> Sections = XmlHandler.ListSections(strSection, strAttrib);
-      foreach (string str in Sections)
+      IEnumerable<string> sections = XmlHandler.ListSections(strSection, strAttrib);
+      foreach (string str in sections)
       {
         cbSections.Items.Add(str);
       }
@@ -408,23 +397,23 @@ namespace MPLanguageTool
       Close();
     }
 
-    public void ToolStripText(int lines)
+    private void ToolStripText(int lines)
     {
-      string AddTxt;
+      string addTxt;
       if (lines != 0)
       {
         toolStripStatusLabel1.ForeColor = System.Drawing.Color.Red;
-        AddTxt = ". Double click a row to edit text.";
+        addTxt = ". Double click a row to edit text.";
       }
       else
       {
         toolStripStatusLabel1.ForeColor = System.Drawing.Color.Black;
-        AddTxt = null;
+        addTxt = null;
       }
-      toolStripStatusLabel1.Text = "Missing translations: " + lines + AddTxt;
+      toolStripStatusLabel1.Text = "Missing translations: " + lines + addTxt;
     }
 
-    public void ToolStripText(string status)
+    private void ToolStripText(string status)
     {
       toolStripStatusLabel1.ForeColor = System.Drawing.Color.Black;
       toolStripStatusLabel1.Text = status;

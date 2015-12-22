@@ -60,7 +60,7 @@
                         <xs:sequence>
                           <xs:element name="ListValue" msprop:Generator_UserTableName="ListValue" msprop:Generator_RowEvArgName="ListValueRowChangeEvent" msprop:Generator_TableVarName="tableListValue" msprop:Generator_TablePropName="ListValue" msprop:Generator_RowDeletingName="ListValueRowDeleting" msprop:Generator_RowChangingName="ListValueRowChanging" msprop:Generator_RowDeletedName="ListValueRowDeleted" msprop:Generator_RowEvHandlerName="ListValueRowChangeEventHandler" msprop:Generator_TableClassName="ListValueDataTable" msprop:Generator_RowChangedName="ListValueRowChanged" msprop:Generator_RowClassName="ListValueRow" minOccurs="0" maxOccurs="unbounded">
                             <xs:complexType>
-                              <xs:attribute name="Text" msprop:Generator_ColumnVarNameInTable="columnText" msprop:Generator_ColumnPropNameInRow="Text" msprop:Generator_ColumnPropNameInTable="TextColumn" msprop:Generator_UserColumnName="Text" type="xs:string" />
+                              <xs:attribute name="text" msprop:Generator_ColumnVarNameInTable="columntext" msprop:Generator_ColumnPropNameInRow="text" msprop:Generator_ColumnPropNameInTable="textColumn" msprop:Generator_UserColumnName="text" type="xs:string" />
                               <xs:attribute name="CustomField_Id" msprop:Generator_ColumnVarNameInTable="columnCustomField_Id" msprop:Generator_ColumnPropNameInRow="CustomField_Id" msprop:Generator_ColumnPropNameInTable="CustomField_IdColumn" msprop:Generator_UserColumnName="CustomField_Id" type="xs:int" use="prohibited" />
                             </xs:complexType>
                           </xs:element>

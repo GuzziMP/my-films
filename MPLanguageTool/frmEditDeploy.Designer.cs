@@ -1,6 +1,6 @@
 namespace MPLanguageTool
 {
-  partial class frmEditDeploy
+  partial class FrmEditDeploy
   {
     /// <summary>
     /// Required designer variable.

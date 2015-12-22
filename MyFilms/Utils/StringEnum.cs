@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 
-namespace MyFilmsPlugin.MyFilms.Utils
+namespace MyFilmsPlugin.Utils
 {
   public class StringValue : System.Attribute
   {

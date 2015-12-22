@@ -1,12 +1,10 @@
-﻿namespace MyFilmsPlugin.MyFilms.Utils.Cornerstone.MP.Extensions {
-  using MediaPortal.GUI.Library;
+﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
+using MediaPortal.GUI.Library;
+using NLog;
 
-  using NLog;
-
-  using System.Reflection;
-  using System;
-  using System.Collections.Generic;
-
+namespace MyFilmsPlugin.Utils.Cornerstone.MP.Extensions {
   /// <summary>
     /// a set of extension methods for the MediaPortal GUIFacadeControl
     /// </summary>

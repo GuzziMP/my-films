@@ -4,6 +4,8 @@ Imports System.ComponentModel
 Imports System.Text
 Imports System.Windows.Forms
 Imports Grabber
+Imports Grabber.Data
+Imports Grabber.Util
 
 Public Class AntProcessor
 
@@ -1182,7 +1184,7 @@ Public Class AntProcessor
                             End If
 
                             Dim Gb As Grabber.Grabber_URLClass = New Grabber.Grabber_URLClass
-                            Dim fanart As List(Of Grabber.DbMovieInfo)
+                            Dim fanart As List(Of DbMovieInfo)
 
                             Dim FileToScan As String = String.Empty
                             Dim AllFilesPath As String = String.Empty
@@ -1246,12 +1248,12 @@ Public Class AntProcessor
                                     Dim filenameperson As String = String.Empty
                                     Dim filename1person As String = String.Empty
                                     Dim filename2person As String = String.Empty
-                                    Dim listepersons As List(Of Grabber.DbPersonInfo) = fanart(0).Persons
-                                    For Each person As Grabber.DbPersonInfo In listepersons
+                                    Dim listepersons As List(Of DbPersonInfo) = fanart(0).Persons
+                                    For Each person As DbPersonInfo In listepersons
                                         Dim firstpersonimage As Boolean = True
                                         Dim onlysinglepersonimage As Boolean = True
-                                        Dim persondetails As Grabber.DbPersonInfo = New DbPersonInfo()
-                                        Dim TheMoviedb As New Grabber.TheMoviedb()
+                                        Dim persondetails As DbPersonInfo = New DbPersonInfo()
+                                        Dim TheMoviedb As New TheMoviedb()
                                         persondetails = TheMoviedb.GetPersonsById(person.Id, String.Empty)
                                         bgwManualUpdate.ReportProgress(ProcessCounter, "PersonImages : " & CurrentNode.Attributes("Number").Value & " | " & row("AntTitle").ToString & "Person Artwork - " + persondetails.Images.Count.ToString() & " Images found for '" + persondetails.Name & "'")
                                         If persondetails.Images.Count > 0 Then

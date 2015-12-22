@@ -54,7 +54,7 @@ namespace MyFilmsPlugin.Utils
     /// <param name="sFileName">The sFileName of the image to load, fails silently if it cannot be loaded</param>
     /// <param name="size">size of image</param>
     /// <returns>memory identifier</returns>
-    public static string buildMemoryImageFromFile(string sFileName, System.Drawing.Size size)
+    public static string buildMemoryImageFromFile(string sFileName, Size size)
     {
       try
       {
@@ -87,7 +87,7 @@ namespace MyFilmsPlugin.Utils
     /// <param name="size">Dimensions of the image</param>
     /// <param name="buildIdentifier">switch if new identifier should be created</param>
     /// <returns>memory identifier</returns>
-    public static string buildMemoryImage(Image image, string identifier, System.Drawing.Size size, bool buildIdentifier)
+    public static string buildMemoryImage(Image image, string identifier, Size size, bool buildIdentifier)
     {
       string name = buildIdentifier ? ImageAllocator.buildIdentifier(identifier) : identifier;
       try
@@ -113,12 +113,9 @@ namespace MyFilmsPlugin.Utils
     public static string ExtractFullName(string identifier)
     {
       const string RegExp = @"\[MyFilms:(.*)\]";
-      Regex Engine = new Regex(RegExp, RegexOptions.IgnoreCase);
-      Match match = Engine.Match(identifier);
-      if (match.Success)
-        return match.Groups[1].Value;
-      else
-        return identifier;
+      Regex engine = new Regex(RegExp, RegexOptions.IgnoreCase);
+      Match match = engine.Match(identifier);
+      return match.Success ? match.Groups[1].Value : identifier;
     }
 
     public static void Flush(List<String> toFlush)
@@ -146,15 +143,14 @@ namespace MyFilmsPlugin.Utils
       s_sFontName = sFontName;
     }
 
-    public static String GetOtherImage(string sFileName, System.Drawing.Size size, bool bPersistent)
+    public static String GetOtherImage(string sFileName, Size size, bool bPersistent)
     {
       return GetOtherImage(null, sFileName, size, bPersistent);
     }
 
-    public static String GetOtherImage(Image i, string sFileName, System.Drawing.Size size, bool bPersistent)
+    public static String GetOtherImage(Image i, string sFileName, Size size, bool bPersistent)
     {
-      String sTextureName;
-      sTextureName = i != null ? buildMemoryImage(i, sFileName, size, true) : buildMemoryImageFromFile(sFileName, size);
+      string sTextureName = i != null ? buildMemoryImage(i, sFileName, size, true) : buildMemoryImageFromFile(sFileName, size);
       if (bPersistent)
       {
         if (!s_OtherPersistentImageList.Contains(sTextureName))

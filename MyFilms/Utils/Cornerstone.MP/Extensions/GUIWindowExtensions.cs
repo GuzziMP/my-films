@@ -1,10 +1,9 @@
-﻿namespace MyFilmsPlugin.MyFilms.Utils.Cornerstone.MP.Extensions
+﻿using System.Collections;
+using System.Reflection;
+using MediaPortal.GUI.Library;
+
+namespace MyFilmsPlugin.Utils.Cornerstone.MP.Extensions
 {
-  using MediaPortal.GUI.Library;
-
-  using System.Reflection;
-  using System.Collections;
-
   public static class GUIWindowExtensions
     {
         /// <summary>

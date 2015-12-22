@@ -19,18 +19,15 @@
 #endregion
 
 using System;
-using System.Collections;
-using System.IO;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using MediaPortal.Profile;
 
 //using MediaPortal.GUI.Library;
 
-namespace MyFilmsPlugin.MyFilms.Utils
+namespace MyFilmsPlugin.Utils
 {
-  using System.Globalization;
-
-  using MediaPortal.Profile;
-
   ///// <summary>
   ///// MPSettings allows to read and write MediaPortal.xml configuration file
   ///// (wrapper class to unify path handling)

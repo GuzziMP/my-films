@@ -39,7 +39,7 @@ namespace MyFilmsPlugin.Utils
     {
     }
 
-    private static Type imageType = typeof(System.Drawing.Bitmap);
+    private static Type imageType = typeof(Bitmap);
 
     public static Image FastFromFile(string filename)
     {
@@ -61,8 +61,8 @@ namespace MyFilmsPlugin.Utils
       // Loading the image to draw 
       if (string.IsNullOrEmpty(sourceimage))
       {
-        if (!System.IO.File.Exists(path.Substring(0, path.LastIndexOf("\\") + 1) + "Default.jpg"))
-          MediaPortal.Util.Picture.CreateThumbnail(MyFilms.MyFilmsGUI.MyFilms.conf.DefaultCover, path.Substring(0, path.LastIndexOf("\\") + 1) + "\\Default.jpg", MyFilms.MyFilmsGUI.MyFilms.cacheThumbWith, MyFilms.MyFilmsGUI.MyFilms.cacheThumbHeight, 0, MediaPortal.Util.Thumbs.SpeedThumbsLarge);
+        if (!File.Exists(path.Substring(0, path.LastIndexOf("\\") + 1) + "Default.jpg"))
+          MediaPortal.Util.Picture.CreateThumbnail(MyFilmsGUI.MyFilms.conf.DefaultCover, path.Substring(0, path.LastIndexOf("\\") + 1) + "\\Default.jpg", MyFilmsGUI.MyFilms.cacheThumbWith, MyFilmsGUI.MyFilms.cacheThumbHeight, 0, MediaPortal.Util.Thumbs.SpeedThumbsLarge);
         loadimage = path.Substring(0, path.LastIndexOf("\\") + 1) + "\\Default.jpg";
       }
       else loadimage = sourceimage;
@@ -77,7 +77,7 @@ namespace MyFilmsPlugin.Utils
 
       // Creation of the bitmap to make the drawing 
 
-      //          Bitmap bmp = new Bitmap(image.Width, image.Height);
+      //          Bitmap bmp = new Bitmap(image.width, image.height);
       //Bitmap bmp = new Bitmap(150, 200);
       Bitmap bmp = new Bitmap(400, 600);
       // Creation of graphics to draw
@@ -106,12 +106,12 @@ namespace MyFilmsPlugin.Utils
         xfont = 64;
       for (wi = 0; wi < arSplit.Length; wi++)
       {
-        g.DrawString(arSplit[wi].ToUpper(), new Font("Arial", xfont, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel), Brushes.White, new PointF(20, 30 + wi * xfont));
+        g.DrawString(arSplit[wi].ToUpper(), new Font("Arial", xfont, FontStyle.Bold, GraphicsUnit.Pixel), Brushes.White, new PointF(20, 30 + wi * xfont));
       }
       //g.DrawString("+", new Font("Arial", 64, System.Drawing.FontStyle.Bold), Brushes.White, new PointF(1, 1));
-      //g.DrawString("+", new Font("Arial", 64, System.Drawing.FontStyle.Bold), Brushes.White, new PointF(1,image.Height - 64));
-      //g.DrawString("+", new Font("Arial", 64, System.Drawing.FontStyle.Bold), Brushes.White, new PointF(image.Width -64, 1));
-      //g.DrawString("+", new Font("Arial", 64, System.Drawing.FontStyle.Bold), Brushes.White, new PointF(image.Width-64, image.Height - 64));
+      //g.DrawString("+", new Font("Arial", 64, System.Drawing.FontStyle.Bold), Brushes.White, new PointF(1,image.height - 64));
+      //g.DrawString("+", new Font("Arial", 64, System.Drawing.FontStyle.Bold), Brushes.White, new PointF(image.width -64, 1));
+      //g.DrawString("+", new Font("Arial", 64, System.Drawing.FontStyle.Bold), Brushes.White, new PointF(image.width-64, image.height - 64));
 
       bmp.Save(path);
       return bmp;
@@ -120,27 +120,27 @@ namespace MyFilmsPlugin.Utils
     /// <summary>
     /// Wandelt einen String in ein Bitmap (Image) um.
     /// </summary>
-    /// <param name="Text">Beliebiger Text (auch mehrzeilig mit \n)</param>
-    /// <param name="Schrift">Font als Objekt</param>
-    /// <param name="ForeColor">Schriftfarbe</param>
-    /// <param name="BackColor">Hintergrundfarbe</param>
+    /// <param name="text">Beliebiger text (auch mehrzeilig mit \n)</param>
+    /// <param name="schrift">Font als Objekt</param>
+    /// <param name="foreColor">Schriftfarbe</param>
+    /// <param name="backColor">Hintergrundfarbe</param>
     /// <returns></returns>
-    public static Image Text2Bitmap(string Text, Font Schrift, Color ForeColor, Color BackColor)
+    public static Image Text2Bitmap(string text, Font schrift, Color foreColor, Color backColor)
     {
       int intWidth, intHeight;
 
-      TextSize(Text, Schrift, out intWidth, out intHeight);
+      TextSize(text, schrift, out intWidth, out intHeight);
 
-      SolidBrush objBrushForeColor = new SolidBrush(ForeColor);
-      SolidBrush objBrushBackColor = new SolidBrush(BackColor);
+      SolidBrush objBrushForeColor = new SolidBrush(foreColor);
+      SolidBrush objBrushBackColor = new SolidBrush(backColor);
 
       Point objPoint = new Point(0, 0);
 
       Bitmap objBitmap = new Bitmap(intWidth, intHeight);
-      Graphics objGraphics = System.Drawing.Graphics.FromImage(objBitmap);
+      Graphics objGraphics = Graphics.FromImage(objBitmap);
 
       objGraphics.FillRectangle(objBrushBackColor, 0, 0, intWidth, intHeight);
-      objGraphics.DrawString(Text, Schrift, objBrushForeColor, objPoint);
+      objGraphics.DrawString(text, schrift, objBrushForeColor, objPoint);
 
       return objBitmap;
     }
@@ -148,15 +148,15 @@ namespace MyFilmsPlugin.Utils
     /// <summary>
     /// Übergibt die Größe eines Textes in Pixel
     /// </summary>
-    /// <param name="Text">Text dessen Größe ermittelt werden soll (auch mehrzeilig mit \n)</param>
-    /// <param name="Schrift">Font als Objet</param>
-    /// <param name="Width">Ausgabe : Breite in Pixel</param>
-    /// <param name="Height">Ausgabe : Höhe in Pixel</param>
-    public static void TextSize(string Text, Font Schrift, out int Width, out int Height)
+    /// <param name="text">text dessen Größe ermittelt werden soll (auch mehrzeilig mit \n)</param>
+    /// <param name="schrift">Font als Objet</param>
+    /// <param name="width">Ausgabe : Breite in Pixel</param>
+    /// <param name="height">Ausgabe : Höhe in Pixel</param>
+    public static void TextSize(string text, Font schrift, out int width, out int height)
     {
-      System.Drawing.Size objSize = TextRenderer.MeasureText(Text, Schrift);
-      Width = objSize.Width;
-      Height = objSize.Height;
+      Size objSize = TextRenderer.MeasureText(text, schrift);
+      width = objSize.Width;
+      height = objSize.Height;
     }
 
     // OPTIONALE ÜBERLADUNGEN:
@@ -164,27 +164,27 @@ namespace MyFilmsPlugin.Utils
     /// <summary>
     /// Wandelt einen String in ein Bitmap (Image) um.
     /// </summary>
-    /// <param name="Text">Beliebiger Text (auch mehrzeilig mit \n)</param>
-    /// <param name="FontName">Name des Font z.B. Arial</param>
-    /// <param name="FontSize">Fontgröße</param>
-    /// <param name="ForeColor">Schriftfarbe</param>
-    /// <param name="BackColor">Hintergrundfarbe</param>
+    /// <param name="text">Beliebiger text (auch mehrzeilig mit \n)</param>
+    /// <param name="fontName">Name des Font z.B. Arial</param>
+    /// <param name="fontSize">Fontgröße</param>
+    /// <param name="foreColor">Schriftfarbe</param>
+    /// <param name="backColor">Hintergrundfarbe</param>
     /// <returns></returns>
-    public static Image Text2Bitmap(string Text, string FontName, float FontSize, Color ForeColor, Color BackColor)
+    public static Image Text2Bitmap(string text, string fontName, float fontSize, Color foreColor, Color backColor)
     {
-      return Text2Bitmap(Text, new Font(FontName, FontSize), ForeColor, BackColor);
+      return Text2Bitmap(text, new Font(fontName, fontSize), foreColor, backColor);
     }
 
     /// <summary>
     /// Wandelt einen String in ein Bitmap (Image) um. Schriftfarbe ist schwarz, Hintergrund ist weiss
     /// </summary>
-    /// <param name="Text">Beliebiger Text (auch mehrzeilig mit \n)</param>
-    /// <param name="FontName">Name des Font z.B. Arial</param>
-    /// <param name="FontSize">Fontgröße</param>
+    /// <param name="text">Beliebiger text (auch mehrzeilig mit \n)</param>
+    /// <param name="fontName">Name des Font z.B. Arial</param>
+    /// <param name="fontSize">Fontgröße</param>
     /// <returns></returns>
-    public static Image Text2Bitmap(string Text, string FontName, float FontSize)
+    public static Image Text2Bitmap(string text, string fontName, float fontSize)
     {
-      return Text2Bitmap(Text, new Font(FontName, FontSize), Color.Black, Color.White);
+      return Text2Bitmap(text, new Font(fontName, fontSize), Color.Black, Color.White);
     }
 
   }

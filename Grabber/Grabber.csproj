@@ -86,12 +86,13 @@
       <HintPath>..\packages\HtmlAgilityPack.1.4.9\lib\Net40\HtmlAgilityPack.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="NLog">
-      <HintPath>..\packages\NLog.3.2.0.0\lib\net40\NLog.dll</HintPath>
-    </Reference>
-    <Reference Include="RestSharp, Version=105.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\RestSharp.105.0.1\lib\net4\RestSharp.dll</HintPath>
+      <HintPath>..\packages\NLog.4.2.3\lib\net40\NLog.dll</HintPath>
+    </Reference>
+    <Reference Include="RestSharp, Version=105.2.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\RestSharp.105.2.3\lib\net4\RestSharp.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
@@ -99,17 +100,23 @@
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data.Linq" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Net" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="TMDbLib">
+      <HintPath>..\packages\TMDbLib.0.7.7\lib\net40\TMDbLib.dll</HintPath>
+    </Reference>
     <Reference Include="Utils, Version=1.6.0.0, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Externals\Mediaportal\Utils.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\DbMovieInfo.cs" />
+    <Compile Include="Data\DbPersonInfo.cs" />
     <Compile Include="Data\GrabberScript.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -119,8 +126,6 @@
       <DependentUpon>OutputData.xsd</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="DbMovieInfo.cs" />
-    <Compile Include="DbPersonInfo.cs" />
     <Compile Include="Grab.cs" />
     <Compile Include="Data\GrabberScript.cs">
       <DependentUpon>GrabberScript.xsd</DependentUpon>
@@ -132,7 +137,6 @@
     <Compile Include="Importer\Filelister.cs" />
     <Compile Include="Importer\Helper.cs" />
     <Compile Include="Importer\Watcher.cs" />
-    <Compile Include="MediaInfoDLL.cs" />
     <Compile Include="Data\OutputData.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -143,8 +147,6 @@
     <Compile Include="ShareWatcher\DelayedFileSystemWatcher.cs" />
     <Compile Include="ShareWatcher\ShareWatcherEvent.cs" />
     <Compile Include="ShareWatcher\ShareWatcherHelper.cs" />
-    <Compile Include="TheMoviedb.cs" />
-    <Compile Include="ThumbCreator.cs" />
     <Compile Include="TMDBv3\TmdbAccount.cs" />
     <Compile Include="TMDBv3\TmdbAccountMovies.cs" />
     <Compile Include="TMDBv3\TmdbChanges.cs" />
@@ -207,12 +209,15 @@
     <Compile Include="TMDBv3\Utilities\RequestGenerator.cs" />
     <Compile Include="TMDBv3\Utilities\Utility.cs" />
     <Compile Include="TMDBv3\Utilities\WatJsonDeserializer.cs" />
-    <Compile Include="TranslateProvider\TranslateProvider.cs" />
-    <Compile Include="Updater.cs" />
     <Compile Include="Util\AdvancedStringComparer.cs" />
     <Compile Include="Util\HtmlUtil.cs" />
+    <Compile Include="Util\MediaInfoDLL.cs" />
+    <Compile Include="Util\TheMoviedb.cs" />
+    <Compile Include="Util\ThumbCreator.cs" />
     <Compile Include="Util\Thumbs.cs" />
-    <Compile Include="WebGrabber.cs" />
+    <Compile Include="Util\TranslateProvider.cs" />
+    <Compile Include="Util\Updater.cs" />
+    <Compile Include="Util\WebGrabber.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
@@ -246,9 +251,7 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="LocalMedia\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="Data\GrabberScript.xsc">
       <DependentUpon>GrabberScript.xsd</DependentUpon>
@@ -283,4 +286,11 @@
     <PostBuildEvent>if exist $(ProjectDir)PostBuild.bat call $(ProjectDir)PostBuild.bat $(SolutionDir) $(ConfigurationName)</PostBuildEvent>
   </PropertyGroup>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <Import Project="..\packages\MediaInfo.0.7.72\build\MediaInfo.targets" Condition="Exists('..\packages\MediaInfo.0.7.72\build\MediaInfo.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>Dieses Projekt verweist auf mindestens ein NuGet-Paket, das auf diesem Computer fehlt. Aktivieren Sie die Wiederherstellung von NuGet-Paketen, um die fehlende Datei herunterzuladen. Weitere Informationen finden Sie unter "http://go.microsoft.com/fwlink/?LinkID=322105". Die fehlende Datei ist "{0}".</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\MediaInfo.0.7.72\build\MediaInfo.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\MediaInfo.0.7.72\build\MediaInfo.targets'))" />
+  </Target>
 </Project>

@@ -36,7 +36,7 @@ namespace MPLanguageTool
 
       CultureInfo current = System.Threading.Thread.CurrentThread.CurrentCulture;
       if ((current.CultureTypes & CultureTypes.SpecificCultures) != 0 &&
-          frmMain.LangType != frmMain.StringsType.DeployTool)
+          FrmMain.LangType != FrmMain.StringsType.DeployTool)
       {
         // Select neutral culture like "it"
         cbCulture.SelectedItem = current.Parent;
@@ -70,7 +70,7 @@ namespace MPLanguageTool
 
     private void cbCulture_SelectedIndexChanged(object sender, EventArgs e)
     {
-      CultureInfo culture = this.GetSelectedCulture();
+      CultureInfo culture = GetSelectedCulture();
 
       string tmpFileName = XmlHandler.BuildFileName(culture.Name, false);
 

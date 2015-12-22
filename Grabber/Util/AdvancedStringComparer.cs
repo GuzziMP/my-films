@@ -5,7 +5,7 @@ namespace Grabber.Util
 {
   public class AdvancedStringComparer
   {
-    private static Logger logger = LogManager.GetCurrentClassLogger();
+    // private static Logger LogMyFilms = LogManager.GetCurrentClassLogger();
 
     // Calculates the Levenshtein Distance between two strings. The least number of 
     // changes to make one string equal to the other. Useful for finding 

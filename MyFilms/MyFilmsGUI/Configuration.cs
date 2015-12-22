@@ -21,26 +21,21 @@
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #endregion
 
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using MediaPortal.Configuration;
+using MediaPortal.Dialogs;
+using MediaPortal.GUI.Library;
 using MyFilmsPlugin.CatalogConverter;
+using MyFilmsPlugin.DataBase;
+using MyFilmsPlugin.Utils;
+using GUILocalizeStrings = MyFilmsPlugin.Utils.GUILocalizeStrings;
 
-namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
+namespace MyFilmsPlugin.MyFilmsGUI
 {
-  using System;
-  using System.Collections.Generic;
-  using System.Data;
-  using System.Linq;
-
-  using MediaPortal.Configuration;
-  using MediaPortal.Dialogs;
-  using MediaPortal.GUI.Library;
-
-  using MyFilmsPlugin.DataBase;
-  using MyFilmsPlugin.MyFilms;
-
-  using MyFilmsPlugin.MyFilms.CatalogConverter;
-  using MyFilmsPlugin.MyFilms.Utils;
-
-  using GUILocalizeStrings = MyFilmsPlugin.MyFilms.Utils.GUILocalizeStrings;
+  using GUILocalizeStrings = GUILocalizeStrings;
 
   public class Configuration
   {

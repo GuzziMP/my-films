@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using MediaPortal.GUI.Library;
 using MediaPortal.Dialogs;
+using MediaPortal.GUI.Library;
 
-namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
+namespace MyFilmsPlugin.MyFilmsGUI
 {
     public enum ModalResult
     {
@@ -23,13 +23,13 @@ namespace MyFilmsPlugin.MyFilms.MyFilmsGUI
     public class GUIDialogMultiSelect : GUIDialogMenu
     {
         #region Skin attributes
-        [SkinControlAttribute(3)]
+        [SkinControl(3)]
         public GUIListControl SelectionList = null;
 
-        [SkinControlAttribute(10)]
+        [SkinControl(10)]
         protected GUIButtonControl btnOK = null;
 
-        [SkinControlAttribute(11)]
+        [SkinControl(11)]
         protected GUIButtonControl btnCancel = null;
         #endregion
 

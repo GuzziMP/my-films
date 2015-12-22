@@ -1,12 +1,9 @@
-﻿namespace MyFilmsPlugin.MyFilms.Configuration
+﻿using System.Windows.Forms;
+using MyFilmsPlugin.DataBase;
+using MyFilmsPlugin.Utils;
+
+namespace MyFilmsPlugin.Configuration
 {
-  using System.Windows.Forms;
-
-  using MyFilmsPlugin.MyFilms.Configuration;
-  using MyFilmsPlugin.DataBase;
-
-  using MyFilmsPlugin.MyFilms.Utils;
-
   partial class MyFilmsSetup
     {
         /// <summary>
