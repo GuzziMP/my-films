@@ -1,5 +1,5 @@
 <Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
-Partial Class dgLogWindow
+Partial Class DgLogWindow
     Inherits System.Windows.Forms.Form
 
     'Form overrides dispose to clean up the component list.
@@ -40,7 +40,7 @@ Partial Class dgLogWindow
         Me.txtLogWindow.TabIndex = 1
         Me.txtLogWindow.WordWrap = False
         '
-        'dgLogWindow
+        'DgLogWindow
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font

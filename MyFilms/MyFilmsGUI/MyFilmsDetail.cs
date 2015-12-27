@@ -1947,13 +1947,13 @@ namespace MyFilmsPlugin.MyFilmsGUI
             foreach (string file in files)
             {
               LogMyFilms.Debug("Mediainfo - Filename: '" + file + "'");
-              if (System.IO.File.Exists(file))
+              if (File.Exists(file))
               {
                 // Get File Date Added/Created
                 FileDate = GetFileTimeStamps(file);
                 LogMyFilms.Debug("Mediainfo - FileDate: '" + FileDate + "'");
 
-                System.IO.FileInfo fi = new System.IO.FileInfo(file);
+                FileInfo fi = new FileInfo(file);
                 TotalSize += fi.Length;
 
                 // ReadMediaInfo(file, ref mediainfo);
@@ -1964,11 +1964,11 @@ namespace MyFilmsPlugin.MyFilmsGUI
                   return;
 
                 // Check if File Exists and is not an Image type e.g. ISO (we can't extract mediainfo from that)
-                if (System.IO.File.Exists(file) && !Helper.IsImageFile(file))
+                if (File.Exists(file) && !Helper.IsImageFile(file))
                 {
                   try
                   {
-                    LogMyFilms.Debug("Attempting to read Mediainfo for ", file);
+                    LogMyFilms.Debug("Attempting to read Mediainfo for " + file);
 
                     // open file in MediaInfo
                     mediainfo.Open(file);
@@ -2023,7 +2023,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
                   }
                   catch (Exception ex)
                   {
-                    LogMyFilms.Debug("Error reading MediaInfo: ", ex.Message);
+                    LogMyFilms.Debug("Error reading MediaInfo: " + ex.Message);
                   }
 
                 }
@@ -2104,7 +2104,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
             GUIUtils.ShowNotifyDialog("OnlineVideos is not available!");
             return;
           }
-          SearchAndDownloadTrailerOnlineTMDB(MyFilms.r, MyFilms.conf.StrIndex, false, true, (MyFilms.conf.StrDirStorTrailer.Length > 0) ? MyFilms.conf.StrDirStorTrailer : null); // MyFilmsDetail.SearchAndDownloadTrailerOnlineTMDB(r, MyFilms.conf.StrIndex, false, true, null);
+          SearchAndDownloadTrailerOnlineTmdb(MyFilms.r, MyFilms.conf.StrIndex, false, true, (MyFilms.conf.StrDirStorTrailer.Length > 0) ? MyFilms.conf.StrDirStorTrailer : null); // MyFilmsDetail.SearchAndDownloadTrailerOnlineTMDB(r, MyFilms.conf.StrIndex, false, true, null);
           break;
 
         case "cover-thumbnailer":
@@ -2136,7 +2136,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
           dlgYesNo.DoModal(GetID);
           if (dlgYesNo.IsConfirmed)
           {
-            DeleteTrailerFromDB(MyFilms.r, MyFilms.conf.StrIndex);
+            DeleteTrailerFromDb(MyFilms.r, MyFilms.conf.StrIndex);
             //MyFilms.r = BaseMesFilms.ReadDataMovies(MyFilms.conf.StrDfltSelect, MyFilms.conf.StrFilmSelect, MyFilms.conf.StrSorta, MyFilms.conf.StrSortSens);
             afficher_detail(true);
           }
@@ -2380,7 +2380,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
 
     private void Menu_LoadTMDBposter()
     {
-      //Grabber.Grabber_URLClass Grab = new Grabber.Grabber_URLClass();
+      //Grabber.GrabberUrlClass Grab = new Grabber.GrabberUrlClass();
       Searchtitles stitles = GetSearchTitles(MyFilms.r[MyFilms.conf.StrIndex], "");
       if (string.IsNullOrEmpty(stitles.FanartTitle) && MyFilms.conf.StrFanart)
         return;
@@ -2504,7 +2504,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
 
     private void Menu_LoadFanart(bool loadPersonImages)
     {
-      Grabber.Grabber_URLClass Grab = new Grabber.Grabber_URLClass();
+      Grabber.GrabberUrlClass Grab = new Grabber.GrabberUrlClass();
       string personartworkpath = string.Empty;
       Searchtitles sTitles = GetSearchTitles(MyFilms.r[MyFilms.conf.StrIndex], "");
       string imdbid = GetIMDB_Id(MyFilms.r[MyFilms.conf.StrIndex]);
@@ -2526,7 +2526,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
       AddPersonsToDownloadQueue();
 
       #region old method via fanart loader framework (disabled)
-      //Grabber.Grabber_URLClass Grab = new Grabber.Grabber_URLClass();
+      //Grabber.GrabberUrlClass Grab = new Grabber.GrabberUrlClass();
       //string personartworkpath = string.Empty;
       //Searchtitles sTitles = GetSearchTitles(MyFilms.r[MyFilms.conf.StrIndex], "");
       //string imdbid = GetIMDB_Id(MyFilms.r[MyFilms.conf.StrIndex]);
@@ -3257,8 +3257,8 @@ namespace MyFilmsPlugin.MyFilmsGUI
         movieName = fullMovieName.Substring(fullMovieName.LastIndexOf(MyFilms.conf.TitleDelim, StringComparison.Ordinal) + 1).Trim();
         movieHierarchy = fullMovieName.Substring(0, fullMovieName.LastIndexOf(MyFilms.conf.TitleDelim, StringComparison.Ordinal) + 1).Trim();
       }
-      var grab = new Grabber.Grabber_URLClass();
-      Grabber_URLClass.IMDBUrl wurl;
+      var grab = new Grabber.GrabberUrlClass();
+      GrabberUrlClass.IMDBUrl wurl;
       var listUrl = new ArrayList();
 
       new Thread(delegate()
@@ -3281,7 +3281,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
           switch (listCount)
           {
             case 1: // only one match -> grab details without user interaction
-              wurl = (Grabber.Grabber_URLClass.IMDBUrl)listUrl[0];
+              wurl = (Grabber.GrabberUrlClass.IMDBUrl)listUrl[0];
               grabb_Internet_Details_Informations(wurl.URL, movieHierarchy, wscript, GetID, false, grabtype, sTitles, searchanimation);
               break;
             case 0:
@@ -3300,7 +3300,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
 
               for (int i = 0; i < listUrl.Count; i++)
               {
-                wurl = (Grabber.Grabber_URLClass.IMDBUrl)listUrl[i];
+                wurl = (Grabber.GrabberUrlClass.IMDBUrl)listUrl[i];
                 if (wurl.Director.Contains(MyFilms.r[MyFilms.conf.StrIndex]["Director"].ToString()) && wurl.Year.Contains(MyFilms.r[MyFilms.conf.StrIndex]["Year"].ToString()) && !MyFilms.conf.StrGrabber_Always)
                 {
                   if (dlg.SelectedLabel == -1)
@@ -3370,7 +3370,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
               }
               if (dlg.SelectedLabel > 0 && dlg.SelectedLabel <= listUrl.Count)
               {
-                wurl = (Grabber_URLClass.IMDBUrl)listUrl[dlg.SelectedLabel - 1];
+                wurl = (GrabberUrlClass.IMDBUrl)listUrl[dlg.SelectedLabel - 1];
                 grabb_Internet_Details_Informations(wurl.URL, movieHierarchy, wscript, GetID, true, grabtype, sTitles, searchanimation);
                 break;
               }
@@ -3403,7 +3403,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
       LogMyFilms.Debug("launching (grabb_Internet_Details_Informations) with url = '" + url + "', moviehead = '" + moviehead + "', wscript = '" + wscript + "', GetID = '" + GetID + "', interactive = '" + interactive + "'");
 
       #region set environment
-      var Grab = new Grabber_URLClass();
+      var Grab = new GrabberUrlClass();
       var Result = new string[80];
       string title = string.Empty;
       string ttitle = string.Empty;
@@ -3613,7 +3613,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
                         {
                           strOldValue = MyFilms.r[MyFilms.conf.StrIndex][wProperty].ToString() ?? "";
                           strNewValue = Result[i];
-                          if (i == (int)Grabber_URLClass.Grabber_Output.PicturePathLong) strNewValue = Result[(int)Grabber_URLClass.Grabber_Output.PicturePathShort];
+                          if (i == (int)GrabberUrlClass.Grabber_Output.PicturePathLong) strNewValue = Result[(int)GrabberUrlClass.Grabber_Output.PicturePathShort];
                           if (strNewValue == null) strNewValue = "";
 
                           if ( // make sure, only supported fields are offered to user for update
@@ -3630,7 +3630,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
                           {
                             var pItem = new GUIListItem(wProperty);
                             pItem.TVTag = wProperty;
-                            if (i == (int)Grabber_URLClass.Grabber_Output.PicturePathLong) pItem.IconImage = Result[(int)Grabber_URLClass.Grabber_Output.PicturePathLong];
+                            if (i == (int)GrabberUrlClass.Grabber_Output.PicturePathLong) pItem.IconImage = Result[(int)GrabberUrlClass.Grabber_Output.PicturePathLong];
                             pItem.Selected = false;
                             pItem.Label = BaseMesFilms.TranslateColumn(wProperty) + ": '" + Helper.LimitString(strOldValue.Replace(Environment.NewLine, " # "), iPropertyLengthLimit) + "' -> '" + Helper.LimitString(strNewValue.Replace(Environment.NewLine, " # "), iPropertyLengthLimit) + "'";
                             dlgMultiSelect.Add(pItem);
@@ -3699,29 +3699,29 @@ namespace MyFilmsPlugin.MyFilmsGUI
               #region load details data
 
               // ********************************** now load data, if requested ! ******************************
-              if (IsUpdateRequired("OriginalTitle", strChoice, MyFilms.r[MyFilms.conf.StrIndex]["OriginalTitle"].ToString(), Result[(int)Grabber_URLClass.Grabber_Output.OriginalTitle], grabtype, onlyselected, onlymissing, onlynonempty, updateItems))
+              if (IsUpdateRequired("OriginalTitle", strChoice, MyFilms.r[MyFilms.conf.StrIndex]["OriginalTitle"].ToString(), Result[(int)GrabberUrlClass.Grabber_Output.OriginalTitle], grabtype, onlyselected, onlymissing, onlynonempty, updateItems))
               {
-                title = Result[(int)Grabber_URLClass.Grabber_Output.OriginalTitle];
+                title = Result[(int)GrabberUrlClass.Grabber_Output.OriginalTitle];
                 wtitle = MyFilms.r[MyFilms.conf.StrIndex]["OriginalTitle"].ToString();
                 if (wtitle.Contains(MyFilms.conf.TitleDelim)) wtitle = wtitle.Substring(wtitle.LastIndexOf(MyFilms.conf.TitleDelim) + 1);
                 if (wtitle != title) Remove_Backdrops_Fanart(wtitle, true);
 
                 // Add Collection from internet grabber
-                if (!string.IsNullOrEmpty(Result[(int)Grabber_URLClass.Grabber_Output.Collection]) && string.IsNullOrEmpty(moviehead))
+                if (!string.IsNullOrEmpty(Result[(int)GrabberUrlClass.Grabber_Output.Collection]) && string.IsNullOrEmpty(moviehead))
                 {
-                  moviehead = Result[(int)Grabber_URLClass.Grabber_Output.Collection] + @"\";
+                  moviehead = Result[(int)GrabberUrlClass.Grabber_Output.Collection] + @"\";
                 }
                 if (MyFilms.conf.StrTitle1 == "OriginalTitle") MyFilms.r[MyFilms.conf.StrIndex]["OriginalTitle"] = moviehead + title;
                 else MyFilms.r[MyFilms.conf.StrIndex]["OriginalTitle"] = title;
               }
 
-              if (IsUpdateRequired("TranslatedTitle", strChoice, MyFilms.r[MyFilms.conf.StrIndex]["TranslatedTitle"].ToString(), Result[(int)Grabber_URLClass.Grabber_Output.TranslatedTitle], grabtype, onlyselected, onlymissing, onlynonempty, updateItems))
+              if (IsUpdateRequired("TranslatedTitle", strChoice, MyFilms.r[MyFilms.conf.StrIndex]["TranslatedTitle"].ToString(), Result[(int)GrabberUrlClass.Grabber_Output.TranslatedTitle], grabtype, onlyselected, onlymissing, onlynonempty, updateItems))
               {
-                ttitle = Result[(int)Grabber_URLClass.Grabber_Output.TranslatedTitle];
+                ttitle = Result[(int)GrabberUrlClass.Grabber_Output.TranslatedTitle];
                 if ("TranslatedTitle" == strChoice)
                 {
                   if (string.IsNullOrEmpty(ttitle) && MyFilms.conf.StrTitle1 == "TranslatedTitle" && !string.IsNullOrEmpty(MyFilms.r[MyFilms.conf.StrIndex]["TranslatedTitle"].ToString())) // Added to fill ttitle with otitle in case ttitle is empty and mastertitle = ttitle and mastertitle is empty
-                    ttitle = Result[(int)Grabber_URLClass.Grabber_Output.OriginalTitle];
+                    ttitle = Result[(int)GrabberUrlClass.Grabber_Output.OriginalTitle];
                 }
                 wtitle = MyFilms.r[MyFilms.conf.StrIndex]["TranslatedTitle"].ToString();
                 if (wtitle.Contains(MyFilms.conf.TitleDelim)) wtitle = wtitle.Substring(wtitle.LastIndexOf(MyFilms.conf.TitleDelim) + 1);
@@ -3729,90 +3729,90 @@ namespace MyFilmsPlugin.MyFilmsGUI
                 if (MyFilms.conf.StrTitle1 == "TranslatedTitle")
                 {
                   // Add Collection from internet grabber
-                  if (!string.IsNullOrEmpty(Result[(int)Grabber_URLClass.Grabber_Output.Collection]) && string.IsNullOrEmpty(moviehead))
+                  if (!string.IsNullOrEmpty(Result[(int)GrabberUrlClass.Grabber_Output.Collection]) && string.IsNullOrEmpty(moviehead))
                   {
-                    moviehead = Result[(int)Grabber_URLClass.Grabber_Output.Collection] + @"\";
+                    moviehead = Result[(int)GrabberUrlClass.Grabber_Output.Collection] + @"\";
                   }
                   MyFilms.r[MyFilms.conf.StrIndex]["TranslatedTitle"] = moviehead + ttitle;
                 }
                 else MyFilms.r[MyFilms.conf.StrIndex]["TranslatedTitle"] = ttitle;
               }
 
-              //if (IsUpdateRequired("Collection", strChoice, MyFilms.r[MyFilms.conf.StrIndex]["Collection"].ToString(), Result[(int)Grabber_URLClass.Grabber_Output.Collection], grabtype, onlyselected, onlymissing, onlynonempty, updateItems))
-              //  MyFilms.r[MyFilms.conf.StrIndex]["Collection"] = Result[(int)Grabber_URLClass.Grabber_Output.Collection];
+              //if (IsUpdateRequired("Collection", strChoice, MyFilms.r[MyFilms.conf.StrIndex]["Collection"].ToString(), Result[(int)GrabberUrlClass.Grabber_Output.Collection], grabtype, onlyselected, onlymissing, onlynonempty, updateItems))
+              //  MyFilms.r[MyFilms.conf.StrIndex]["Collection"] = Result[(int)GrabberUrlClass.Grabber_Output.Collection];
 
-              if (IsUpdateRequired("Description", strChoice, MyFilms.r[MyFilms.conf.StrIndex]["Description"].ToString(), Result[(int)Grabber_URLClass.Grabber_Output.Description], grabtype, onlyselected, onlymissing, onlynonempty, updateItems))
-                MyFilms.r[MyFilms.conf.StrIndex]["Description"] = Result[(int)Grabber_URLClass.Grabber_Output.Description];
+              if (IsUpdateRequired("Description", strChoice, MyFilms.r[MyFilms.conf.StrIndex]["Description"].ToString(), Result[(int)GrabberUrlClass.Grabber_Output.Description], grabtype, onlyselected, onlymissing, onlynonempty, updateItems))
+                MyFilms.r[MyFilms.conf.StrIndex]["Description"] = Result[(int)GrabberUrlClass.Grabber_Output.Description];
 
-              if (IsUpdateRequired("Rating", strChoice, MyFilms.r[MyFilms.conf.StrIndex]["Rating"].ToString(), Result[(int)Grabber_URLClass.Grabber_Output.Rating], grabtype, onlyselected, onlymissing, onlynonempty, updateItems))
+              if (IsUpdateRequired("Rating", strChoice, MyFilms.r[MyFilms.conf.StrIndex]["Rating"].ToString(), Result[(int)GrabberUrlClass.Grabber_Output.Rating], grabtype, onlyselected, onlymissing, onlynonempty, updateItems))
               {
-                if (Result[(int)Grabber_URLClass.Grabber_Output.Rating].Length > 0)
+                if (Result[(int)GrabberUrlClass.Grabber_Output.Rating].Length > 0)
                 {
                   var provider = new NumberFormatInfo();
                   provider.NumberDecimalSeparator = ".";
                   provider.NumberDecimalDigits = 1;
-                  decimal wnote = Convert.ToDecimal(Result[(int)Grabber_URLClass.Grabber_Output.Rating], provider);
+                  decimal wnote = Convert.ToDecimal(Result[(int)GrabberUrlClass.Grabber_Output.Rating], provider);
                   if (string.IsNullOrEmpty(MyFilms.r[MyFilms.conf.StrIndex]["Rating"].ToString()) || !onlymissing)
                     MyFilms.r[MyFilms.conf.StrIndex]["Rating"] = string.Format("{0:F1}", wnote);
                 }
               }
-              if (IsUpdateRequired("Actors", strChoice, MyFilms.r[MyFilms.conf.StrIndex]["Actors"].ToString(), Result[(int)Grabber_URLClass.Grabber_Output.Actors], grabtype, onlyselected, onlymissing, onlynonempty, updateItems))
+              if (IsUpdateRequired("Actors", strChoice, MyFilms.r[MyFilms.conf.StrIndex]["Actors"].ToString(), Result[(int)GrabberUrlClass.Grabber_Output.Actors], grabtype, onlyselected, onlymissing, onlynonempty, updateItems))
                 if (string.IsNullOrEmpty(MyFilms.r[MyFilms.conf.StrIndex]["Actors"].ToString()) || !onlymissing)
-                  MyFilms.r[MyFilms.conf.StrIndex]["Actors"] = Result[(int)Grabber_URLClass.Grabber_Output.Actors];
-              if (IsUpdateRequired("Director", strChoice, MyFilms.r[MyFilms.conf.StrIndex]["Director"].ToString(), Result[(int)Grabber_URLClass.Grabber_Output.Director], grabtype, onlyselected, onlymissing, onlynonempty, updateItems))
+                  MyFilms.r[MyFilms.conf.StrIndex]["Actors"] = Result[(int)GrabberUrlClass.Grabber_Output.Actors];
+              if (IsUpdateRequired("Director", strChoice, MyFilms.r[MyFilms.conf.StrIndex]["Director"].ToString(), Result[(int)GrabberUrlClass.Grabber_Output.Director], grabtype, onlyselected, onlymissing, onlynonempty, updateItems))
               {
-                director = Result[(int)Grabber_URLClass.Grabber_Output.Director];
-                MyFilms.r[MyFilms.conf.StrIndex]["Director"] = Result[(int)Grabber_URLClass.Grabber_Output.Director];
+                director = Result[(int)GrabberUrlClass.Grabber_Output.Director];
+                MyFilms.r[MyFilms.conf.StrIndex]["Director"] = Result[(int)GrabberUrlClass.Grabber_Output.Director];
               }
-              if (IsUpdateRequired("Producer", strChoice, MyFilms.r[MyFilms.conf.StrIndex]["Producer"].ToString(), Result[(int)Grabber_URLClass.Grabber_Output.Producer], grabtype, onlyselected, onlymissing, onlynonempty, updateItems))
-                MyFilms.r[MyFilms.conf.StrIndex]["Producer"] = Result[(int)Grabber_URLClass.Grabber_Output.Producer];
-              if (IsUpdateRequired("Year", strChoice, MyFilms.r[MyFilms.conf.StrIndex]["Year"].ToString(), Result[(int)Grabber_URLClass.Grabber_Output.Year], grabtype, onlyselected, onlymissing, onlynonempty, updateItems))
+              if (IsUpdateRequired("Producer", strChoice, MyFilms.r[MyFilms.conf.StrIndex]["Producer"].ToString(), Result[(int)GrabberUrlClass.Grabber_Output.Producer], grabtype, onlyselected, onlymissing, onlynonempty, updateItems))
+                MyFilms.r[MyFilms.conf.StrIndex]["Producer"] = Result[(int)GrabberUrlClass.Grabber_Output.Producer];
+              if (IsUpdateRequired("Year", strChoice, MyFilms.r[MyFilms.conf.StrIndex]["Year"].ToString(), Result[(int)GrabberUrlClass.Grabber_Output.Year], grabtype, onlyselected, onlymissing, onlynonempty, updateItems))
               {
-                try { year = Convert.ToInt16(Result[(int)Grabber_URLClass.Grabber_Output.Year]); }
+                try { year = Convert.ToInt16(Result[(int)GrabberUrlClass.Grabber_Output.Year]); }
                 catch { year = 1900; }
                 MyFilms.r[MyFilms.conf.StrIndex]["Year"] = year.ToString();
               }
 
-              if (IsUpdateRequired("Country", strChoice, MyFilms.r[MyFilms.conf.StrIndex]["Country"].ToString(), Result[(int)Grabber_URLClass.Grabber_Output.Country], grabtype, onlyselected, onlymissing, onlynonempty, updateItems))
-                MyFilms.r[MyFilms.conf.StrIndex]["Country"] = Result[(int)Grabber_URLClass.Grabber_Output.Country];
-              if (IsUpdateRequired("Category", strChoice, MyFilms.r[MyFilms.conf.StrIndex]["Category"].ToString(), Result[(int)Grabber_URLClass.Grabber_Output.Category], grabtype, onlyselected, onlymissing, onlynonempty, updateItems))
-                MyFilms.r[MyFilms.conf.StrIndex]["Category"] = Result[(int)Grabber_URLClass.Grabber_Output.Category];
-              if (IsUpdateRequired("URL", strChoice, MyFilms.r[MyFilms.conf.StrIndex]["URL"].ToString(), Result[(int)Grabber_URLClass.Grabber_Output.URL], grabtype, onlyselected, onlymissing, onlynonempty, updateItems))
+              if (IsUpdateRequired("Country", strChoice, MyFilms.r[MyFilms.conf.StrIndex]["Country"].ToString(), Result[(int)GrabberUrlClass.Grabber_Output.Country], grabtype, onlyselected, onlymissing, onlynonempty, updateItems))
+                MyFilms.r[MyFilms.conf.StrIndex]["Country"] = Result[(int)GrabberUrlClass.Grabber_Output.Country];
+              if (IsUpdateRequired("Category", strChoice, MyFilms.r[MyFilms.conf.StrIndex]["Category"].ToString(), Result[(int)GrabberUrlClass.Grabber_Output.Category], grabtype, onlyselected, onlymissing, onlynonempty, updateItems))
+                MyFilms.r[MyFilms.conf.StrIndex]["Category"] = Result[(int)GrabberUrlClass.Grabber_Output.Category];
+              if (IsUpdateRequired("URL", strChoice, MyFilms.r[MyFilms.conf.StrIndex]["URL"].ToString(), Result[(int)GrabberUrlClass.Grabber_Output.URL], grabtype, onlyselected, onlymissing, onlynonempty, updateItems))
                 if (MyFilms.conf.StrStorage != "URL")
-                  MyFilms.r[MyFilms.conf.StrIndex]["URL"] = Result[(int)Grabber_URLClass.Grabber_Output.URL];
-              if (IsUpdateRequired("Comments", strChoice, MyFilms.r[MyFilms.conf.StrIndex]["Comments"].ToString(), Result[(int)Grabber_URLClass.Grabber_Output.Comments], grabtype, onlyselected, onlymissing, onlynonempty, updateItems))
-                MyFilms.r[MyFilms.conf.StrIndex]["Comments"] = Result[(int)Grabber_URLClass.Grabber_Output.Comments];
-              if (IsUpdateRequired("Languages", strChoice, MyFilms.r[MyFilms.conf.StrIndex]["Languages"].ToString(), Result[(int)Grabber_URLClass.Grabber_Output.Language], grabtype, onlyselected, onlymissing, onlynonempty, updateItems))
+                  MyFilms.r[MyFilms.conf.StrIndex]["URL"] = Result[(int)GrabberUrlClass.Grabber_Output.URL];
+              if (IsUpdateRequired("Comments", strChoice, MyFilms.r[MyFilms.conf.StrIndex]["Comments"].ToString(), Result[(int)GrabberUrlClass.Grabber_Output.Comments], grabtype, onlyselected, onlymissing, onlynonempty, updateItems))
+                MyFilms.r[MyFilms.conf.StrIndex]["Comments"] = Result[(int)GrabberUrlClass.Grabber_Output.Comments];
+              if (IsUpdateRequired("Languages", strChoice, MyFilms.r[MyFilms.conf.StrIndex]["Languages"].ToString(), Result[(int)GrabberUrlClass.Grabber_Output.Language], grabtype, onlyselected, onlymissing, onlynonempty, updateItems))
                 MyFilms.r[MyFilms.conf.StrIndex]["Languages"] =
-                  Result[(int)Grabber_URLClass.Grabber_Output.Language];
+                  Result[(int)GrabberUrlClass.Grabber_Output.Language];
 
               #region AMC4 extended fields
               if (MyFilms.conf.StrFileType == MyFilmsPlugin.MyFilmsGUI.Configuration.CatalogType.AntMovieCatalog4Xtended)
               {
-                if (IsUpdateRequired("Writer", strChoice, MyFilms.r[MyFilms.conf.StrIndex]["Writer"].ToString(), Result[(int)Grabber_URLClass.Grabber_Output.Writer], grabtype, onlyselected, onlymissing, onlynonempty, updateItems))
-                  MyFilms.r[MyFilms.conf.StrIndex]["Writer"] = Result[(int)Grabber_URLClass.Grabber_Output.Writer];
-                if (IsUpdateRequired("TagLine", strChoice, MyFilms.r[MyFilms.conf.StrIndex]["TagLine"].ToString(), Result[(int)Grabber_URLClass.Grabber_Output.Tagline], grabtype, onlyselected, onlymissing, onlynonempty, updateItems))
-                  MyFilms.r[MyFilms.conf.StrIndex]["TagLine"] = Result[(int)Grabber_URLClass.Grabber_Output.Tagline];
-                if (IsUpdateRequired("Certification", strChoice, MyFilms.r[MyFilms.conf.StrIndex]["Certification"].ToString(), Result[(int)Grabber_URLClass.Grabber_Output.Certification], grabtype, onlyselected, onlymissing, onlynonempty, updateItems))
-                  MyFilms.r[MyFilms.conf.StrIndex]["Certification"] = Result[(int)Grabber_URLClass.Grabber_Output.Certification];
-                if (IsUpdateRequired("IMDB_Id", strChoice, MyFilms.r[MyFilms.conf.StrIndex]["IMDB_Id"].ToString(), Result[(int)Grabber_URLClass.Grabber_Output.IMDB_Id], grabtype, onlyselected, onlymissing, onlynonempty, updateItems))
-                  MyFilms.r[MyFilms.conf.StrIndex]["IMDB_Id"] = Result[(int)Grabber_URLClass.Grabber_Output.IMDB_Id];
-                if (IsUpdateRequired("IMDB_Rank", strChoice, MyFilms.r[MyFilms.conf.StrIndex]["IMDB_Rank"].ToString(), Result[(int)Grabber_URLClass.Grabber_Output.IMDB_Rank], grabtype, onlyselected, onlymissing, onlynonempty, updateItems))
-                  MyFilms.r[MyFilms.conf.StrIndex]["IMDB_Rank"] = Result[(int)Grabber_URLClass.Grabber_Output.IMDB_Rank];
-                if (IsUpdateRequired("TMDB_Id", strChoice, MyFilms.r[MyFilms.conf.StrIndex]["TMDB_Id"].ToString(), Result[(int)Grabber_URLClass.Grabber_Output.TMDB_Id], grabtype, onlyselected, onlymissing, onlynonempty, updateItems))
-                  MyFilms.r[MyFilms.conf.StrIndex]["TMDB_Id"] = Result[(int)Grabber_URLClass.Grabber_Output.TMDB_Id];
-                if (IsUpdateRequired("Studio", strChoice, MyFilms.r[MyFilms.conf.StrIndex]["Studio"].ToString(), Result[(int)Grabber_URLClass.Grabber_Output.Studio], grabtype, onlyselected, onlymissing, onlynonempty, updateItems))
-                  MyFilms.r[MyFilms.conf.StrIndex]["Studio"] = Result[(int)Grabber_URLClass.Grabber_Output.Studio];
-                if (IsUpdateRequired("Edition", strChoice, MyFilms.r[MyFilms.conf.StrIndex]["Edition"].ToString(), Result[(int)Grabber_URLClass.Grabber_Output.Edition], grabtype, onlyselected, onlymissing, onlynonempty, updateItems))
-                  MyFilms.r[MyFilms.conf.StrIndex]["Edition"] = Result[(int)Grabber_URLClass.Grabber_Output.Edition];
-                //if (IsUpdateRequired("Fanart", strChoice, MyFilms.r[MyFilms.conf.StrIndex]["Fanart"].ToString(), Result[(int)Grabber_URLClass.Grabber_Output.Fanart], grabtype, onlyselected, onlymissing, onlynonempty, updateItems)) 
-                //  MyFilms.r[MyFilms.conf.StrIndex]["Fanart"] = Result[(int)Grabber_URLClass.Grabber_Output.Fanart];
-                //if (IsUpdateRequired("Trailer", strChoice, MyFilms.r[MyFilms.conf.StrIndex]["Trailer"].ToString(), Result[(int)Grabber_URLClass.Grabber_Output.Trailer], grabtype, onlyselected, onlymissing, onlynonempty, updateItems)) 
-                //  MyFilms.r[MyFilms.conf.StrIndex]["Trailer"] = Result[(int)Grabber_URLClass.Grabber_Output.Trailer];
+                if (IsUpdateRequired("Writer", strChoice, MyFilms.r[MyFilms.conf.StrIndex]["Writer"].ToString(), Result[(int)GrabberUrlClass.Grabber_Output.Writer], grabtype, onlyselected, onlymissing, onlynonempty, updateItems))
+                  MyFilms.r[MyFilms.conf.StrIndex]["Writer"] = Result[(int)GrabberUrlClass.Grabber_Output.Writer];
+                if (IsUpdateRequired("TagLine", strChoice, MyFilms.r[MyFilms.conf.StrIndex]["TagLine"].ToString(), Result[(int)GrabberUrlClass.Grabber_Output.Tagline], grabtype, onlyselected, onlymissing, onlynonempty, updateItems))
+                  MyFilms.r[MyFilms.conf.StrIndex]["TagLine"] = Result[(int)GrabberUrlClass.Grabber_Output.Tagline];
+                if (IsUpdateRequired("Certification", strChoice, MyFilms.r[MyFilms.conf.StrIndex]["Certification"].ToString(), Result[(int)GrabberUrlClass.Grabber_Output.Certification], grabtype, onlyselected, onlymissing, onlynonempty, updateItems))
+                  MyFilms.r[MyFilms.conf.StrIndex]["Certification"] = Result[(int)GrabberUrlClass.Grabber_Output.Certification];
+                if (IsUpdateRequired("IMDB_Id", strChoice, MyFilms.r[MyFilms.conf.StrIndex]["IMDB_Id"].ToString(), Result[(int)GrabberUrlClass.Grabber_Output.IMDB_Id], grabtype, onlyselected, onlymissing, onlynonempty, updateItems))
+                  MyFilms.r[MyFilms.conf.StrIndex]["IMDB_Id"] = Result[(int)GrabberUrlClass.Grabber_Output.IMDB_Id];
+                if (IsUpdateRequired("IMDB_Rank", strChoice, MyFilms.r[MyFilms.conf.StrIndex]["IMDB_Rank"].ToString(), Result[(int)GrabberUrlClass.Grabber_Output.IMDB_Rank], grabtype, onlyselected, onlymissing, onlynonempty, updateItems))
+                  MyFilms.r[MyFilms.conf.StrIndex]["IMDB_Rank"] = Result[(int)GrabberUrlClass.Grabber_Output.IMDB_Rank];
+                if (IsUpdateRequired("TMDB_Id", strChoice, MyFilms.r[MyFilms.conf.StrIndex]["TMDB_Id"].ToString(), Result[(int)GrabberUrlClass.Grabber_Output.TMDB_Id], grabtype, onlyselected, onlymissing, onlynonempty, updateItems))
+                  MyFilms.r[MyFilms.conf.StrIndex]["TMDB_Id"] = Result[(int)GrabberUrlClass.Grabber_Output.TMDB_Id];
+                if (IsUpdateRequired("Studio", strChoice, MyFilms.r[MyFilms.conf.StrIndex]["Studio"].ToString(), Result[(int)GrabberUrlClass.Grabber_Output.Studio], grabtype, onlyselected, onlymissing, onlynonempty, updateItems))
+                  MyFilms.r[MyFilms.conf.StrIndex]["Studio"] = Result[(int)GrabberUrlClass.Grabber_Output.Studio];
+                if (IsUpdateRequired("Edition", strChoice, MyFilms.r[MyFilms.conf.StrIndex]["Edition"].ToString(), Result[(int)GrabberUrlClass.Grabber_Output.Edition], grabtype, onlyselected, onlymissing, onlynonempty, updateItems))
+                  MyFilms.r[MyFilms.conf.StrIndex]["Edition"] = Result[(int)GrabberUrlClass.Grabber_Output.Edition];
+                //if (IsUpdateRequired("Fanart", strChoice, MyFilms.r[MyFilms.conf.StrIndex]["Fanart"].ToString(), Result[(int)GrabberUrlClass.Grabber_Output.Fanart], grabtype, onlyselected, onlymissing, onlynonempty, updateItems)) 
+                //  MyFilms.r[MyFilms.conf.StrIndex]["Fanart"] = Result[(int)GrabberUrlClass.Grabber_Output.Fanart];
+                //if (IsUpdateRequired("Trailer", strChoice, MyFilms.r[MyFilms.conf.StrIndex]["Trailer"].ToString(), Result[(int)GrabberUrlClass.Grabber_Output.Trailer], grabtype, onlyselected, onlymissing, onlynonempty, updateItems)) 
+                //  MyFilms.r[MyFilms.conf.StrIndex]["Trailer"] = Result[(int)GrabberUrlClass.Grabber_Output.Trailer];
               }
               #endregion
 
-              if (grabtype == GrabType.All && IsUpdateRequired("Picture", strChoice, MyFilms.r[MyFilms.conf.StrIndex]["Picture"].ToString(), Result[(int)Grabber_URLClass.Grabber_Output.PicturePathLong], grabtype, onlyselected, onlymissing, onlynonempty, updateItems))
+              if (grabtype == GrabType.All && IsUpdateRequired("Picture", strChoice, MyFilms.r[MyFilms.conf.StrIndex]["Picture"].ToString(), Result[(int)GrabberUrlClass.Grabber_Output.PicturePathLong], grabtype, onlyselected, onlymissing, onlynonempty, updateItems))
                 grabb_Internet_Details_Informations_Cover(Result, interactive, GetID, wscript, grabtype, sTitles);
 
               #endregion
@@ -3890,28 +3890,28 @@ namespace MyFilmsPlugin.MyFilmsGUI
                 {
                   personProperty = "name";
                   strOldValue = person != null && person.Name.Length > 0 ? person.Name : "";
-                  strNewValue = Result[(int)Grabber_URLClass.Grabber_Output.OriginalTitle];
+                  strNewValue = Result[(int)GrabberUrlClass.Grabber_Output.OriginalTitle];
                   dlgmenu.Add(GUILocalizeStrings.Get(10799301) + ": '" + strOldValue.Replace(Environment.NewLine, " # ") + "' -> '" + strNewValue.Replace(Environment.NewLine, " # ") + "'");
                   choiceViewMenu.Add(personProperty);
                   LogMyFilms.Debug("GrabberUpdate - Add to menu (" + personProperty + "): '" + strOldValue + "' -> '" + strNewValue + "'");
 
                   personProperty = "dateofbirth";
                   strOldValue = person != null && person.DateOfBirth.Length > 0 ? person.DateOfBirth : "";
-                  strNewValue = Result[(int)Grabber_URLClass.Grabber_Output.Comments];
+                  strNewValue = Result[(int)GrabberUrlClass.Grabber_Output.Comments];
                   dlgmenu.Add(GUILocalizeStrings.Get(10799302) + ": '" + strOldValue.Replace(Environment.NewLine, " # ") + "' -> '" + strNewValue.Replace(Environment.NewLine, " # ") + "'");
                   choiceViewMenu.Add(personProperty);
                   LogMyFilms.Debug("GrabberUpdate - Add to menu (" + personProperty + "): '" + strOldValue + "' -> '" + strNewValue + "'");
 
                   personProperty = "placeofbirth";
                   strOldValue = person != null && person.PlaceOfBirth.Length > 0 ? person.PlaceOfBirth : "";
-                  strNewValue = Result[(int)Grabber_URLClass.Grabber_Output.Country];
+                  strNewValue = Result[(int)GrabberUrlClass.Grabber_Output.Country];
                   dlgmenu.Add(GUILocalizeStrings.Get(10799303) + ": '" + strOldValue.Replace(Environment.NewLine, " # ") + "' -> '" + strNewValue.Replace(Environment.NewLine, " # ") + "'");
                   choiceViewMenu.Add(personProperty);
                   LogMyFilms.Debug("GrabberUpdate - Add to menu (" + personProperty + "): '" + strOldValue + "' -> '" + strNewValue + "'");
 
                   personProperty = "biography";
                   strOldValue = person != null && person.Biography.Length > 0 ? person.Biography : "";
-                  strNewValue = Result[(int)Grabber_URLClass.Grabber_Output.Description];
+                  strNewValue = Result[(int)GrabberUrlClass.Grabber_Output.Description];
                   dlgmenu.Add(GUILocalizeStrings.Get(10799304) + ": '" + strOldValue.Replace(Environment.NewLine, " # ") + "' -> '" + strNewValue.Replace(Environment.NewLine, " # ") + "'");
                   choiceViewMenu.Add(personProperty);
                   LogMyFilms.Debug("GrabberUpdate - Add to menu (" + personProperty + "): '" + strOldValue + "' -> '" + strNewValue + "'");
@@ -3923,14 +3923,14 @@ namespace MyFilmsPlugin.MyFilmsGUI
                   // main image
                   personProperty = "coverimage";
                   strOldValue = person != null && person.ThumbnailUrl.Length > 0 ? person.ThumbnailUrl : "";
-                  strNewValue = Result[(int)Grabber_URLClass.Grabber_Output.PictureURL];
+                  strNewValue = Result[(int)GrabberUrlClass.Grabber_Output.PictureURL];
                   dlgmenu.Add(GUILocalizeStrings.Get(10798682) + ": '" + strOldValue.Replace(Environment.NewLine, " # ") + "' -> '" + strNewValue.Replace(Environment.NewLine, " # ") + "'");
                   choiceViewMenu.Add(personProperty);
                   imageUrls.Add(personProperty, strNewValue);
                   LogMyFilms.Debug("GrabberUpdate - Add to menu (" + personProperty + "): '" + strOldValue + "' -> '" + strNewValue + "'");
 
                   // add additional images, if returned by grabber
-                  string multipersonimages = Result[(int)Grabber_URLClass.Grabber_Output.PersonImages];
+                  string multipersonimages = Result[(int)GrabberUrlClass.Grabber_Output.PersonImages];
                   LogMyFilms.Debug("GrabberUpdate - multipersonimages = '" + multipersonimages + "'");
                   int i = 1;
                   string[] personimagesUrls = multipersonimages.Split(new char[] { ',', '|' });
@@ -3939,7 +3939,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
                   {
                     personProperty = "coverimage" + i.ToString();
                     strNewValue = reg.Replace(personimagesUrl, "").Trim();
-                    if (strNewValue != Result[(int)Grabber_URLClass.Grabber_Output.PictureURL]) // do not add main image twice!
+                    if (strNewValue != Result[(int)GrabberUrlClass.Grabber_Output.PictureURL]) // do not add main image twice!
                     {
                       dlgmenu.Add(GUILocalizeStrings.Get(10798682) + " " + i.ToString() + ": '" + strOldValue.Replace(Environment.NewLine, " # ") + "' -> '" + strNewValue.Replace(Environment.NewLine, " # ") + "'");
                       choiceViewMenu.Add(personProperty);
@@ -3966,46 +3966,46 @@ namespace MyFilmsPlugin.MyFilmsGUI
               switch (strChoice)
               {
                 case "name":
-                  person.Name = Result[(int)Grabber_URLClass.Grabber_Output.OriginalTitle];
+                  person.Name = Result[(int)GrabberUrlClass.Grabber_Output.OriginalTitle];
                   break;
                 case "dateofbirth":
-                  person.DateOfBirth = Result[(int)Grabber_URLClass.Grabber_Output.Comments];
+                  person.DateOfBirth = Result[(int)GrabberUrlClass.Grabber_Output.Comments];
                   break;
                 case "placeofbirth":
-                  person.PlaceOfBirth = Result[(int)Grabber_URLClass.Grabber_Output.Country];
+                  person.PlaceOfBirth = Result[(int)GrabberUrlClass.Grabber_Output.Country];
                   break;
                 case "biography":
-                  person.Biography = Result[(int)Grabber_URLClass.Grabber_Output.Description];
+                  person.Biography = Result[(int)GrabberUrlClass.Grabber_Output.Description];
                   break;
                 case "coverimage":
-                  person.ThumbnailUrl = Result[(int)Grabber_URLClass.Grabber_Output.PictureURL];
+                  person.ThumbnailUrl = Result[(int)GrabberUrlClass.Grabber_Output.PictureURL];
                   // ToDo: Download Image
                   break;
 
                 case "all":
-                  person.Name = Result[(int)Grabber_URLClass.Grabber_Output.OriginalTitle];
-                  person.DateOfBirth = Result[(int)Grabber_URLClass.Grabber_Output.Comments];
-                  person.PlaceOfBirth = Result[(int)Grabber_URLClass.Grabber_Output.Country];
-                  person.Biography = Result[(int)Grabber_URLClass.Grabber_Output.Description];
-                  person.ThumbnailUrl = Result[(int)Grabber_URLClass.Grabber_Output.PictureURL];
+                  person.Name = Result[(int)GrabberUrlClass.Grabber_Output.OriginalTitle];
+                  person.DateOfBirth = Result[(int)GrabberUrlClass.Grabber_Output.Comments];
+                  person.PlaceOfBirth = Result[(int)GrabberUrlClass.Grabber_Output.Country];
+                  person.Biography = Result[(int)GrabberUrlClass.Grabber_Output.Description];
+                  person.ThumbnailUrl = Result[(int)GrabberUrlClass.Grabber_Output.PictureURL];
                   // ToDo: Download Image
                   break;
 
                 case "missing":
-                  if (string.IsNullOrEmpty(person.Name)) person.Name = Result[(int)Grabber_URLClass.Grabber_Output.OriginalTitle];
-                  if (string.IsNullOrEmpty(person.DateOfBirth)) person.DateOfBirth = Result[(int)Grabber_URLClass.Grabber_Output.Comments];
-                  if (string.IsNullOrEmpty(person.PlaceOfBirth)) person.PlaceOfBirth = Result[(int)Grabber_URLClass.Grabber_Output.Country];
-                  if (string.IsNullOrEmpty(person.Biography)) person.Biography = Result[(int)Grabber_URLClass.Grabber_Output.Description];
-                  if (string.IsNullOrEmpty(person.ThumbnailUrl)) person.ThumbnailUrl = Result[(int)Grabber_URLClass.Grabber_Output.PictureURL];
+                  if (string.IsNullOrEmpty(person.Name)) person.Name = Result[(int)GrabberUrlClass.Grabber_Output.OriginalTitle];
+                  if (string.IsNullOrEmpty(person.DateOfBirth)) person.DateOfBirth = Result[(int)GrabberUrlClass.Grabber_Output.Comments];
+                  if (string.IsNullOrEmpty(person.PlaceOfBirth)) person.PlaceOfBirth = Result[(int)GrabberUrlClass.Grabber_Output.Country];
+                  if (string.IsNullOrEmpty(person.Biography)) person.Biography = Result[(int)GrabberUrlClass.Grabber_Output.Description];
+                  if (string.IsNullOrEmpty(person.ThumbnailUrl)) person.ThumbnailUrl = Result[(int)GrabberUrlClass.Grabber_Output.PictureURL];
                   // ToDo: Download Image
                   break;
 
                 case "all-onlynewdata":
-                  if (string.IsNullOrEmpty(Result[(int)Grabber_URLClass.Grabber_Output.OriginalTitle])) person.Name = Result[(int)Grabber_URLClass.Grabber_Output.OriginalTitle];
-                  if (string.IsNullOrEmpty(Result[(int)Grabber_URLClass.Grabber_Output.Comments])) person.DateOfBirth = Result[(int)Grabber_URLClass.Grabber_Output.Comments];
-                  if (string.IsNullOrEmpty(Result[(int)Grabber_URLClass.Grabber_Output.Country])) person.PlaceOfBirth = Result[(int)Grabber_URLClass.Grabber_Output.Country];
-                  if (string.IsNullOrEmpty(Result[(int)Grabber_URLClass.Grabber_Output.Description])) person.Biography = Result[(int)Grabber_URLClass.Grabber_Output.Description];
-                  if (string.IsNullOrEmpty(Result[(int)Grabber_URLClass.Grabber_Output.PictureURL]) && Result[(int)Grabber_URLClass.Grabber_Output.PictureURL].ToLower().StartsWith("http")) person.ThumbnailUrl = Result[(int)Grabber_URLClass.Grabber_Output.PictureURL];
+                  if (string.IsNullOrEmpty(Result[(int)GrabberUrlClass.Grabber_Output.OriginalTitle])) person.Name = Result[(int)GrabberUrlClass.Grabber_Output.OriginalTitle];
+                  if (string.IsNullOrEmpty(Result[(int)GrabberUrlClass.Grabber_Output.Comments])) person.DateOfBirth = Result[(int)GrabberUrlClass.Grabber_Output.Comments];
+                  if (string.IsNullOrEmpty(Result[(int)GrabberUrlClass.Grabber_Output.Country])) person.PlaceOfBirth = Result[(int)GrabberUrlClass.Grabber_Output.Country];
+                  if (string.IsNullOrEmpty(Result[(int)GrabberUrlClass.Grabber_Output.Description])) person.Biography = Result[(int)GrabberUrlClass.Grabber_Output.Description];
+                  if (string.IsNullOrEmpty(Result[(int)GrabberUrlClass.Grabber_Output.PictureURL]) && Result[(int)GrabberUrlClass.Grabber_Output.PictureURL].ToLower().StartsWith("http")) person.ThumbnailUrl = Result[(int)GrabberUrlClass.Grabber_Output.PictureURL];
                   // ToDo: Download Image
                   break;
 
@@ -4018,7 +4018,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
                   break;
               }
 
-              LogMyFilms.Debug("GrabInternetDetails - downloadimage: '" + Result[(int)Grabber_URLClass.Grabber_Output.PicturePathLong]);
+              LogMyFilms.Debug("GrabInternetDetails - downloadimage: '" + Result[(int)GrabberUrlClass.Grabber_Output.PicturePathLong]);
 
               #region Add or update actor to video database
               try
@@ -4074,7 +4074,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
             {
               #region Cover
 
-              if (string.IsNullOrEmpty(Result[(int)Grabber_URLClass.Grabber_Output.PicturePathLong]))
+              if (string.IsNullOrEmpty(Result[(int)GrabberUrlClass.Grabber_Output.PicturePathLong]))
               {
                 if (interactive)
                 {
@@ -4092,7 +4092,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
             {
               #region MultiCovers
 
-              if (string.IsNullOrEmpty(Result[(int)Grabber_URLClass.Grabber_Output.MultiPosters]))
+              if (string.IsNullOrEmpty(Result[(int)GrabberUrlClass.Grabber_Output.MultiPosters]))
               {
                 // no data found
                 if (interactive)
@@ -4178,8 +4178,8 @@ namespace MyFilmsPlugin.MyFilmsGUI
       {
         case GrabType.Cover:
         case GrabType.All:
-          tmpPicture = Result[(int)Grabber_URLClass.Grabber_Output.PicturePathLong];
-          tmpPicturename = Result[(int)Grabber_URLClass.Grabber_Output.PicturePathLong].Substring(Result[(int)Grabber_URLClass.Grabber_Output.PicturePathLong].LastIndexOf("\\") + 1);
+          tmpPicture = Result[(int)GrabberUrlClass.Grabber_Output.PicturePathLong];
+          tmpPicturename = Result[(int)GrabberUrlClass.Grabber_Output.PicturePathLong].Substring(Result[(int)GrabberUrlClass.Grabber_Output.PicturePathLong].LastIndexOf("\\") + 1);
           break;
         case GrabType.MultiCovers:
           // make difference between existing cover and new one
@@ -4239,9 +4239,9 @@ namespace MyFilmsPlugin.MyFilmsGUI
         case GrabType.MultiCovers:
           #region multiple cover images
           var script = new GrabberScript(wscript);
-          var ArtworkImages = new ArtworkInfo(Result[(int)Grabber_URLClass.Grabber_Output.MultiPosters], script.URLPrefix);
+          var ArtworkImages = new ArtworkInfo(Result[(int)GrabberUrlClass.Grabber_Output.MultiPosters], script.URLPrefix);
           var testlist = new List<ArtworkInfoItem>();
-          testlist = Grabber.GrabUtil.GetMultiImageList(script.URLPrefix, Result[(int)Grabber_URLClass.Grabber_Output.MultiPosters], "");
+          testlist = Grabber.GrabUtil.GetMultiImageList(script.URLPrefix, Result[(int)GrabberUrlClass.Grabber_Output.MultiPosters], "");
 
           var choiceViewMenu = new List<string>();
           var dlgmenu = (GUIDialogMenu)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_MENU);
@@ -4337,9 +4337,9 @@ namespace MyFilmsPlugin.MyFilmsGUI
           break;
         case GrabType.Cover:
           #region single cover without confirmation dialog
-          if (File.Exists(newPicture)) // if 'base file' already exists, create sub file name Result[(int)Grabber_URLClass.Grabber_Output.Country]
+          if (File.Exists(newPicture)) // if 'base file' already exists, create sub file name Result[(int)GrabberUrlClass.Grabber_Output.Country]
           {
-            newPicture = Path.Combine(Path.GetDirectoryName(newPicture), Path.GetFileNameWithoutExtension(newPicture) + " [" + Result[(int)Grabber.Grabber_URLClass.Grabber_Output.PictureURL].GetHashCode() + "]" + System.IO.Path.GetExtension(newPicture));
+            newPicture = Path.Combine(Path.GetDirectoryName(newPicture), Path.GetFileNameWithoutExtension(newPicture) + " [" + Result[(int)Grabber.GrabberUrlClass.Grabber_Output.PictureURL].GetHashCode() + "]" + System.IO.Path.GetExtension(newPicture));
             LogMyFilms.Debug("New Cover File Name = '" + newPicture + "'");
           }
           if (newPicture != tmpPicture)
@@ -4480,7 +4480,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
         if (dlgPrgrs != null)
           dlgPrgrs.Percentage = 10;
 
-        var grab = new Grabber_URLClass();
+        var grab = new GrabberUrlClass();
         List<DbMovieInfo> listemovies = grab.GetFanart(title, ttitle, year, director, imdbid, MyFilms.conf.StrPathFanart, true, false, StrTitle1, string.Empty);
       }
       catch (Exception ex)
@@ -4505,7 +4505,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
       var listUrl = new ArrayList();
       if (string.IsNullOrEmpty(wscript)) return listUrl;
       LogMyFilms.Debug("FindActor() with name = '" + personname + "', grabberfile = '" + wscript + "'");
-      var grab = new Grabber_URLClass();
+      var grab = new GrabberUrlClass();
       try
       {
         listUrl = grab.ReturnURL(personname, wscript, 1, false, "");
@@ -4522,7 +4522,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
       LogMyFilms.Debug("launching (GrabActorDetails) with url = '" + url + "', wscript = '" + wscript + "'");
 
       person = new IMDBActor();
-      var Grab = new Grabber_URLClass();
+      var Grab = new GrabberUrlClass();
       var Result = new string[80];
 
       #region load internet data
@@ -4543,11 +4543,11 @@ namespace MyFilmsPlugin.MyFilmsGUI
       #endregion
 
       #region load details data for person
-      person.Name = Result[(int)Grabber_URLClass.Grabber_Output.OriginalTitle];
-      person.DateOfBirth = Result[(int)Grabber_URLClass.Grabber_Output.Comments];
-      person.PlaceOfBirth = Result[(int)Grabber_URLClass.Grabber_Output.Country];
-      person.Biography = Result[(int)Grabber_URLClass.Grabber_Output.Description];
-      person.ThumbnailUrl = Result[(int)Grabber_URLClass.Grabber_Output.PictureURL];
+      person.Name = Result[(int)GrabberUrlClass.Grabber_Output.OriginalTitle];
+      person.DateOfBirth = Result[(int)GrabberUrlClass.Grabber_Output.Comments];
+      person.PlaceOfBirth = Result[(int)GrabberUrlClass.Grabber_Output.Country];
+      person.Biography = Result[(int)GrabberUrlClass.Grabber_Output.Description];
+      person.ThumbnailUrl = Result[(int)GrabberUrlClass.Grabber_Output.PictureURL];
       #endregion
       LogMyFilms.Debug("GrabActorDetails() done for person : '" + person.Name + "'");
       return true;
@@ -4812,8 +4812,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
       string oldPicture = getGUIProperty("picture");
       string newPicture = ""; // full path to new picture
       string newPictureCatalogname = ""; // entry to be stored in catalog
-      if (string.IsNullOrEmpty(oldPicture)) 
-        oldPicture = "";
+      if (string.IsNullOrEmpty(oldPicture)) oldPicture = "";
 
       if (!Directory.Exists(MyFilms.conf.StrPathImg + "\\" + MyFilms.conf.StrPicturePrefix))
         try
@@ -4821,7 +4820,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
           Directory.CreateDirectory(MyFilms.conf.StrPathImg + "\\" + MyFilms.conf.StrPicturePrefix);
         }
         catch (Exception) { }
-      var grab = new Grabber_URLClass();
+      var grab = new GrabberUrlClass();
       string language = CultureInfo.CurrentCulture.Name.Substring(0, 2);
       int wyear = 0;
       try { wyear = Convert.ToInt32(year); }
@@ -4848,12 +4847,8 @@ namespace MyFilmsPlugin.MyFilmsGUI
                 break;
               default:
 
-                var wotitle_tableau = new ArrayList();
-                var wttitle_tableau = new ArrayList();
-                var wotitle_sub_tableau = new ArrayList();
-                var wttitle_sub_tableau = new ArrayList();
                 const int MinChars = 2;
-                bool Filter = true;
+                const bool Filter = true;
 
                 var dlg = (GUIDialogMenu)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_MENU);
                 if (dlg == null) return;
@@ -4873,35 +4868,22 @@ namespace MyFilmsPlugin.MyFilmsGUI
                 if (dlg.SelectedLabel == 0)
                 {
                   #region Get SubTitles and Subwords from otitle and ttitle
-                  wotitle_tableau = MyFilms.SubTitleGrabbing(wtitle);
-                  wttitle_tableau = MyFilms.SubTitleGrabbing(wttitle);
-                  wotitle_sub_tableau = MyFilms.SubWordGrabbing(wtitle, MinChars, Filter); // Min 3 Chars, Filter true (no der die das)
-                  wttitle_sub_tableau = MyFilms.SubWordGrabbing(wttitle, MinChars, Filter); // Min 3 Chars, Filter true (no der die das)
-                  //First Show Dialog to choose Otitle, Ttitle or substrings - or Keyboard to manually enter searchstring!!!
-                  var dlgs = (GUIDialogMenu)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_MENU);
+                  GUIDialogMenu dlgs = (GUIDialogMenu)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_MENU);
                   if (dlgs == null) return;
                   dlgs.Reset();
                   dlgs.SetHeading(GUILocalizeStrings.Get(1079859)); // choose search expression
                   dlgs.Add("  *****  " + GUILocalizeStrings.Get(1079858) + "  *****  "); //manual selection with keyboard
+                  // First Show Dialog to choose Otitle, Ttitle or substrings - or Keyboard to manually enter searchstring!!!
                   //dlgs.Add(wtitle); //Otitle
                   dlgs.Add(savetitle); //Otitle = savetitle
                   dlgs.Add(wttitle); //Ttitle
-                  foreach (object t in from object t in wotitle_tableau where t.ToString().Length > 1 select t)
+                  foreach (object t in MyFilms.SubTitleGrabbing(wtitle))
                   {
-                    dlgs.Add(t.ToString());
+                    if (t.ToString().Length > 1) dlgs.Add(t.ToString());
                   }
-                  foreach (object t in from object t in wttitle_tableau where t.ToString().Length > 1 select t)
-                  {
-                    dlgs.Add(t.ToString());
-                  }
-                  foreach (object t in from object t in wotitle_sub_tableau where t.ToString().Length > 1 select t)
-                  {
-                    dlgs.Add(t.ToString());
-                  }
-                  foreach (object t in from object t in wttitle_sub_tableau where t.ToString().Length > 1 select t)
-                  {
-                    dlgs.Add(t.ToString());
-                  }
+                  foreach (object t in from object t in MyFilms.SubTitleGrabbing(wttitle) where t.ToString().Length > 1 select t) dlgs.Add(t.ToString());
+                  foreach (string t in MyFilms.SubWordGrabbing(wtitle, MinChars, Filter).Where(t => t.Length > 1)) dlgs.Add(t);
+                  foreach (string t in MyFilms.SubWordGrabbing(wttitle, MinChars, Filter).Where(t => t.Length > 1)) dlgs.Add(t);
                   //Now all titles and Substrings listed in dialog !
                   //dlgs.Add("  *****  " + GUILocalizeStrings.Get(1079860) + "  *****  "); //manual selection
                   if (!(dlgs.SelectedLabel > -1))
@@ -4941,7 +4923,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
                 {
                   // Load Posters  -> show progress dialog !
 
-                  var dlgPrgrs = (GUIDialogProgress)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_PROGRESS);
+                  GUIDialogProgress dlgPrgrs = (GUIDialogProgress)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_PROGRESS);
                   if (dlgPrgrs != null)
                   {
                     dlgPrgrs.Reset();
@@ -5036,23 +5018,21 @@ namespace MyFilmsPlugin.MyFilmsGUI
     //-------------------------------------------------------------------------------------------
     //  Change local Cover Image
     //-------------------------------------------------------------------------------------------        
-    private static string ChangeLocalCover(DataRow[] r1, int Index, bool interactive, bool onlyReturnCount)
+    private static string ChangeLocalCover(DataRow[] r1, int index, bool interactive, bool onlyReturnCount)
     {
       result = new ArrayList();
       ArrayList resultsize = new ArrayList();
       string[] filesfound = new string[100];
       Int64[] filesfoundsize = new Int64[100];
       int filesfoundcounter = 0;
-      //string file = MyFilms.r[Index][MyFilms.conf.StrTitle1].ToString();
-      //string titlename = MyFilms.r[Index][MyFilms.conf.StrTitle1].ToString();
-      //string titlename2 = MyFilms.r[Index][MyFilms.conf.StrTitle2].ToString();
+      //string file = MyFilms.r[index][MyFilms.conf.StrTitle1].ToString();
+      //string titlename = MyFilms.r[index][MyFilms.conf.StrTitle1].ToString();
+      //string titlename2 = MyFilms.r[index][MyFilms.conf.StrTitle2].ToString();
       //string file = MyFilms.r[MyFilms.conf.StrIndex][MyFilms.conf.StrTitle1].ToString();
       //string titlename = MyFilms.r[MyFilms.conf.StrIndex][MyFilms.conf.StrTitle1].ToString();
       //string titlename2 = MyFilms.r[MyFilms.conf.StrIndex][MyFilms.conf.StrTitle2].ToString();
       string directoryname = "";
       //string movieName = "";
-      string[] files = null;
-      Int64 wsize = 0; // Temporary Filesize detection
       string startPattern = "";
       string currentPicture = getGUIProperty("picture");
       //if ((sr["Picture"].ToString().IndexOf(":\\") == -1) && (sr["Picture"].ToString().Substring(0, 2) != "\\\\"))
@@ -5060,19 +5040,17 @@ namespace MyFilmsPlugin.MyFilmsGUI
       //else
       //  conf.FileImage = sr["Picture"].ToString();
 
-      if (string.IsNullOrEmpty(currentPicture))
-        return "";
+      if (string.IsNullOrEmpty(currentPicture)) return "";
+
       string currentPictureName = currentPicture.Substring(currentPicture.LastIndexOf("\\") + 1);
       string currentStorePath = MyFilms.conf.StrPathImg + "\\" + MyFilms.conf.StrPicturePrefix;
       string newPicture = ""; // full path to new picture
       string newPictureCatalogname = ""; // entry to be stored in catalog
 
 
-      if (!currentPicture.StartsWith(currentStorePath))
-        return "";
-      startPattern = currentStorePath.EndsWith("\\")
-                       ? ""
-                       : currentPicture.Substring(currentPicture.LastIndexOf("\\") + 1);
+      if (!currentPicture.StartsWith(currentStorePath)) return "";
+
+      startPattern = currentStorePath.EndsWith("\\") ? "" : currentPicture.Substring(currentPicture.LastIndexOf("\\") + 1);
       string searchPattern = currentPicture.Substring(currentStorePath.Length);
 
       int patternLength2 = 999;
@@ -5090,14 +5068,14 @@ namespace MyFilmsPlugin.MyFilmsGUI
       int nCurrent = -1;
       if (!string.IsNullOrEmpty(directoryname))
       {
-        files = Directory.GetFiles(directoryname, @"*" + searchPattern + @"*.jpg", SearchOption.TopDirectoryOnly);
+        string[] files = Directory.GetFiles(directoryname, @"*" + searchPattern + @"*.jpg", SearchOption.TopDirectoryOnly);
         foreach (string filefound in files)
         {
-          wsize = new System.IO.FileInfo(filefound).Length;
+          long wsize = new FileInfo(filefound).Length; // Temporary Filesize detection
           result.Add(filefound);
           resultsize.Add(wsize);
           filesfound[filesfoundcounter] = filefound;
-          filesfoundsize[filesfoundcounter] = new System.IO.FileInfo(filefound).Length;
+          filesfoundsize[filesfoundcounter] = new FileInfo(filefound).Length;
           if (filefound.ToLower() == currentPicture.ToLower())
             nCurrent = filesfoundcounter;
           filesfoundcounter = filesfoundcounter + 1;
@@ -5123,7 +5101,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
       if (result.Count > 0)
       {
         if (nCurrent == -1)
-          return "(" + filesfoundcounter.ToString() + ")";
+          return "(" + filesfoundcounter + ")";
         nCurrent++;
         if (nCurrent >= result.Count)
           nCurrent = 0;
@@ -5151,88 +5129,57 @@ namespace MyFilmsPlugin.MyFilmsGUI
     {
       return GetSearchTitles(movieRecord, mediapath, MyFilms.conf);
     }
-    public static Searchtitles GetSearchTitles(DataRow movieRecord, string mediapath, MyFilmsPlugin.MyFilmsGUI.Configuration tmpconf) // returns the first title name of the configured mastertitle field
+    public static Searchtitles GetSearchTitles(DataRow movieRecord, string mediapath, Configuration tmpconf) // returns the first title name of the configured mastertitle field
     {
-      var stitles = new Searchtitles();
-      stitles.SearchTitle = "";
-      stitles.FanartTitle = "";
-      stitles.MasterTitle = "";
-      stitles.SecondaryTitle = "";
-      stitles.SortTitle = "";
-      stitles.MovieDirectoryTitle = "";
-      stitles.MovieFileTitle = "";
-      stitles.OriginalTitle = "";
-      stitles.TranslatedTitle = "";
-      stitles.FormattedTitle = "";
-      stitles.Year = 0;
-      stitles.Director = "";
+      Searchtitles stitles = new Searchtitles
+      {
+        SearchTitle = "",
+        FanartTitle = "",
+        MasterTitle = "",
+        SecondaryTitle = "",
+        SortTitle = "",
+        MovieDirectoryTitle = "",
+        MovieFileTitle = "",
+        OriginalTitle = "",
+        TranslatedTitle = "",
+        FormattedTitle = "",
+        Year = 0,
+        Director = ""
+      };
 
-      if (movieRecord["OriginalTitle"] != null && movieRecord["OriginalTitle"].ToString().Length > 0)
-        stitles.OriginalTitle = RemoveGroupNames(movieRecord["OriginalTitle"].ToString());
-      if (tmpconf.StrTitle1 == "OriginalTitle")
-        stitles.MasterTitle = stitles.OriginalTitle;
-      if (tmpconf.StrTitle2 == "OriginalTitle")
-        stitles.SecondaryTitle = stitles.OriginalTitle;
-      if (tmpconf.StrSTitle == "OriginalTitle")
-        stitles.SortTitle = stitles.OriginalTitle;
+      if (movieRecord["OriginalTitle"] != null && movieRecord["OriginalTitle"].ToString().Length > 0) stitles.OriginalTitle = RemoveGroupNames(movieRecord["OriginalTitle"].ToString());
+      if (tmpconf.StrTitle1 == "OriginalTitle") stitles.MasterTitle = stitles.OriginalTitle;
+      if (tmpconf.StrTitle2 == "OriginalTitle") stitles.SecondaryTitle = stitles.OriginalTitle;
+      if (tmpconf.StrSTitle == "OriginalTitle") stitles.SortTitle = stitles.OriginalTitle;
 
-      if (movieRecord["TranslatedTitle"] != null && movieRecord["TranslatedTitle"].ToString().Length > 0)
-        stitles.TranslatedTitle = RemoveGroupNames(movieRecord["TranslatedTitle"].ToString());
-      if (tmpconf.StrTitle1 == "TranslatedTitle")
-        stitles.MasterTitle = stitles.TranslatedTitle;
-      if (tmpconf.StrTitle2 == "TranslatedTitle")
-        stitles.SecondaryTitle = stitles.TranslatedTitle;
-      if (tmpconf.StrSTitle == "TranslatedTitle")
-        stitles.SortTitle = stitles.TranslatedTitle;
+      if (movieRecord["TranslatedTitle"] != null && movieRecord["TranslatedTitle"].ToString().Length > 0) stitles.TranslatedTitle = RemoveGroupNames(movieRecord["TranslatedTitle"].ToString());
+      if (tmpconf.StrTitle1 == "TranslatedTitle") stitles.MasterTitle = stitles.TranslatedTitle;
+      if (tmpconf.StrTitle2 == "TranslatedTitle") stitles.SecondaryTitle = stitles.TranslatedTitle;
+      if (tmpconf.StrSTitle == "TranslatedTitle") stitles.SortTitle = stitles.TranslatedTitle;
 
-      if (movieRecord["FormattedTitle"] != null && movieRecord["FormattedTitle"].ToString().Length > 0)
-        stitles.FormattedTitle = RemoveGroupNames(movieRecord["FormattedTitle"].ToString());
-      if (tmpconf.StrTitle1 == "FormattedTitle")
-        stitles.MasterTitle = stitles.FormattedTitle;
-      if (tmpconf.StrTitle2 == "FormattedTitle")
-        stitles.SecondaryTitle = stitles.FormattedTitle;
-      if (tmpconf.StrSTitle == "FormattedTitle")
-        stitles.SortTitle = stitles.FormattedTitle;
+      if (movieRecord["FormattedTitle"] != null && movieRecord["FormattedTitle"].ToString().Length > 0) stitles.FormattedTitle = RemoveGroupNames(movieRecord["FormattedTitle"].ToString());
+      if (tmpconf.StrTitle1 == "FormattedTitle") stitles.MasterTitle = stitles.FormattedTitle;
+      if (tmpconf.StrTitle2 == "FormattedTitle") stitles.SecondaryTitle = stitles.FormattedTitle;
+      if (tmpconf.StrSTitle == "FormattedTitle") stitles.SortTitle = stitles.FormattedTitle;
 
       if (movieRecord["OriginalTitle"].ToString().Length > 0 && tmpconf.StrFanart)
       {
-        try
-        {
-          stitles.Year = System.Convert.ToInt16(movieRecord["Year"]);
-        }
-        catch
-        {
-          stitles.Year = 0;
-        }
-        try
-        {
-          stitles.Director = (string)movieRecord["Director"];
-        }
-        catch
-        {
-          stitles.Director = string.Empty;
-        }
+        try { stitles.Year = Convert.ToInt16(movieRecord["Year"]); } catch { stitles.Year = 0; }
+        try { stitles.Director = (string)movieRecord["Director"]; } catch { stitles.Director = string.Empty; }
       }
       if (tmpconf.StrTitle1 == "FormattedTitle") // special setting for formatted title - we don't want to use it, as it is usually too long and causes problems with path length
       {
-        if (!string.IsNullOrEmpty(stitles.TranslatedTitle))
-          stitles.FanartTitle = stitles.TranslatedTitle;
-        else if (!string.IsNullOrEmpty(stitles.OriginalTitle))
-          stitles.FanartTitle = stitles.OriginalTitle;
-        else
-          stitles.FanartTitle = stitles.FormattedTitle;
+        if (!string.IsNullOrEmpty(stitles.TranslatedTitle))       stitles.FanartTitle = stitles.TranslatedTitle;
+        else if (!string.IsNullOrEmpty(stitles.OriginalTitle))    stitles.FanartTitle = stitles.OriginalTitle;
+        else                                                      stitles.FanartTitle = stitles.FormattedTitle;
       }
       else
       {
-        if (!string.IsNullOrEmpty(stitles.MasterTitle))
-          stitles.FanartTitle = stitles.MasterTitle;
-        else if (!string.IsNullOrEmpty(stitles.OriginalTitle))
-          stitles.FanartTitle = stitles.OriginalTitle;
-        else if (!string.IsNullOrEmpty(stitles.TranslatedTitle))
-          stitles.FanartTitle = stitles.TranslatedTitle;
-        else if (!string.IsNullOrEmpty(stitles.FormattedTitle))
-          stitles.FanartTitle = stitles.FormattedTitle;
-        else stitles.FanartTitle = "";
+        if (!string.IsNullOrEmpty(stitles.MasterTitle))           stitles.FanartTitle = stitles.MasterTitle;
+        else if (!string.IsNullOrEmpty(stitles.OriginalTitle))    stitles.FanartTitle = stitles.OriginalTitle;
+        else if (!string.IsNullOrEmpty(stitles.TranslatedTitle))  stitles.FanartTitle = stitles.TranslatedTitle;
+        else if (!string.IsNullOrEmpty(stitles.FormattedTitle))   stitles.FanartTitle = stitles.FormattedTitle;
+        else                                                      stitles.FanartTitle = "";
       }
 
       // if mediapath is given, create mediapath search titles
@@ -5243,7 +5190,6 @@ namespace MyFilmsPlugin.MyFilmsGUI
         Regex CutText;
         Match m;
 
-        // filename
         //Strip Path
         CleanStringFile = mediapath.Substring(mediapath.LastIndexOf(@"\") + 1);
         //Strip Extension
@@ -5289,7 +5235,6 @@ namespace MyFilmsPlugin.MyFilmsGUI
       return stitles;
     }
 
-    // returns the first title name of the configured mastertitle field
     public static string GetFanartTitle(DataRow movieRecord, out string wtitle, out string wttitle, out string wftitle, out int wyear, out string wdirector)
     {
       string fanartTitle = "";
@@ -5297,59 +5242,32 @@ namespace MyFilmsPlugin.MyFilmsGUI
       wtitle = wttitle = wftitle = wdirector = string.Empty;
       wyear = 0;
 
-      if (movieRecord["OriginalTitle"] != null && movieRecord["OriginalTitle"].ToString().Length > 0)
-        wtitle = RemoveGroupNames(movieRecord["OriginalTitle"].ToString());
-      if (MyFilms.conf.StrTitle1 == "OriginalTitle")
-        mastertitle = wtitle;
+      if (movieRecord["OriginalTitle"] != null && movieRecord["OriginalTitle"].ToString().Length > 0) wtitle = RemoveGroupNames(movieRecord["OriginalTitle"].ToString());
+      if (MyFilms.conf.StrTitle1 == "OriginalTitle") mastertitle = wtitle;
 
-      if (movieRecord["TranslatedTitle"] != null && movieRecord["TranslatedTitle"].ToString().Length > 0)
-        wttitle = RemoveGroupNames(movieRecord["TranslatedTitle"].ToString());
-      if (MyFilms.conf.StrTitle1 == "TranslatedTitle")
-        mastertitle = wttitle;
+      if (movieRecord["TranslatedTitle"] != null && movieRecord["TranslatedTitle"].ToString().Length > 0) wttitle = RemoveGroupNames(movieRecord["TranslatedTitle"].ToString());
+      if (MyFilms.conf.StrTitle1 == "TranslatedTitle") mastertitle = wttitle;
 
-      if (movieRecord["FormattedTitle"] != null && movieRecord["FormattedTitle"].ToString().Length > 0)
-        wftitle = RemoveGroupNames(movieRecord["FormattedTitle"].ToString());
-      if (MyFilms.conf.StrTitle1 == "FormattedTitle")
-        mastertitle = wftitle;
+      if (movieRecord["FormattedTitle"] != null && movieRecord["FormattedTitle"].ToString().Length > 0) wftitle = RemoveGroupNames(movieRecord["FormattedTitle"].ToString());
+      if (MyFilms.conf.StrTitle1 == "FormattedTitle") mastertitle = wftitle;
 
       if (movieRecord["OriginalTitle"].ToString().Length > 0 && MyFilms.conf.StrFanart)
       {
-        try
-        {
-          wyear = System.Convert.ToInt16(movieRecord["Year"]);
-        }
-        catch
-        {
-          wyear = 0;
-        }
-        try
-        {
-          wdirector = (string)movieRecord["Director"];
-        }
-        catch
-        {
-          wdirector = string.Empty;
-        }
+        try { wyear = Convert.ToInt16(movieRecord["Year"]); } catch { wyear = 0; }
+        try { wdirector = (string)movieRecord["Director"]; } catch { wdirector = string.Empty; }
       }
       if (MyFilms.conf.StrTitle1 == "FormattedTitle") // special setting for formatted title - we don't want to use it, as it is usually too long and causes problems with path length
       {
-        if (!string.IsNullOrEmpty(wttitle))
-          fanartTitle = wttitle;
-        else if (!string.IsNullOrEmpty(wtitle))
-          fanartTitle = wtitle;
-        else
-          fanartTitle = wftitle;
+        if (!string.IsNullOrEmpty(wttitle))     fanartTitle = wttitle;
+        else if (!string.IsNullOrEmpty(wtitle)) fanartTitle = wtitle;
+        else                                    fanartTitle = wftitle;
       }
       else
       {
-        if (!string.IsNullOrEmpty(mastertitle))
-          fanartTitle = mastertitle;
-        else if (!string.IsNullOrEmpty(wtitle))
-          fanartTitle = wtitle;
-        else if (!string.IsNullOrEmpty(wttitle))
-          fanartTitle = wttitle;
-        else if (!string.IsNullOrEmpty(wftitle))
-          fanartTitle = wftitle;
+        if (!string.IsNullOrEmpty(mastertitle))  fanartTitle = mastertitle;
+        else if (!string.IsNullOrEmpty(wtitle))  fanartTitle = wtitle;
+        else if (!string.IsNullOrEmpty(wttitle)) fanartTitle = wttitle;
+        else if (!string.IsNullOrEmpty(wftitle)) fanartTitle = wftitle;
         else fanartTitle = "";
       }
 
@@ -5357,7 +5275,6 @@ namespace MyFilmsPlugin.MyFilmsGUI
       return fanartTitle;
     }
 
-    // returns the first title name of the configured mastertitle field
     public static string GetIMDB_Id(DataRow movieRecord)
     {
       string imdb = "";
@@ -5382,7 +5299,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
       string name = fullName;
       if (MyFilms.conf != null && !string.IsNullOrEmpty(MyFilms.conf.TitleDelim)) // if called from BaseFilms
       {
-        if (fullName.IndexOf(MyFilms.conf.TitleDelim, System.StringComparison.Ordinal) > 0)
+        if (fullName.IndexOf(MyFilms.conf.TitleDelim, StringComparison.Ordinal) > 0)
           name = fullName.Substring(fullName.IndexOf(MyFilms.conf.TitleDelim) + 1);
       }
       return name;
@@ -5397,11 +5314,10 @@ namespace MyFilmsPlugin.MyFilmsGUI
       {
         if (wtitle.Contains(MyFilms.conf.TitleDelim))
           wtitle = wtitle.Substring(wtitle.LastIndexOf(MyFilms.conf.TitleDelim) + 1).Trim();
-        wtitle = Grabber.GrabUtil.CreateFilename(wtitle.ToLower()).Replace(' ', '.');
+        wtitle = GrabUtil.CreateFilename(wtitle.ToLower()).Replace(' ', '.');
         if (suppressDir)
         {
-          try { Directory.Delete(MyFilms.conf.StrPathFanart + "\\{" + wtitle + "}"); }
-          catch { }
+          try { Directory.Delete(MyFilms.conf.StrPathFanart + "\\{" + wtitle + "}"); } catch { }
         }
         else
         {
@@ -5413,7 +5329,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
             {
               try
               {
-                System.IO.File.Delete(sfi.FullName);
+                File.Delete(sfi.FullName);
               }
               catch (Exception ex)
               {
@@ -5431,33 +5347,22 @@ namespace MyFilmsPlugin.MyFilmsGUI
     //-------------------------------------------------------------------------------------------
     //  Dowload backdrops on theMovieDB.org
     //-------------------------------------------------------------------------------------------        
-    public static void Download_Backdrops_Fanart(string wtitle, string wttitle, string wftitle, string director, string imdbid, string year, bool choose, int wGetID, string savetitle, string personartworkpath, bool loadFanart, bool loadPersonImages, GUIAnimation searchanimation)
+    public static void Download_Backdrops_Fanart(string wtitle, string wttitle, string wftitle, string director, string imdbid, string year, bool choose, int wGetId, string savetitle, string personartworkpath, bool loadFanart, bool loadPersonImages, GUIAnimation searchanimation)
     {
       new Thread(delegate()
       {
-        var grab = new Grabber_URLClass();
+        var grab = new GrabberUrlClass();
         int wyear = 0;
-        try { wyear = Convert.ToInt32(year); }
-        catch { }
+        try { wyear = Convert.ToInt32(year); } catch { }
         try
         {
           SetProcessAnimationStatus(true, searchanimation);  // GUIWaitCursor.Init(); GUIWaitCursor.Show();
-          List<DbMovieInfo> listemovies = grab.GetFanart(
-            wtitle,
-            savetitle,
-            wyear,
-            director,
-            imdbid,
-            MyFilms.conf.StrPathFanart,
-            true,
-            choose,
-            MyFilms.conf.StrTitle1,
-            personartworkpath);
+          List<DbMovieInfo> listemovies = grab.GetFanart(wtitle, savetitle, wyear, director, imdbid, MyFilms.conf.StrPathFanart, true, choose, MyFilms.conf.StrTitle1, personartworkpath);
           SetProcessAnimationStatus(false, searchanimation);  //GUIWaitCursor.Hide();
           //System.Collections.Generic.List<grabber.DBMovieInfo> listemovies = Grab.GetFanart(wtitle, wttitle, wyear, director, MyFilms.conf.StrPathFanart, true, choose);
-          LogMyFilms.Debug("(DownloadBackdrops) - listemovies: '" + wtitle + "', '" + wttitle + "', '" + wyear + "', '" + director + "', '" + MyFilms.conf.StrPathFanart + "', 'true', '" + choose.ToString() + "', '" + MyFilms.conf.StrTitle1 + "'");
+          LogMyFilms.Debug("(DownloadBackdrops) - listemovies: '" + wtitle + "', '" + wttitle + "', '" + wyear + "', '" + director + "', '" + MyFilms.conf.StrPathFanart + "', 'true', '" + choose + "', '" + MyFilms.conf.StrTitle1 + "'");
           int listCount = listemovies.Count;
-          LogMyFilms.Debug("(DownloadBackdrops) - listemovies: Result Listcount: '" + listCount.ToString() + "'");
+          LogMyFilms.Debug("(DownloadBackdrops) - listemovies: Result Listcount: '" + listCount + "'");
 
           if (choose) listCount = 2;
           switch (listCount)
@@ -5468,23 +5373,19 @@ namespace MyFilmsPlugin.MyFilmsGUI
               LogMyFilms.Debug("Fanart " + listemovies[0].Name.Substring(listemovies[0].Name.LastIndexOf("\\") + 1) + " downloaded for " + wttitle);
               if (listemovies[0].Persons.Count > 0)
               {
-                LogMyFilms.Debug("PersonArtwork: " + listemovies[0].Persons.Count.ToString() + " Persons checked for " + wttitle);
+                LogMyFilms.Debug("PersonArtwork: " + listemovies[0].Persons.Count + " Persons checked for " + wttitle);
                 foreach (DbPersonInfo person in listemovies[0].Persons)
                 {
-                  LogMyFilms.Debug("PersonArtwork: " + person.Images.Count.ToString() + " images found for " + person.Name);
+                  LogMyFilms.Debug("PersonArtwork: " + person.Images.Count + " images found for " + person.Name);
                 }
               }
               break;
             default:
 
-              var wotitle_tableau = new ArrayList();
-              var wttitle_tableau = new ArrayList();
-              var wotitle_sub_tableau = new ArrayList();
-              var wttitle_sub_tableau = new ArrayList();
               const int MinChars = 2;
-              bool Filter = true;
+              const bool Filter = true; // no "der die das"
 
-              var dlg = (GUIDialogMenu)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_MENU);
+              GUIDialogMenu dlg = (GUIDialogMenu)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_MENU);
               if (dlg == null) return;
               dlg.Reset();
               dlg.SetHeading(loadFanart ? GUILocalizeStrings.Get(1079862) : GUILocalizeStrings.Get(1079900));  // Load fanart (online)  // Download person images (selected film)
@@ -5495,23 +5396,16 @@ namespace MyFilmsPlugin.MyFilmsGUI
                 if (loadFanart) dialoginfoline += " - Fanarts: " + t.Backdrops.Count;
                 if (loadPersonImages) dialoginfoline += " - Persons: " + t.Persons.Count.ToString();
                 dlg.Add(dialoginfoline);
-                LogMyFilms.Debug("TMDB listemovies: " + t.Name + "  (" + t.Year + ") - Fanarts: " + t.Backdrops.Count + " - TMDB-Id: " + t.Identifier + " - Persons: " + t.Persons.Count.ToString());
+                LogMyFilms.Debug("TMDB listemovies: " + t.Name + "  (" + t.Year + ") - Fanarts: " + t.Backdrops.Count + " - TMDB-Id: " + t.Identifier + " - Persons: " + t.Persons.Count);
               }
               if (!(dlg.SelectedLabel > -1))
               {
                 dlg.SelectedLabel = -1;
-                dlg.DoModal(wGetID);
+                dlg.DoModal(wGetId);
               }
               if (dlg.SelectedLabel == 0)
               {
                 #region Get SubTitles and Subwords from otitle and ttitle
-
-                wotitle_tableau = MyFilms.SubTitleGrabbing(wtitle);
-                wttitle_tableau = MyFilms.SubTitleGrabbing(wttitle);
-                wotitle_sub_tableau = MyFilms.SubWordGrabbing(wtitle, MinChars, Filter);
-                // Min 3 Chars, Filter true (no der die das)
-                wttitle_sub_tableau = MyFilms.SubWordGrabbing(wttitle, MinChars, Filter);
-                // Min 3 Chars, Filter true (no der die das)
                 //First Show Dialog to choose Otitle, Ttitle or substrings - or Keyboard to manually enter searchstring!!!
                 var dlgSearchFilm = (GUIDialogMenu)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_MENU);
                 if (dlgSearchFilm == null) return;
@@ -5522,94 +5416,43 @@ namespace MyFilmsPlugin.MyFilmsGUI
                 //dlgs.Add(wtitle); //Otitle
                 dlgSearchFilm.Add(savetitle); //Otitle = savetitle
                 dlgSearchFilm.Add(wttitle); //Ttitle
-                foreach (object t in from object t in wotitle_tableau where t.ToString().Length > 1 select t)
-                {
-                  dlgSearchFilm.Add(t.ToString());
-                }
-                foreach (object t in from object t in wttitle_tableau where t.ToString().Length > 1 select t)
-                {
-                  dlgSearchFilm.Add(t.ToString());
-                }
-                foreach (object t in from object t in wotitle_sub_tableau where t.ToString().Length > 1 select t)
-                {
-                  dlgSearchFilm.Add(t.ToString());
-                }
-                foreach (object t in from object t in wttitle_sub_tableau where t.ToString().Length > 1 select t)
-                {
-                  dlgSearchFilm.Add(t.ToString());
-                }
+                foreach (string t in MyFilms.SubTitleGrabbing(wtitle).Where(t => t.Length > 1)) dlgSearchFilm.Add(t);
+                foreach (string t in MyFilms.SubTitleGrabbing(wttitle).Where(t => t.Length > 1)) dlgSearchFilm.Add(t);
+                foreach (string t in MyFilms.SubWordGrabbing(wtitle, MinChars, Filter).Where(t => t.Length > 1)) dlgSearchFilm.Add(t);
+                foreach (string t in MyFilms.SubWordGrabbing(wttitle, MinChars, Filter).Where(t => t.Length > 1)) dlgSearchFilm.Add(t);
                 //Now all titles and Substrings listed in dialog !
                 //dlgs.Add("  *****  " + GUILocalizeStrings.Get(1079860) + "  *****  "); //manual selection
                 if (!(dlgSearchFilm.SelectedLabel > -1))
                 {
                   dlgSearchFilm.SelectedLabel = -1;
-                  dlgSearchFilm.DoModal(wGetID);
+                  dlgSearchFilm.DoModal(wGetId);
                 }
                 if (dlgSearchFilm.SelectedLabel == 0) // enter manual searchstring via VK
                 {
-                  var keyboard = (VirtualKeyboard)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_VIRTUAL_KEYBOARD);
+                  VirtualKeyboard keyboard = (VirtualKeyboard)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_VIRTUAL_KEYBOARD);
                   if (null == keyboard) return;
                   keyboard.Reset();
                   keyboard.SetLabelAsInitialText(false); // set to false, otherwise our intial text is cleared
                   keyboard.Text = wtitle;
-                  keyboard.DoModal(wGetID);
-                  if ((keyboard.IsConfirmed) && (keyboard.Text.Length > 0))
+                  keyboard.DoModal(wGetId);
+                  if (keyboard.IsConfirmed && (keyboard.Text.Length > 0))
                   {
                     //Remove_Backdrops_Fanart(wtitle, true);
                     //Remove_Backdrops_Fanart(wttitle, true);
                     //Remove_Backdrops_Fanart(wftitle, true);
-                    Download_Backdrops_Fanart(
-                      keyboard.Text,
-                      string.Empty,
-                      string.Empty,
-                      string.Empty,
-                      string.Empty,
-                      string.Empty,
-                      true,
-                      wGetID,
-                      savetitle,
-                      personartworkpath,
-                      loadFanart,
-                      loadPersonImages,
-                      searchanimation);
+                    Download_Backdrops_Fanart(keyboard.Text, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, true, wGetId, savetitle, personartworkpath, loadFanart, loadPersonImages, searchanimation);
                   }
                   break;
                 }
                 if (dlgSearchFilm.SelectedLabel > 0 && dlgSearchFilm.SelectedLabel < 3) // if one of otitle or ttitle selected, keep year and director
                 {
-                  Download_Backdrops_Fanart(
-                    dlgSearchFilm.SelectedLabelText,
-                    wttitle,
-                    wftitle,
-                    year,
-                    director,
-                    string.Empty,
-                    true,
-                    wGetID,
-                    savetitle,
-                    personartworkpath,
-                    loadFanart,
-                    loadPersonImages,
-                    searchanimation);
+                  Download_Backdrops_Fanart(dlgSearchFilm.SelectedLabelText, wttitle, wftitle, year, director, string.Empty, true, wGetId, savetitle, personartworkpath, loadFanart, loadPersonImages, searchanimation);
                   //Download_Backdrops_Fanart(string wtitle, string wttitle, string director, string year, bool choose,int wGetID, string savetitle)
                   break;
                 }
                 if (dlgSearchFilm.SelectedLabel > 2) // For subitems, search without year and director !
                 {
-                  Download_Backdrops_Fanart(
-                    dlgSearchFilm.SelectedLabelText,
-                    wttitle,
-                    wftitle,
-                    string.Empty,
-                    string.Empty,
-                    string.Empty,
-                    true,
-                    wGetID,
-                    savetitle,
-                    personartworkpath,
-                    loadFanart,
-                    loadPersonImages,
-                    searchanimation);
+                  Download_Backdrops_Fanart(dlgSearchFilm.SelectedLabelText, wttitle, wftitle, string.Empty, string.Empty, string.Empty, true, wGetId, savetitle, personartworkpath, loadFanart, loadPersonImages, searchanimation);
                   //Download_Backdrops_Fanart(string wtitle, string wttitle, string director, string year, bool choose,int wGetID, string savetitle)
                   break;
                 }
@@ -5664,9 +5507,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
                   {
                     string filenameperson = string.Empty;
                     string filename1person = string.Empty;
-                    string filename2person = string.Empty;
-                    LogMyFilms.Debug(
-                      "Person Artwork - " + listemovies[0].Persons.Count + " persons found - now loading artwork");
+                    LogMyFilms.Debug("Person Artwork - " + listemovies[0].Persons.Count + " persons found - now loading artwork");
                     if (!string.IsNullOrEmpty(personartworkpath) && listemovies[0].Persons != null &&
                         listemovies[0].Persons.Count > 0)
                     {
@@ -5731,15 +5572,14 @@ namespace MyFilmsPlugin.MyFilmsGUI
       }) { Name = "MyFilmsTMDBLoader", IsBackground = true }.Start();
     }
 
-
     private static bool MovieThumbsExist(int index)
     {
       string movieThumbsDirectory = MyFilmsSettings.GetPath(MyFilmsSettings.Path.MyFilmsThumbsPath) + @"\MovieThumbs";
       string title = GetSearchTitles(MyFilms.r[index], "").FanartTitle;
       if (MyFilms.conf.StrFanart)
       {
-        if (title.Contains(MyFilms.conf.TitleDelim)) title = title.Substring(title.LastIndexOf(MyFilms.conf.TitleDelim, System.StringComparison.Ordinal) + 1);
-        title = Grabber.GrabUtil.CreateFilename(title.ToLower()).Replace(' ', '.');
+        if (title.Contains(MyFilms.conf.TitleDelim)) title = title.Substring(title.LastIndexOf(MyFilms.conf.TitleDelim, StringComparison.Ordinal) + 1);
+        title = GrabUtil.CreateFilename(title.ToLower()).Replace(' ', '.');
         string safeName = movieThumbsDirectory + "\\{" + title + "}"; // string safeName = MyFilms.conf.StrPathFanart + "\\{" + title + "}";
 
         if (!Directory.Exists(safeName)) return false;
@@ -5760,8 +5600,8 @@ namespace MyFilmsPlugin.MyFilmsGUI
 
       if (MyFilms.conf.StrFanart)
       {
-        if (title.Contains(MyFilms.conf.TitleDelim)) title = title.Substring(title.LastIndexOf(MyFilms.conf.TitleDelim, System.StringComparison.Ordinal) + 1);
-        title = Grabber.GrabUtil.CreateFilename(title.ToLower()).Replace(' ', '.');
+        if (title.Contains(MyFilms.conf.TitleDelim)) title = title.Substring(title.LastIndexOf(MyFilms.conf.TitleDelim, StringComparison.Ordinal) + 1);
+        title = GrabUtil.CreateFilename(title.ToLower()).Replace(' ', '.');
 
         string safeName = movieThumbsDirectory + "\\{" + title + "}"; // string safeName = MyFilms.conf.StrPathFanart + "\\{" + title + "}";
 
@@ -5804,7 +5644,6 @@ namespace MyFilmsPlugin.MyFilmsGUI
       return moviethumbs;
     }
 
-
     //-------------------------------------------------------------------------------------------
     //  Search Fanart Thumbs 
     //                          title = Translated Title if any or Original Title
@@ -5821,18 +5660,18 @@ namespace MyFilmsPlugin.MyFilmsGUI
     {
       return Search_Fanart(title, main, searched, isGroupView, filecover, group, MyFilms.conf);
     }
-    public static string[] Search_Fanart(string title, bool main, string searched, bool isGroupView, string filecover, string group, MyFilmsPlugin.MyFilmsGUI.Configuration tmpconf)
+    public static string[] Search_Fanart(string title, bool main, string searched, bool isGroupView, string filecover, string group, Configuration tmpconf)
     //                     Search_Fanart(wlabel, true, "file", false, facadeFilms.SelectedListItem.ThumbnailImage.ToString(), string.Empty);
     {
       //if (MyFilms.conf == tmpconf) LogMyFilms.Debug("Search_Fanart(): Using '" + title + "'");
-      var wfanart = new string[2];
+      string[] wfanart = new string[2];
       wfanart[0] = " ";
       wfanart[1] = " ";
       if (tmpconf.StrFanart)
       {
         if (title.Contains(tmpconf.TitleDelim))
-          title = title.Substring(title.LastIndexOf(tmpconf.TitleDelim, System.StringComparison.Ordinal) + 1);
-        title = Grabber.GrabUtil.CreateFilename(title.ToLower()).Replace(' ', '.');
+          title = title.Substring(title.LastIndexOf(tmpconf.TitleDelim, StringComparison.Ordinal) + 1);
+        title = GrabUtil.CreateFilename(title.ToLower()).Replace(' ', '.');
 
         if (!tmpconf.StrFanart)
           return wfanart;
@@ -5868,7 +5707,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
 
         try //Added to avoid crash with very long filenames - better is if user configures titledelimiters properly !
         {
-          var wfile = new FileInfo(safeName + "\\{" + title + "}.jpg");
+          FileInfo wfile = new FileInfo(safeName + "\\{" + title + "}.jpg");
         }
         catch (Exception e)
         {
@@ -5909,26 +5748,24 @@ namespace MyFilmsPlugin.MyFilmsGUI
         }
         else
         {
-          try { Directory.CreateDirectory(safeName); }
-          catch { }
+          try { Directory.CreateDirectory(safeName); } catch { }
         }
 
         // Added to support fanart for external catalogs
         switch (tmpconf.StrFileType)
         {
-          case MyFilmsPlugin.MyFilmsGUI.Configuration.CatalogType.AntMovieCatalog3:
+          case Configuration.CatalogType.AntMovieCatalog3:
             break;
-          case MyFilmsPlugin.MyFilmsGUI.Configuration.CatalogType.AntMovieCatalog4Xtended:
+          case Configuration.CatalogType.AntMovieCatalog4Xtended:
             break;
-
-          case MyFilmsPlugin.MyFilmsGUI.Configuration.CatalogType.DVDProfiler:
+          case Configuration.CatalogType.DVDProfiler:
             break;
-          case MyFilmsPlugin.MyFilmsGUI.Configuration.CatalogType.MovieCollector:
+          case Configuration.CatalogType.MovieCollector:
             break;
-          case MyFilmsPlugin.MyFilmsGUI.Configuration.CatalogType.MyMovies:
+          case Configuration.CatalogType.MyMovies:
             break;
-          case MyFilmsPlugin.MyFilmsGUI.Configuration.CatalogType.EaxMovieCatalog2:
-          case MyFilmsPlugin.MyFilmsGUI.Configuration.CatalogType.EaxMovieCatalog3:
+          case Configuration.CatalogType.EaxMovieCatalog2:
+          case Configuration.CatalogType.EaxMovieCatalog3:
             if (!string.IsNullOrEmpty(tmpconf.StrPathFanart)) //Search matching files in XMM fanart directory
             {
               string searchname = HTMLParser.removeHtml(title).Replace(" ", "."); // replaces special character "á" and other special chars !
@@ -5943,7 +5780,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
               }
             }
             break;
-          case MyFilmsPlugin.MyFilmsGUI.Configuration.CatalogType.PersonalVideoDatabase: // PVD artist thumbs: e.g. Natalie Portman_1.jpg , then Natalie Portman_2.jpg 
+          case Configuration.CatalogType.PersonalVideoDatabase: // PVD artist thumbs: e.g. Natalie Portman_1.jpg , then Natalie Portman_2.jpg 
             if (!string.IsNullOrEmpty(tmpconf.StrPathFanart)) //Search matching files in XMM fanart directory
             {
               string searchname = HTMLParser.removeHtml(title); // replaces special character "á" and other special chars !
@@ -5958,7 +5795,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
               }
             }
             break;
-          case MyFilmsPlugin.MyFilmsGUI.Configuration.CatalogType.eXtremeMovieManager:
+          case Configuration.CatalogType.eXtremeMovieManager:
             if (!string.IsNullOrEmpty(tmpconf.StrPathFanart)) //Search matching files in XMM fanart directory
             {
               string searchname = HTMLParser.removeHtml(title).Replace(" ", "-"); // replaces special character "á" and other special chars !
@@ -5977,10 +5814,10 @@ namespace MyFilmsPlugin.MyFilmsGUI
             }
             break;
 
-          case MyFilmsPlugin.MyFilmsGUI.Configuration.CatalogType.XBMC: // XBMC fulldb export (all movies in one DB)
+          case Configuration.CatalogType.XBMC: // XBMC fulldb export (all movies in one DB)
             break;
 
-          case MyFilmsPlugin.MyFilmsGUI.Configuration.CatalogType.MovingPicturesXML:
+          case Configuration.CatalogType.MovingPicturesXML:
             if (!string.IsNullOrEmpty(tmpconf.StrPathFanart)) //Search matching files in MoPi fanart directory
             {
               string searchname = HTMLParser.removeHtml(title); // replaces special character "á" and other special chars !
@@ -5996,7 +5833,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
             }
             break;
 
-          case MyFilmsPlugin.MyFilmsGUI.Configuration.CatalogType.XBMCnfoReader: // XBMC Nfo (separate nfo files, to scan dirs - MovingPictures or XBMC)
+          case Configuration.CatalogType.XBMCnfoReader: // XBMC Nfo (separate nfo files, to scan dirs - MovingPictures or XBMC)
             break;
 
         }
@@ -6070,9 +5907,9 @@ namespace MyFilmsPlugin.MyFilmsGUI
 
       if (MyFilms.conf.StrIndex == -1)
       {
-        Action actionType = new MediaPortal.GUI.Library.Action
+        Action actionType = new Action
           {
-            wID = MediaPortal.GUI.Library.Action.ActionType.ACTION_PREVIOUS_MENU
+            wID = Action.ActionType.ACTION_PREVIOUS_MENU
           };
         base.OnAction(actionType);
         return;
@@ -6137,7 +5974,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
       {
         if (MyFilms.r[MyFilms.conf.StrIndex]["Picture"].ToString().Length > 0)
         {
-          if (MyFilms.r[MyFilms.conf.StrIndex]["Picture"].ToString().IndexOf(":\\", System.StringComparison.Ordinal) == -1 && MyFilms.r[MyFilms.conf.StrIndex]["Picture"].ToString().Substring(0, 2) != "\\\\")
+          if (MyFilms.r[MyFilms.conf.StrIndex]["Picture"].ToString().IndexOf(":\\", StringComparison.Ordinal) == -1 && MyFilms.r[MyFilms.conf.StrIndex]["Picture"].ToString().Substring(0, 2) != "\\\\")
             file = MyFilms.conf.StrPathImg + "\\" + MyFilms.r[MyFilms.conf.StrIndex]["Picture"];
           else
             file = MyFilms.r[MyFilms.conf.StrIndex]["Picture"].ToString();
@@ -6166,7 +6003,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
             Load_Logos(MyFilms.r[MyFilms.conf.StrIndex]);
 
             //ImageSwapper backdrop = new ImageSwapper();
-            var wfanart = new string[2];
+            string[] wfanart;
             Searchtitles sTitles = GetSearchTitles(MyFilms.r[MyFilms.conf.StrIndex], "");
 
             if (ImgFanartDir != null)
@@ -6214,7 +6051,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
             {
               if (MyFilms.r[MyFilms.conf.StrIndex][MyFilms.conf.StrStorage].ToString().Length > 0)
               {
-                int at = MyFilms.r[MyFilms.conf.StrIndex][MyFilms.conf.StrStorage].ToString().IndexOf(";", 0, MyFilms.r[MyFilms.conf.StrIndex][MyFilms.conf.StrStorage].ToString().Length, System.StringComparison.Ordinal);
+                int at = MyFilms.r[MyFilms.conf.StrIndex][MyFilms.conf.StrStorage].ToString().IndexOf(";", 0, MyFilms.r[MyFilms.conf.StrIndex][MyFilms.conf.StrStorage].ToString().Length, StringComparison.Ordinal);
                 file = SearchMovie(at == -1
                   ? MyFilms.r[MyFilms.conf.StrIndex][MyFilms.conf.StrStorage].ToString().Substring(0, MyFilms.r[MyFilms.conf.StrIndex][MyFilms.conf.StrStorage].ToString().Length).Trim()
                   : MyFilms.r[MyFilms.conf.StrIndex][MyFilms.conf.StrStorage].ToString().Substring(0, at).Trim(), MyFilms.conf.StrDirStor);
@@ -6405,7 +6242,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
 
     internal static void Load_Detailed_TMDB(GUIListItem item)
     {
-      var stopwatch = new Stopwatch(); stopwatch.Reset(); stopwatch.Start();
+      Stopwatch stopwatch = new Stopwatch(); stopwatch.Reset(); stopwatch.Start();
       string language = CultureInfo.CurrentCulture.Name.Substring(0, 2);
       LogMyFilms.Debug("GetImagesForTMDB - detected language = '" + language + "'");
       Tmdb api = new Tmdb(MyFilms.TmdbApiKey, language); // language is optional, default is "en"
@@ -6540,7 +6377,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
     {
       setGUIProperty("db." + dbfield.ToLower() + ".value", value);
       
-      if (MyFilms.conf.Stritem1.ToLower() == (dbfield.ToLower()))
+      if (MyFilms.conf.Stritem1.ToLower() == dbfield.ToLower())
       {
         setGUIProperty("user.item1.label", MyFilms.conf.Strlabel1);
         if (MyFilms.conf.Stritem1.ToLower() == "date")
@@ -6549,7 +6386,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
           setGUIProperty("user.item1.field", MyFilms.conf.Stritem1.ToLower());
         setGUIProperty("user.item1.value", value);
       }
-      if (MyFilms.conf.Stritem2.ToLower() == (dbfield.ToLower()))
+      if (MyFilms.conf.Stritem2.ToLower() == dbfield.ToLower())
       {
         setGUIProperty("user.item2.label", MyFilms.conf.Strlabel2);
         if (MyFilms.conf.Stritem2.ToLower() == "date")
@@ -6558,7 +6395,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
           setGUIProperty("user.item2.field", MyFilms.conf.Stritem2.ToLower());
         setGUIProperty("user.item2.value", value);
       }
-      if (MyFilms.conf.Stritem3.ToLower() == (dbfield.ToLower()))
+      if (MyFilms.conf.Stritem3.ToLower() == dbfield.ToLower())
       {
         setGUIProperty("user.item3.label", MyFilms.conf.Strlabel3);
         if (MyFilms.conf.Stritem3.ToLower() == "date")
@@ -6567,7 +6404,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
           setGUIProperty("user.item3.field", MyFilms.conf.Stritem3.ToLower());
         setGUIProperty("user.item3.value", value);
       }
-      if (MyFilms.conf.Stritem4.ToLower() == (dbfield.ToLower()))
+      if (MyFilms.conf.Stritem4.ToLower() == dbfield.ToLower())
       {
         setGUIProperty("user.item4.label", MyFilms.conf.Strlabel4);
         if (MyFilms.conf.Stritem4.ToLower() == "date")
@@ -6576,7 +6413,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
           setGUIProperty("user.item4.field", MyFilms.conf.Stritem4.ToLower());
         setGUIProperty("user.item4.value", value);
       }
-      if (MyFilms.conf.Stritem5.ToLower() == (dbfield.ToLower()))
+      if (MyFilms.conf.Stritem5.ToLower() == dbfield.ToLower())
       {
         setGUIProperty("user.item5.label", MyFilms.conf.Strlabel5);
         if (MyFilms.conf.Stritem5.ToLower() == "date")
@@ -6674,7 +6511,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
     public static void Load_Detailed_DB(int itemId)
     {
       LogMyFilms.Debug("Load_Detailed_DB() - ItemId: '" + itemId + "'");
-      var stopwatch = new Stopwatch(); stopwatch.Reset(); stopwatch.Start();
+      Stopwatch stopwatch = new Stopwatch(); stopwatch.Reset(); stopwatch.Start();
       string wstrformat = "";
 
       if (MyFilms.r == null || itemId > MyFilms.r.Length - 1)
@@ -6694,7 +6531,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
       //clearGUIProperty("person.lastupdate.value");
       #endregion
 
-      using (var ds = new AntMovieCatalog())
+      using (AntMovieCatalog ds = new AntMovieCatalog())
       {
         foreach (DataColumn dc in ds.Movie.Columns)
         {
@@ -6705,7 +6542,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
           if (MyFilms.r.Length > itemId && MyFilms.r[itemId][dc.ColumnName] != null) // make sure, it is a valid part of current loaded dataset "r"
           {
             #region set userdefined properties for main screen
-            if (MyFilms.conf.Stritem1.ToLower() == (dc.ColumnName.ToLower()))
+            if (MyFilms.conf.Stritem1.ToLower() == dc.ColumnName.ToLower())
             {
               setGUIProperty("user.item1.label", MyFilms.conf.Strlabel1);
               if (MyFilms.conf.Stritem1.ToLower() == "date")
@@ -6714,7 +6551,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
                 setGUIProperty("user.item1.field", MyFilms.conf.Stritem1.ToLower());
               setGUIProperty("user.item1.value", MyFilms.r[itemId][dc.ColumnName].ToString());
             }
-            if (MyFilms.conf.Stritem2.ToLower() == (dc.ColumnName.ToLower()))
+            if (MyFilms.conf.Stritem2.ToLower() == dc.ColumnName.ToLower())
             {
               setGUIProperty("user.item2.label", MyFilms.conf.Strlabel2);
               if (MyFilms.conf.Stritem2.ToLower() == "date")
@@ -6723,7 +6560,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
                 setGUIProperty("user.item2.field", MyFilms.conf.Stritem2.ToLower());
               setGUIProperty("user.item2.value", MyFilms.r[itemId][dc.ColumnName].ToString());
             }
-            if (MyFilms.conf.Stritem3.ToLower() == (dc.ColumnName.ToLower()))
+            if (MyFilms.conf.Stritem3.ToLower() == dc.ColumnName.ToLower())
             {
               setGUIProperty("user.item3.label", MyFilms.conf.Strlabel3);
               if (MyFilms.conf.Stritem3.ToLower() == "date")
@@ -6732,7 +6569,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
                 setGUIProperty("user.item3.field", MyFilms.conf.Stritem3.ToLower());
               setGUIProperty("user.item3.value", MyFilms.r[itemId][dc.ColumnName].ToString());
             }
-            if (MyFilms.conf.Stritem4.ToLower() == (dc.ColumnName.ToLower()))
+            if (MyFilms.conf.Stritem4.ToLower() == dc.ColumnName.ToLower())
             {
               setGUIProperty("user.item4.label", MyFilms.conf.Strlabel4);
               if (MyFilms.conf.Stritem4.ToLower() == "date")
@@ -6741,7 +6578,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
                 setGUIProperty("user.item4.field", MyFilms.conf.Stritem4.ToLower());
               setGUIProperty("user.item4.value", MyFilms.r[itemId][dc.ColumnName].ToString());
             }
-            if (MyFilms.conf.Stritem5.ToLower() == (dc.ColumnName.ToLower()))
+            if (MyFilms.conf.Stritem5.ToLower() == dc.ColumnName.ToLower())
             {
               setGUIProperty("user.item5.label", MyFilms.conf.Strlabel5);
               if (MyFilms.conf.Stritem5.ToLower() == "date")
@@ -6753,7 +6590,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
             #endregion
 
             #region set userdefined properties for details screen
-            if (MyFilms.conf.StritemDetails1.ToLower() == (dc.ColumnName.ToLower()))
+            if (MyFilms.conf.StritemDetails1.ToLower() == dc.ColumnName.ToLower())
             {
               setGUIProperty("user.detailsitem1.label", MyFilms.conf.StrlabelDetails1);
               if (MyFilms.conf.StritemDetails1.ToLower() == "date")
@@ -6762,7 +6599,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
                 setGUIProperty("user.detailsitem1.field", MyFilms.conf.StritemDetails1.ToLower());
               setGUIProperty("user.detailsitem1.value", MyFilms.r[itemId][dc.ColumnName].ToString());
             }
-            if (MyFilms.conf.StritemDetails2.ToLower() == (dc.ColumnName.ToLower()))
+            if (MyFilms.conf.StritemDetails2.ToLower() == dc.ColumnName.ToLower())
             {
               setGUIProperty("user.detailsitem2.label", MyFilms.conf.StrlabelDetails2);
               if (MyFilms.conf.Stritem2.ToLower() == "date")
@@ -6771,7 +6608,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
                 setGUIProperty("user.detailsitem2.field", MyFilms.conf.StritemDetails2.ToLower());
               setGUIProperty("user.detailsitem2.value", MyFilms.r[itemId][dc.ColumnName].ToString());
             }
-            if (MyFilms.conf.StritemDetails3.ToLower() == (dc.ColumnName.ToLower()))
+            if (MyFilms.conf.StritemDetails3.ToLower() == dc.ColumnName.ToLower())
             {
               setGUIProperty("user.detailsitem3.label", MyFilms.conf.StrlabelDetails3);
               if (MyFilms.conf.Stritem3.ToLower() == "date")
@@ -6780,7 +6617,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
                 setGUIProperty("user.detailsitem3.field", MyFilms.conf.StritemDetails3.ToLower());
               setGUIProperty("user.detailsitem3.value", MyFilms.r[itemId][dc.ColumnName].ToString());
             }
-            if (MyFilms.conf.StritemDetails4.ToLower() == (dc.ColumnName.ToLower()))
+            if (MyFilms.conf.StritemDetails4.ToLower() == dc.ColumnName.ToLower())
             {
               setGUIProperty("user.detailsitem4.label", MyFilms.conf.StrlabelDetails4);
               if (MyFilms.conf.Stritem4.ToLower() == "date")
@@ -6789,7 +6626,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
                 setGUIProperty("user.detailsitem4.field", MyFilms.conf.StritemDetails4.ToLower());
               setGUIProperty("user.detailsitem4.value", MyFilms.r[itemId][dc.ColumnName].ToString());
             }
-            if (MyFilms.conf.StritemDetails5.ToLower() == (dc.ColumnName.ToLower()))
+            if (MyFilms.conf.StritemDetails5.ToLower() == dc.ColumnName.ToLower())
             {
               setGUIProperty("user.detailsitem5.label", MyFilms.conf.StrlabelDetails5);
               if (MyFilms.conf.Stritem5.ToLower() == "date")
@@ -6798,7 +6635,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
                 setGUIProperty("user.detailsitem5.field", MyFilms.conf.StritemDetails5.ToLower());
               setGUIProperty("user.detailsitem5.value", MyFilms.r[itemId][dc.ColumnName].ToString());
             }
-            if (MyFilms.conf.StritemDetails6.ToLower() == (dc.ColumnName.ToLower()))
+            if (MyFilms.conf.StritemDetails6.ToLower() == dc.ColumnName.ToLower())
             {
               setGUIProperty("user.detailsitem6.label", MyFilms.conf.StrlabelDetails6);
               if (MyFilms.conf.Stritem5.ToLower() == "date")
@@ -6908,23 +6745,17 @@ namespace MyFilmsPlugin.MyFilmsGUI
                 #region titles
                 setGUIProperty("db." + dc.ColumnName.ToLower() + ".value", wstring);
                 if (MyFilms.r[itemId][dc.ColumnName].ToString().Length > 0)
-                  if (MyFilms.r[itemId][dc.ColumnName].ToString().Contains(MyFilms.conf.TitleDelim))
-                  {
-                    wstring = MyFilms.r[itemId][dc.ColumnName].ToString().Substring(MyFilms.r[itemId][dc.ColumnName].ToString().LastIndexOf(MyFilms.conf.TitleDelim) + 1);
-                    wstring2 = MyFilms.r[itemId][dc.ColumnName].ToString().Substring(0, MyFilms.r[itemId][dc.ColumnName].ToString().LastIndexOf(MyFilms.conf.TitleDelim));
-                  }
-                  else
-                  {
-                    wstring = MyFilms.r[itemId][dc.ColumnName].ToString();
-                    wstring2 = "";
-                  }
+                {
+                  wstring  = MyFilms.r[itemId][dc.ColumnName].ToString().Contains(MyFilms.conf.TitleDelim) ? MyFilms.r[itemId][dc.ColumnName].ToString().Substring(MyFilms.r[itemId][dc.ColumnName].ToString().LastIndexOf(MyFilms.conf.TitleDelim) + 1) : MyFilms.r[itemId][dc.ColumnName].ToString();
+                  wstring2 = MyFilms.r[itemId][dc.ColumnName].ToString().Contains(MyFilms.conf.TitleDelim) ? MyFilms.r[itemId][dc.ColumnName].ToString().Substring(0, MyFilms.r[itemId][dc.ColumnName].ToString().LastIndexOf(MyFilms.conf.TitleDelim)) : "";
+                }
 
-                if (MyFilms.conf.StrTitle1.ToLower() == (dc.ColumnName.ToLower()))
+                if (MyFilms.conf.StrTitle1.ToLower() == dc.ColumnName.ToLower())
                 {
                   setGUIProperty("user.mastertitle.value", wstring);
                   setGUIProperty("user.mastertitle.groupname", wstring2);
                 }
-                if (MyFilms.conf.StrTitle2.ToLower() == (dc.ColumnName.ToLower()))
+                if (MyFilms.conf.StrTitle2.ToLower() == dc.ColumnName.ToLower())
                 {
                   setGUIProperty("user.secondarytitle.value", wstring);
                   setGUIProperty("user.secondarytitle.groupname", wstring2);
@@ -6933,11 +6764,11 @@ namespace MyFilmsPlugin.MyFilmsGUI
                 break;
               case "length":
                 #region length
-                int length = 0;
                 if (MyFilms.r[itemId]["Length"].ToString().Length > 0) wstring = MyFilms.r[itemId]["Length"].ToString();
                 setGUIProperty("db.length.value", wstring);
+                int length;
                 bool success = int.TryParse(wstring, out length);
-                MyFilms.currentMovie.Length = (success) ? length : 0;
+                MyFilms.currentMovie.Length = success ? length : 0;
                 break;
                 #endregion
               case "actors":
@@ -6945,7 +6776,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
                 if (MyFilms.r[itemId]["Actors"].ToString().Length > 0)
                 {
                   wstring = MyFilms.r[itemId]["Actors"].ToString().Replace('|', '\n');
-                  wstring = System.Web.HttpUtility.HtmlDecode(MediaPortal.Util.HTMLParser.removeHtml(wstring));
+                  wstring = System.Web.HttpUtility.HtmlDecode(HTMLParser.removeHtml(wstring));
 
                   //IEnumerable<DbPersonInfo> persons = MyFilms.Search_String_Persons(wstring, false);
                   //foreach (DbPersonInfo t in persons)
@@ -6991,7 +6822,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
                 {
                   wstring = System.Web.HttpUtility.HtmlEncode(MyFilms.r[itemId][dc.ColumnName].ToString().Replace('’', '\''));
                   wstring = wstring.Replace('|', '\n').Replace('…', '.');
-                  wstring = System.Web.HttpUtility.HtmlDecode(MediaPortal.Util.HTMLParser.removeHtml(wstring));
+                  wstring = System.Web.HttpUtility.HtmlDecode(HTMLParser.removeHtml(wstring));
                 }
                 setGUIProperty("db." + dc.ColumnName.ToLower() + ".value", wstring);
                 break;
@@ -7028,11 +6859,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
               case "rating":
               case "ratinguser":
                 #region rating
-                wstring = "";
                 if (MyFilms.r[itemId][dc.ColumnName].ToString().Length > 0)
-                  wstring = MyFilms.r[itemId][dc.ColumnName].ToString();
-                //try { MyFilms.conf.W_rating = (decimal)MyFilms.r[ItemId][dc.ColumnName]; }
-                //catch { MyFilms.conf.W_rating = 0; }
                 try
                 {
                   wstring = ((decimal)MyFilms.r[itemId][dc.ColumnName]).ToString("0.0");
@@ -7074,11 +6901,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
                         break;
                       case "False":
                         if (Helper.FieldIsSet(MyFilms.conf.StrStorage)) // if there is source field set
-                        {
-                          setGUIProperty("user.source.isonline", MyFilms.r[itemId][MyFilms.conf.StrStorage].ToString().Length > 0
-                                                                   ? "offline"
-                                                                   : "unavailable");
-                        }
+                          setGUIProperty("user.source.isonline", MyFilms.r[itemId][MyFilms.conf.StrStorage].ToString().Length > 0 ? "offline" : "unavailable");
                         else
                           setGUIProperty("user.source.isonline", "unavailable");
                         break;
@@ -7092,9 +6915,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
                   if (Helper.FieldIsSet(MyFilms.conf.StrStorage)) // if there is source field set
                   {
                     if (MyFilms.r[itemId][MyFilms.conf.StrStorage].ToString().Length > 0) // if there is source info available ...
-                    {
                       setGUIProperty("user.source.isonline", MyFilms.conf.ScanMediaOnStart ? "unknown" : "available");
-                    }
                     else
                       setGUIProperty("user.source.isonline", "unavailable");
                   }
@@ -7116,11 +6937,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
                     else
                     {
                       if (Helper.FieldIsSet(MyFilms.conf.StrStorageTrailer))
-                      {
-                        setGUIProperty("user.sourcetrailer.isonline", MyFilms.r[itemId][MyFilms.conf.StrStorageTrailer].ToString().Length > 0
-                            ? "offline"
-                            : "unavailable");
-                      }
+                        setGUIProperty("user.sourcetrailer.isonline", MyFilms.r[itemId][MyFilms.conf.StrStorageTrailer].ToString().Length > 0 ? "offline" : "unavailable");
                       else
                         setGUIProperty("user.sourcetrailer.isonline", "unavailable");
                     }
@@ -7133,11 +6950,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
                   if (Helper.FieldIsSet(MyFilms.conf.StrStorageTrailer))
                   {
                     if (MyFilms.r[itemId][MyFilms.conf.StrStorageTrailer].ToString().Length > 0)
-                    {
-                      setGUIProperty("user.sourcetrailer.isonline", MyFilms.conf.ScanMediaOnStart
-                        ? "unknown"
-                        : "available");
-                    }
+                      setGUIProperty("user.sourcetrailer.isonline", MyFilms.conf.ScanMediaOnStart ? "unknown" : "available");
                     else
                       setGUIProperty("user.sourcetrailer.isonline", "unavailable");
                   }
@@ -7190,12 +7003,11 @@ namespace MyFilmsPlugin.MyFilmsGUI
                 #region year
                 if (MyFilms.r[itemId][dc.ColumnName].ToString().Length > 0)
                 {
-                  int year = 0;
                   setGUIProperty("db." + dc.ColumnName.ToLower() + ".value", MyFilms.r[itemId][dc.ColumnName].ToString());
+                  int year;
                   Int32.TryParse(MyFilms.r[itemId][dc.ColumnName].ToString(), out year);
                   MyFilms.currentMovie.Year = year;
                 }
-
                 else
                 {
                   setGUIProperty("db." + dc.ColumnName.ToLower() + ".value", "");
@@ -7231,22 +7043,22 @@ namespace MyFilmsPlugin.MyFilmsGUI
       LogMyFilms.Debug("Load_Detailed_DB() - load details finished (" + stopwatch.ElapsedMilliseconds + " ms).");
     }
 
-    private static void Load_Detailed_DB_PushActorsToSkin(string personscontent)
+    private static void Load_Detailed_DB_PushActorsToSkin(string personscontent, int maxPersons = 7)
     {
-      for (int j = 1; j < 7; j++)
+      for (int j = 1; j < maxPersons; j++)
       {
         clearGUIProperty("db.actors.actor" + j + ".name");
         clearGUIProperty("db.actors.actor" + j + ".role");
         clearGUIProperty("db.actors.actor" + j + ".image");
       }
 
-      IEnumerable<DbPersonInfo> wTableau = MyFilms.Search_String_Persons(personscontent, false);
+      IEnumerable<DbPersonInfo> personInfos = MyFilms.Search_String_Persons(personscontent, false);
       int i = 1;
-      foreach (DbPersonInfo t in wTableau)
+      foreach (DbPersonInfo t in personInfos)
       {
         string actorname = t.Name;
         string actorrole = t.Job;
-        if (i < 7)
+        if (i < maxPersons)
         {
           if (MyFilms.conf.UseThumbsForPersons && !string.IsNullOrEmpty(MyFilms.conf.StrPathArtist))
           {
@@ -7306,8 +7118,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
     {
       if (index > MyFilms.r.Length - 1 || ((facadeMovieThumbs == null || facadeMovieThumbs.ThumbnailLayout != null) && ImgMovieThumbsDir == null)) return;
 
-      if (facadeMovieThumbs != null && facadeMovieThumbs.ThumbnailLayout != null) 
-        GUIControl.ClearControl(GetID, facadeMovieThumbs.GetID);
+      if (facadeMovieThumbs != null && facadeMovieThumbs.ThumbnailLayout != null) GUIControl.ClearControl(GetID, facadeMovieThumbs.GetID);
 
       if (ImgMovieThumbsDir != null)
       {
@@ -7321,7 +7132,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
 
       if (facadeMovieThumbs != null && facadeMovieThumbs.ThumbnailLayout != null)
       {
-        foreach (var item in movieThumbs.Select(movieThumb => new GUIListItem { IconImageBig = movieThumb }))
+        foreach (GUIListItem item in movieThumbs.Select(movieThumb => new GUIListItem { IconImageBig = movieThumb }))
         {
           facadeMovieThumbs.Add(item);
         }
@@ -7364,7 +7175,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
     //-------------------------------------------------------------------------------------------
     public static void Load_Detailed_PersonInfo(string personname, GUIListItem item)
     {
-      var stopwatch = new Stopwatch(); stopwatch.Reset(); stopwatch.Start();
+      Stopwatch stopwatch = new Stopwatch(); stopwatch.Reset(); stopwatch.Start();
       LogMyFilms.Debug("Load_Detailed_PersonInfo for '" + personname + "'");
       IMDBActor person = null;
 
@@ -7375,7 +7186,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
       }
       else
       {
-        var actorList = new ArrayList();
+        ArrayList actorList = new ArrayList();
         VideoDatabase.GetActorByName(personname, actorList);
         LogMyFilms.Debug("Load_Detailed_PersonInfo() - got '" + actorList.Count + "' results (" + stopwatch.ElapsedMilliseconds + " ms)");
         if (actorList.Count > 0 && actorList.Count < 3) // Do not proceed, of none or too many results !
@@ -7386,7 +7197,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
 
           if (actorId > 0)
           {
-            LogMyFilms.Debug("load details for actor ID: '" + actorId.ToString() + "'");
+            LogMyFilms.Debug("load details for actor ID: '" + actorId + "'");
             try
             {
               person = VideoDatabase.GetActorInfo(actorId);
@@ -7453,21 +7264,16 @@ namespace MyFilmsPlugin.MyFilmsGUI
       }
       if (Trailerwatcher.EnableRaisingEvents && Trailerwatcher.Path == directorypath)
         return; // return, if it's already enabled and file name has not changed
-      else
-      {
-        Trailerwatcher.EnableRaisingEvents = false;
-        Trailerwatcher.Changed -= new FileSystemEventHandler(TrailerwatcherChanged);
-        Trailerwatcher.Error -= new ErrorEventHandler(TrailerwatcherError);
-        Trailerwatcher.Created -= new FileSystemEventHandler(TrailerwatcherCreated);
-        Trailerwatcher.Deleted -= new FileSystemEventHandler(TrailerwatcherDeleted);
-        Trailerwatcher.Renamed -= new RenamedEventHandler(TrailerwatcherRenamed);
-        if (directorypath == "") return;
-      }
+
+      Trailerwatcher.EnableRaisingEvents = false;
+      Trailerwatcher.Changed -= new FileSystemEventHandler(TrailerwatcherChanged);
+      Trailerwatcher.Error -= new ErrorEventHandler(TrailerwatcherError);
+      Trailerwatcher.Created -= new FileSystemEventHandler(TrailerwatcherCreated);
+      Trailerwatcher.Deleted -= new FileSystemEventHandler(TrailerwatcherDeleted);
+      Trailerwatcher.Renamed -= new RenamedEventHandler(TrailerwatcherRenamed);
+      if (directorypath == "") return;
 
       // Init FileSystem Watcher
-      // ***** Change this as required
-      //string path = System.IO.Path.GetDirectoryName(conf.StrFileXml);
-      //string filename = System.IO.Path.GetFileName(conf.StrFileXml);
       Trailerwatcher.Path = directorypath;
       Trailerwatcher.IncludeSubdirectories = true;
       Trailerwatcher.Filter = "*.*"; // Trailerwatcher.Filter = "*.xml";
@@ -7565,7 +7371,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
       int getId = GUIWindowManager.GetPreviousActiveWindow();
       try
       {
-        Launch_Movie(movieid, getId, null, MyFilmsDetail.PlayerOption.Internal);
+        Launch_Movie(movieid, getId, null, PlayerOption.Internal);
       }
       catch (Exception ex)
       {
@@ -7574,24 +7380,23 @@ namespace MyFilmsPlugin.MyFilmsGUI
       }
     }
 
-    public static void Launch_Movie(int select_item, int GetID, GUIAnimation m_SearchAnimation, PlayerOption playeroption)
+    public static void Launch_Movie(int selectItem, int getId, GUIAnimation mSearchAnimation, PlayerOption playeroption)
     //-------------------------------------------------------------------------------------------
     // Play Movie
     //-------------------------------------------------------------------------------------------
     {
-      LogMyFilms.Debug("Launch_Movie() select_item = '" + select_item + "' - GetID = '" + GetID + "' - m_SearchAnimation = '" + m_SearchAnimation + "', playeroption = '" + Enum.GetName(typeof(PlayerOption), playeroption) + "'");
+      LogMyFilms.Debug("Launch_Movie() selectitem = '" + selectItem + "' - getID = '" + getId + "' - mSearchAnimation = '" + mSearchAnimation + "', playeroption = '" + Enum.GetName(typeof(PlayerOption), playeroption) + "'");
       //enableNativeAutoplay(); // in case, other plugin disabled it - removed, as we now do start external player ourselves ...
 
       #region Version Select Dialog
-      string filestorage = MyFilms.r[select_item][MyFilms.conf.StrStorage].ToString();
+      string filestorage = MyFilms.r[selectItem][MyFilms.conf.StrStorage].ToString();
       if (Helper.FieldIsSet(MyFilms.conf.StrStorage))
       {
         Regex filmver = new Regex(@"\[\[([^\#]*)##([^\]]*)\]\]");
         MatchCollection filmverMatches = filmver.Matches(filestorage);
         if (filmverMatches.Count > 0)
         {
-          GUIDialogMenu versionmenu =
-            (GUIDialogMenu)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_MENU);
+          GUIDialogMenu versionmenu = (GUIDialogMenu)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_MENU);
           versionmenu.Reset();
           versionmenu.SetHeading("Select Version");
           List<string> filestr = new List<string>();
@@ -7600,7 +7405,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
             versionmenu.Add(filmverMatches[i].Groups[2].Value);
             filestr.Add(filmverMatches[i].Groups[1].Value);
           }
-          versionmenu.DoModal(GetID);
+          versionmenu.DoModal(getId);
           if (versionmenu.SelectedLabel == -1) return;
           filestorage = filestr[versionmenu.SelectedLabel];
         }
@@ -7610,7 +7415,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
 
       #region handle WOL
       // Guzzi: Added WOL to start remote host before playing the files
-      // Wake up the TV server, if required
+      // Wake up the server, if required
       // HandleWakeUpNas();
       // LogMyFilms.Info("Launched HandleWakeUpNas() to start movie'" + MyFilms.r[select_item][MyFilms.conf.StrSTitle.ToString()] + "'");
 
@@ -7618,41 +7423,35 @@ namespace MyFilmsPlugin.MyFilmsGUI
       {
         WakeOnLanManager wakeOnLanManager = new WakeOnLanManager();
         int wTimeout = MyFilms.conf.StrWOLtimeout;
-        bool isActive;
         string UNCpath = filestorage;
         string NasServerName;
         string NasMACAddress;
 
         if (UNCpath.StartsWith("\\\\")) UNCpath = (UNCpath.Substring(2, UNCpath.Substring(2).IndexOf("\\") + 0)).ToLower();
-        if ((UNCpath.Equals(MyFilms.conf.StrNasName1, StringComparison.InvariantCultureIgnoreCase)) ||
-            (UNCpath.Equals(MyFilms.conf.StrNasName2, StringComparison.InvariantCultureIgnoreCase)) ||
-            (UNCpath.Equals(MyFilms.conf.StrNasName3, StringComparison.InvariantCultureIgnoreCase)))
+        if (UNCpath.Equals(MyFilms.conf.StrNasName1, StringComparison.InvariantCultureIgnoreCase) ||
+            UNCpath.Equals(MyFilms.conf.StrNasName2, StringComparison.InvariantCultureIgnoreCase) ||
+            UNCpath.Equals(MyFilms.conf.StrNasName3, StringComparison.InvariantCultureIgnoreCase))
         {
-          isActive = WakeOnLanManager.Ping(UNCpath, wTimeout);
-
-          if (!isActive) // Only if NAS server is not yet already rzunning !
+          if (!WakeOnLanManager.Ping(UNCpath, wTimeout)) // Only if NAS server is not yet already running !
           {
             if (MyFilms.conf.StrCheckWOLuserdialog)
             {
-              if (!(GUIUtils.ShowYesNoDialog(GUILocalizeStrings.Get(107986), "Film    : '" + MyFilms.r[select_item][MyFilms.conf.StrSTitle] + "'" + "\n" + "Server  : '" + UNCpath + "'" + "\n" + "Status  : '" + GUILocalizeStrings.Get(10798742)))) // srv name + " - (offline) - start ?"
+              if (!(GUIUtils.ShowYesNoDialog(GUILocalizeStrings.Get(107986), "Film    : '" + MyFilms.r[selectItem][MyFilms.conf.StrSTitle] + "'" + "\n" + "Server  : '" + UNCpath + "'" + "\n" + "Status  : '" + GUILocalizeStrings.Get(10798742)))) // srv name + " - (offline) - start ?"
                 return;
             }
 
             // Search the NAS where movie is located:
-            if ((UNCpath.Equals(MyFilms.conf.StrNasName1, StringComparison.InvariantCultureIgnoreCase)) &&
-                (MyFilms.conf.StrNasMAC1.Length > 1))
+            if (UNCpath.Equals(MyFilms.conf.StrNasName1, StringComparison.InvariantCultureIgnoreCase) && (MyFilms.conf.StrNasMAC1.Length > 1))
             {
               NasServerName = MyFilms.conf.StrNasName1;
               NasMACAddress = MyFilms.conf.StrNasMAC1;
             }
-            else if ((UNCpath.Equals(MyFilms.conf.StrNasName2, StringComparison.InvariantCultureIgnoreCase)) &&
-                     (MyFilms.conf.StrNasMAC2.Length > 1))
+            else if (UNCpath.Equals(MyFilms.conf.StrNasName2, StringComparison.InvariantCultureIgnoreCase) && (MyFilms.conf.StrNasMAC2.Length > 1))
             {
               NasServerName = MyFilms.conf.StrNasName2;
               NasMACAddress = MyFilms.conf.StrNasMAC2;
             }
-            else if ((UNCpath.Equals(MyFilms.conf.StrNasName3, StringComparison.InvariantCultureIgnoreCase)) &&
-                     (MyFilms.conf.StrNasMAC3.Length > 1))
+            else if (UNCpath.Equals(MyFilms.conf.StrNasName3, StringComparison.InvariantCultureIgnoreCase) && (MyFilms.conf.StrNasMAC3.Length > 1))
             {
               NasServerName = MyFilms.conf.StrNasName3;
               NasMACAddress = MyFilms.conf.StrNasMAC3;
@@ -7664,7 +7463,6 @@ namespace MyFilmsPlugin.MyFilmsGUI
             }
 
             // Start NAS Server
-
             bool successFulStart = wakeOnLanManager.WakeupSystem(wakeOnLanManager.GetHwAddrBytes(NasMACAddress), NasServerName, wTimeout);
 
             if (MyFilms.conf.StrCheckWOLuserdialog)
@@ -7685,7 +7483,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
 
       #endregion
 
-      SetProcessAnimationStatus(true, m_SearchAnimation);
+      SetProcessAnimationStatus(true, mSearchAnimation);
       #region Run externaly Program before Playing if defined in setup
       if (Helper.FieldIsSet(MyFilms.conf.CmdPar))
         RunProgram(MyFilms.conf.CmdExe, MyFilms.r[MyFilms.conf.StrIndex][MyFilms.conf.CmdPar].ToString());
@@ -7698,18 +7496,18 @@ namespace MyFilmsPlugin.MyFilmsGUI
       bool noResumeMovie = true;
       int movieIndex = 0;
 
-      SearchAllFiles(MyFilms.r[select_item], false, ref noResumeMovie, ref newItems, ref movieIndex, false, filestorage);
+      SearchAllFiles(MyFilms.r[selectItem], false, ref noResumeMovie, ref newItems, ref movieIndex, false, filestorage);
       
       //  ToDo: add code to call population of trailers array and insert num of configured trailers into playlist
       // newItems.Insert(0, <trailers>);
       
       if (newItems.Count > 20) // Maximum 20 entries (limitation for MP dialogFileStacking)
       {
-        GUIUtils.ShowOKDialog(MyFilms.r[select_item][MyFilms.conf.StrSTitle].ToString(), "maximum 20 entries for the playlist", "", "");
-        LogMyFilms.Info("Too many entries found for movie '" + MyFilms.r[select_item][MyFilms.conf.StrSTitle] + "', number of entries found = " + newItems.Count);
+        GUIUtils.ShowOKDialog(MyFilms.r[selectItem][MyFilms.conf.StrSTitle].ToString(), "maximum 20 entries for the playlist", "", "");
+        LogMyFilms.Info("Too many entries found for movie '" + MyFilms.r[selectItem][MyFilms.conf.StrSTitle] + "', number of entries found = " + newItems.Count);
         return;
       }
-      SetProcessAnimationStatus(false, m_SearchAnimation);
+      SetProcessAnimationStatus(false, mSearchAnimation);
 
       #region optional part selection dialog
       if (newItems.Count > 1)
@@ -7814,37 +7612,37 @@ namespace MyFilmsPlugin.MyFilmsGUI
         dlgYesNo.SetLine(1, GUILocalizeStrings.Get(219)); //no disc
         if (Helper.FieldIsSet(MyFilms.conf.StrIdentItem))
           if (MyFilms.conf.StrIdentLabel.Length > 0)
-            dlgYesNo.SetLine(2, MyFilms.conf.StrIdentLabel + " = " + MyFilms.r[select_item][MyFilms.conf.StrIdentItem]); //Label Identification for Media
+            dlgYesNo.SetLine(2, MyFilms.conf.StrIdentLabel + " = " + MyFilms.r[selectItem][MyFilms.conf.StrIdentItem]); //Label Identification for Media
           else
-            dlgYesNo.SetLine(2, "'" + MyFilms.conf.StrIdentItem + "' = " + MyFilms.r[select_item][MyFilms.conf.StrIdentItem]); //ANT Item Identification for Media
+            dlgYesNo.SetLine(2, "'" + MyFilms.conf.StrIdentItem + "' = " + MyFilms.r[selectItem][MyFilms.conf.StrIdentItem]); //ANT Item Identification for Media
         else
-          dlgYesNo.SetLine(2, "' disc n° = " + MyFilms.r[select_item]["Number"]); //ANT Number for Identification Media 
-        dlgYesNo.DoModal(GetID);
+          dlgYesNo.SetLine(2, "' disc n° = " + MyFilms.r[selectItem]["Number"]); //ANT Number for Identification Media 
+        dlgYesNo.DoModal(getId);
         if (dlgYesNo.IsConfirmed) 
-          Launch_Movie(select_item, GetID, m_SearchAnimation, playeroption);
+          Launch_Movie(selectItem, getId, mSearchAnimation, playeroption);
         //}
         else
         {
-          GUIUtils.ShowOKDialog("", GUILocalizeStrings.Get(1036), MyFilms.r[select_item][MyFilms.conf.StrSTitle].ToString(), ""); //no video found
-          LogMyFilms.Info("File not found for movie '" + MyFilms.r[select_item][MyFilms.conf.StrSTitle] + "'");
+          GUIUtils.ShowOKDialog("", GUILocalizeStrings.Get(1036), MyFilms.r[selectItem][MyFilms.conf.StrSTitle].ToString(), ""); //no video found
+          LogMyFilms.Info("File not found for movie '" + MyFilms.r[selectItem][MyFilms.conf.StrSTitle] + "'");
         }
       }
     }
 
-    internal static void Launch_Movie_Trailer(int selectItem, int GetID, GUIAnimation m_SearchAnimation)
+    internal static void Launch_Movie_Trailer(int selectItem, int getId, GUIAnimation mSearchAnimation)
     //-------------------------------------------------------------------------------------------
-    // Play Movie Trailers !!!
+    // Play Movie Trailers
     //-------------------------------------------------------------------------------------------
     {
       // Run externaly Program before Playing if defined in setup
-      SetProcessAnimationStatus(true, m_SearchAnimation);
-      LogMyFilms.Debug("(Play Movie Trailer) selectItem = '" + selectItem + "' - GetID = '" + GetID + "' - m_SearchAnimation = '" + m_SearchAnimation + "'");
+      SetProcessAnimationStatus(true, mSearchAnimation);
+      LogMyFilms.Debug("(Play Movie Trailer) selectItem = '" + selectItem + "' - getID = '" + getId + "' - mSearchAnimation = '" + mSearchAnimation + "'");
 
       if (Helper.FieldIsSet(MyFilms.conf.CmdPar)) RunProgram(MyFilms.conf.CmdExe, MyFilms.r[MyFilms.conf.StrIndex][MyFilms.conf.CmdPar].ToString());
 
       if (g_Player.Playing) g_Player.Stop();
       // search all files
-      var newItems = new ArrayList();
+      ArrayList newItems = new ArrayList();
       int movieIndex = 0;
       bool noResumeMovie = true;
 
@@ -7859,7 +7657,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
         LogMyFilms.Info("Too many entries found for movie '" + MyFilms.r[selectItem][MyFilms.conf.StrSTitle] + "', number of entries found = " + newItems.Count);
         return;
       }
-      SetProcessAnimationStatus(false, m_SearchAnimation);
+      SetProcessAnimationStatus(false, mSearchAnimation);
       if (newItems.Count > 1)
       {
         var dlgmenu = (GUIDialogMenu)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_MENU);
@@ -7878,7 +7676,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
             dlgmenu.Add(movieFileName + " (" + wsizeformatted + ")"); // add moviename to menu
         }
 
-        dlgmenu.DoModal(GetID);
+        dlgmenu.DoModal(getId);
         if (dlgmenu.SelectedLabel == -1) return;
         //if (dlgmenu.SelectedLabel > 0) // 0 = Play all trailers - so >0 -> a specific choice has been taken ...
         //IMovieIndex = dlgmenu.SelectedId; // is "1" - as "0" is used for play all movies ...
@@ -7955,7 +7753,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
           dlgmenu.Add(GUILocalizeStrings.Get(712) + " ..."); //Return ...
           choiceViewMenu.Add("return");
 
-          dlgmenu.DoModal(GetID);
+          dlgmenu.DoModal(getId);
           if (dlgmenu.SelectedLabel == -1) return;
 
           string site;
@@ -8039,11 +7837,13 @@ namespace MyFilmsPlugin.MyFilmsGUI
 
         foreach (object t in newItems)
         {
-          var movieFileName = (string)t;
-          var newitem = new PlayListItem();
-          newitem.FileName = movieFileName;
+          string movieFileName = (string)t;
+          PlayListItem newitem = new PlayListItem
+          {
+            FileName = movieFileName,
+            Type = PlayListItem.PlayListItemType.Video
+          };
           LogMyFilms.Info("Add trailer to playlist: '" + movieFileName + "'");
-          newitem.Type = PlayListItem.PlayListItemType.Video;
           playlist.Add(newitem);
         }
         MyFilms.trailerscrobbleactive = true; // needs to be set active again here
@@ -8087,7 +7887,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
         return files;
       }
 
-      var allFiles = new ArrayList();
+      ArrayList allFiles = new ArrayList();
 
       // If this is database movie, get files and return
       if (VideoDatabase.HasMovieInfo(strFile))
@@ -8202,7 +8002,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
       {
         if (newItems.Contains(wfile))
           continue;
-        if (MediaPortal.Util.Utils.ShouldStack(fileName, wfile) && MediaPortal.Util.Utils.IsVideo(wfile))
+        if (Utils.ShouldStack(fileName, wfile) && Utils.IsVideo(wfile))
         {
           if (delete)
           {
@@ -8228,7 +8028,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
       if (newItems.Contains(fileName))
         return;
       // search infos in the Video Database
-      var movieDetails = new IMDBMovie();
+      IMDBMovie movieDetails = new IMDBMovie();
       VideoDatabase.GetMovieInfo(fileName, ref movieDetails);
       if (idMovie == -1)
         idMovie = VideoDatabase.GetMovieId(fileName);
@@ -8320,7 +8120,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
       return false;
     }
 
-    private void OnPlayBackStarted(MediaPortal.Player.g_Player.MediaType type, string filename)
+    private void OnPlayBackStarted(g_Player.MediaType type, string filename)
     {
       if (!PlayBackEventIsOfConcern(type, filename))
       {
@@ -8370,7 +8170,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
       // Check, if property for OSD should be set (came from myvideo DB in the past) -> #Play.Current.Thumb
     }
 
-    private void OnPlayBackEnded(MediaPortal.Player.g_Player.MediaType type, string filename)
+    private void OnPlayBackEnded(g_Player.MediaType type, string filename)
     {
       if (!PlayBackEventIsOfConcern(type, filename))
       {
@@ -8389,7 +8189,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
       UpdateOnPlayEnd(type, 0, filename, true, false);
     }
 
-    private void OnPlayBackStopped(MediaPortal.Player.g_Player.MediaType type, int timeMovieStopped, string filename)
+    private void OnPlayBackStopped(g_Player.MediaType type, int timeMovieStopped, string filename)
     {
       if (!PlayBackEventIsOfConcern(type, filename))
       {
@@ -8401,7 +8201,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
       UpdateOnPlayEnd(type, timeMovieStopped, filename, false, true);
     }
 
-    private void UpdateOnPlayEnd(MediaPortal.Player.g_Player.MediaType type, int timeMovieStopped, string filename, bool ended, bool stopped)
+    private void UpdateOnPlayEnd(g_Player.MediaType type, int timeMovieStopped, string filename, bool ended, bool stopped)
     {
       LogMyFilms.Debug("UpdateOnPlayEnd() was initiated - ended = '" + ended + "', stopped = '" + stopped + "', trailerPlayed = '" + trailerPlayed + "', filename: '" + filename + "'");
 
@@ -8663,14 +8463,14 @@ namespace MyFilmsPlugin.MyFilmsGUI
       {
         try
         {
-          var movie = o as DataRow;
+          DataRow movie = o as DataRow;
           // string alternativeTitle = video["TranslatedTitle"].ToString();
 
           #region Cover
           string pictureFile = string.Empty;
           if (movie["Picture"].ToString().Length > 0)
           {
-            if ((movie["Picture"].ToString().IndexOf(":\\", System.StringComparison.Ordinal) == -1) && (movie["Picture"].ToString().Substring(0, 2) != "\\\\"))
+            if ((movie["Picture"].ToString().IndexOf(":\\", StringComparison.Ordinal) == -1) && (movie["Picture"].ToString().Substring(0, 2) != "\\\\"))
               pictureFile = MyFilms.conf.StrPathImg + "\\" + movie["Picture"];
             else
               pictureFile = movie["Picture"].ToString();
@@ -8694,7 +8494,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
         }
         catch (Exception ex)
         {
-          LogMyFilms.Warn("Error setting playing video properties: {0}", ex.ToString());
+          LogMyFilms.Warn("Error setting playing video properties: {0}", ex);
         }
       }) { IsBackground = true, Name = "MyFilmsSetNowPlayingProperties" }.Start(rowPlaying);
     }
@@ -8711,7 +8511,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
           string pictureFile = Helper.PicturePath(MyFilms.r[MyFilms.conf.StrIndex]["Picture"].ToString(), MyFilms.conf.StrPathImg, MyFilms.conf.DefaultCover);
 
           Thread.Sleep(3000);
-          string titleToShow = Helper.TitleWithoutGroupName(rowPlaying.TranslatedTitle) + " (" + Helper.TitleWithoutGroupName(rowPlaying.Title) + ") - " + rowPlaying.Year.ToString();
+          string titleToShow = Helper.TitleWithoutGroupName(rowPlaying.TranslatedTitle) + " (" + Helper.TitleWithoutGroupName(rowPlaying.Title) + ") - " + rowPlaying.Year;
           LogMyFilms.Debug("Setting Video Properties for '{0}'", titleToShow);
 
           if (!string.IsNullOrEmpty(titleToShow)) GUIPropertyManager.SetProperty("#Play.Current.Title", "Trailer: " + titleToShow);
@@ -8724,18 +8524,18 @@ namespace MyFilmsPlugin.MyFilmsGUI
         }
         catch (Exception ex)
         {
-          LogMyFilms.Warn("Error setting playing video properties: {0}", ex.ToString());
+          LogMyFilms.Warn(ex, "Error setting playing video properties: {0}", ex.Message);
         }
       }) { IsBackground = true, Name = "MyFilmsSetNowPlayingProperties" }.Start(rowPlaying);
     }
 
-    private void GUIWindowManager_OnNewAction(MediaPortal.GUI.Library.Action action)
+    private void GUIWindowManager_OnNewAction(Action action)
     {
       LogMyFilms.Debug("GUIWindowManager_OnNewAction(): Action detected - '" + action.wID + "'");
       LogMyFilms.Debug("GUIWindowManager_OnNewAction(): trailerscrobbleactive = '" + MyFilms.trailerscrobbleactive + "'");
       switch (action.wID)
       {
-        case MediaPortal.GUI.Library.Action.ActionType.ACTION_RECORD:
+        case Action.ActionType.ACTION_RECORD:
           {
             if (!MyFilms.trailerscrobbleactive)
             {
@@ -8760,8 +8560,8 @@ namespace MyFilmsPlugin.MyFilmsGUI
             }
             break;
           }
-        case MediaPortal.GUI.Library.Action.ActionType.ACTION_PLAY:
-        case MediaPortal.GUI.Library.Action.ActionType.ACTION_SELECT_ITEM:
+        case Action.ActionType.ACTION_PLAY:
+        case Action.ActionType.ACTION_SELECT_ITEM:
           {
             if (MyFilms.trailerscrobbleactive)
             {
@@ -8785,7 +8585,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
             }
             break;
           }
-        case MediaPortal.GUI.Library.Action.ActionType.ACTION_PREVIOUS_MENU:
+        case Action.ActionType.ACTION_PREVIOUS_MENU:
           {
             if (MyFilms.trailerscrobbleactive)
             {
@@ -8794,7 +8594,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
             }
             break;
           }
-        case MediaPortal.GUI.Library.Action.ActionType.ACTION_NEXT_CHAPTER:
+        case Action.ActionType.ACTION_NEXT_CHAPTER:
           {
             if (MyFilms.trailerscrobbleactive)
             {
@@ -8824,13 +8624,13 @@ namespace MyFilmsPlugin.MyFilmsGUI
             }
             break;
           }
-        case MediaPortal.GUI.Library.Action.ActionType.ACTION_PARENT_DIR:
-        case MediaPortal.GUI.Library.Action.ActionType.ACTION_KEY_PRESSED:
-        case MediaPortal.GUI.Library.Action.ActionType.ACTION_MUSIC_PLAY:
-        case MediaPortal.GUI.Library.Action.ActionType.ACTION_PREV_PICTURE:
-        case MediaPortal.GUI.Library.Action.ActionType.ACTION_NEXT_PICTURE:
-        case MediaPortal.GUI.Library.Action.ActionType.ACTION_CONTEXT_MENU:
-        case MediaPortal.GUI.Library.Action.ActionType.ACTION_PREV_ITEM:
+        case Action.ActionType.ACTION_PARENT_DIR:
+        case Action.ActionType.ACTION_KEY_PRESSED:
+        case Action.ActionType.ACTION_MUSIC_PLAY:
+        case Action.ActionType.ACTION_PREV_PICTURE:
+        case Action.ActionType.ACTION_NEXT_PICTURE:
+        case Action.ActionType.ACTION_CONTEXT_MENU:
+        case Action.ActionType.ACTION_PREV_ITEM:
         default:
           break;
       }
@@ -8859,7 +8659,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
 
     private static int UpdateDatabase(string filename, DataRow row, int idMovie)
     {
-      var movieDetails = new IMDBMovie();
+      IMDBMovie movieDetails = new IMDBMovie();
       if (idMovie <= 0) // add new VDB movie
       {
         idMovie = VideoDatabase.AddMovie(filename, row["Subtitles"].ToString().Length > 0);
@@ -8867,7 +8667,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
         wdescription = wdescription.Replace('|', '\n');
         movieDetails.PlotOutline = movieDetails.Plot = System.Web.HttpUtility.HtmlDecode(MediaPortal.Util.HTMLParser.removeHtml(wdescription));
 
-        var title = row[MyFilms.conf.StrTitle1].ToString();
+        string title = row[MyFilms.conf.StrTitle1].ToString();
         movieDetails.Title = (title.LastIndexOf("\\", StringComparison.Ordinal) > 0) ? title.Substring(title.LastIndexOf("\\", StringComparison.Ordinal) + 1) : title;
 
         try
@@ -8940,10 +8740,9 @@ namespace MyFilmsPlugin.MyFilmsGUI
 
     private static void Analyze(string champselect, int iidmovie, string field)
     {
-      ArrayList wTableau = MyFilms.Search_String(champselect);
-      foreach (object t in wTableau)
+      foreach (string t in MyFilms.Search_String(champselect))
       {
-        UpdateFieldDb(t.ToString(), iidmovie, field);
+        UpdateFieldDb(t, iidmovie, field);
       }
     }
 
@@ -9160,9 +8959,9 @@ namespace MyFilmsPlugin.MyFilmsGUI
             {
               // it's a Directory so all files included are added to playlist
               var dirsInf = new DirectoryInfo(wfile3);
-              //On retourne une liste d'informations sur les fichiers contenus dans le répertoire
+              // On retourne une liste d'informations sur les fichiers contenus dans le répertoire
               FileSystemInfo[] filesInf = dirsInf.GetFileSystemInfos();
-              foreach (FileSystemInfo fi in filesInf.Where(fi => MediaPortal.Util.Utils.IsVideo(fi.FullName)))
+              foreach (FileSystemInfo fi in filesInf.Where(fi => Utils.IsVideo(fi.FullName)))
               {
                 if (delete)
                 {
@@ -9271,7 +9070,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
     /// <param name="searchrep">le chemin du répertoire dans lequel chercher</param>
     /// <param name="recur">spécifie s'il s'agit d'une relance recursive</param>
     /// <param name="Trailer">if called for trailers</param>
-    public static void SearchFiles(string fileName, string searchrep, bool recur, bool Trailer)
+    private static void SearchFiles(string fileName, string searchrep, bool recur, bool Trailer)
     {
       var oRegex = new Regex(";");
       string file = fileName;
@@ -9294,7 +9093,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
           wpath = path;
         if (Directory.Exists(wpath))
         {
-          var dirsInf = new DirectoryInfo(wpath);
+          DirectoryInfo dirsInf = new DirectoryInfo(wpath);
           //On retourne une liste d'informations sur les fichiers contenus dans le répertoire
           FileSystemInfo[] filesInf = dirsInf.GetFileSystemInfos();
 
@@ -9302,7 +9101,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
           //on place son path dans la variable globale result.
           foreach (FileSystemInfo fi in from fi in filesInf let oMatches = oRegex.Matches(fi.Name.ToLower()) from Match oMatch in oMatches select fi)
           {
-            if (MediaPortal.Util.Utils.IsVideo(fi.Name) || VirtualDirectory.IsImageFile(System.IO.Path.GetExtension(fi.Name)))
+            if (Utils.IsVideo(fi.Name) || VirtualDirectory.IsImageFile(Path.GetExtension(fi.Name)))
               result.Add(wpath + fi.Name);
             else
             {
@@ -9328,7 +9127,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
 
     private static void UpdateFieldDb(string champselect, int iidmovie, string field)
     {
-      var movieDetails = new IMDBMovie();
+      IMDBMovie movieDetails = new IMDBMovie();
 
       if (field == "Genre")
       {
@@ -9361,7 +9160,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
       }
     }
 
-    static public string SearchMovie(string filename, string strDirStor)
+    public static string SearchMovie(string filename, string strDirStor)
     {
       //check if media file is on Disk
       if (File.Exists(filename) || Directory.Exists(filename))
@@ -9390,7 +9189,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
       }
     }
 
-    static public void PlayMovieFromPlayList(bool noResumeMovie, int iMovieIndex)
+    public static void PlayMovieFromPlayList(bool noResumeMovie, int iMovieIndex)
     {
       string filename = iMovieIndex == -1 ? playlistPlayer.GetNext() : playlistPlayer.Get(iMovieIndex);
       var movieDetails = new IMDBMovie();
@@ -9447,7 +9246,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
       }
     }
 
-    static public void PlayMovieFromPlayListTrailer(int iMovieIndex)
+    public static void PlayMovieFromPlayListTrailer(int iMovieIndex)
     {
       trailerPlayed = true;
       string filename = iMovieIndex == -1 ? playlistPlayer.GetNext() : playlistPlayer.Get(iMovieIndex);
@@ -9459,10 +9258,10 @@ namespace MyFilmsPlugin.MyFilmsGUI
         playlistPlayer.Play(iMovieIndex);
     }
 
-    static public bool MountImageFile(int windowId, string file)
+    public static bool MountImageFile(int windowId, string file)
     {
       LogMyFilms.Warn("MountImageFile() - called with WindowID = '" + windowId + "', file = '" + file + "'");
-      var mpSettings = new MPSettings();
+      MPSettings mpSettings = new MPSettings();
       m_askBeforePlayingDVDImage = mpSettings.GetValueAsBool("daemon", "askbeforeplaying", false);
       if (!DaemonTools.IsMounted(file))
       {
@@ -9485,7 +9284,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
       return DaemonTools.IsMounted(file);
     }
 
-    static public string ReplaceString(string file)
+    public static string ReplaceString(string file)
     {
       file = file.Replace("-", " ");
       file = file.Replace("!", " ");
@@ -9505,7 +9304,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
       file = file.Replace(",", " ");
       file = file.Trim();
 
-      var oRegex = new Regex(" +");
+      Regex oRegex = new Regex(" +");
       file = oRegex.Replace(file, ":");
 
       file = file.Replace(":", ".*");
@@ -9561,7 +9360,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
     //  return false;
     //}
 
-    static public void RunProgram(string exeName, string argsLine)
+    public static void RunProgram(string exeName, string argsLine)
     {
       if (exeName.Length > 0)
       {
@@ -9569,7 +9368,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
         // ProcessStartInfo psI = new ProcessStartInfo(exeName, argsLine);
         //ProcessStartInfo startInfo = new ProcessStartInfo();
         LogMyFilms.Debug("Launching process with filename = '" + exeName + "' and argument = '" + argsLine + "'");
-        var newProcess = new Process();
+        Process newProcess = new Process();
 
         try
         {
@@ -9596,7 +9395,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
       }
     }
 
-    static public void RunAmCupdater(string exeName, string argsLine)
+    public static void RunAmCupdater(string exeName, string argsLine)
     {
       if (exeName.Length > 0)
       {
@@ -9633,7 +9432,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
     //-------------------------------------------------------------------------------------------
     //  Search and Download Trailerfiles via TMDB (mostly YouTube)
     //-------------------------------------------------------------------------------------------        
-    internal static void SearchAndDownloadTrailerOnlineTMDB(DataRow[] r1, int index, bool loadAllTrailers, bool interactive, string overridestoragepath)
+    internal static void SearchAndDownloadTrailerOnlineTmdb(DataRow[] r1, int index, bool loadAllTrailers, bool interactive, string overridestoragepath)
     {
       //LogMyFilms.Debug("(SearchAndDownloadTrailerOnlineTMDB) - mastertitle      : '" + MyFilms.r[index][MyFilms.conf.StrTitle1] + "'");
       //if (Helper.FieldIsSet(MyFilms.conf.StrTitle2)) LogMyFilms.Debug("(SearchAndDownloadTrailerOnlineTMDB) - secondary title  : '" + MyFilms.r[index][MyFilms.conf.StrTitle2] + "'");
@@ -9917,11 +9716,11 @@ namespace MyFilmsPlugin.MyFilmsGUI
 
     private static int SearchTmdbMovie(string searchexpression, string title, string title2, int year, string language, bool collectionsearch)
     {
-      LogMyFilms.Debug("SearchTmdbMovie() - title '" + title + "', title2 '" + title2 + "', year '" + year.ToString() + "'");
-      var api = new Tmdb(MyFilms.TmdbApiKey, language);
-      var tmdbConf = api.GetConfiguration();
-      var allMoviesFound = new List<TmdbMovie>();
-      var dlg = (GUIDialogMenu)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_MENU);
+      LogMyFilms.Debug("SearchTmdbMovie() - title '" + title + "', title2 '" + title2 + "', year '" + year + "'");
+      Tmdb api = new Tmdb(MyFilms.TmdbApiKey, language);
+      TmdbConfiguration tmdbConf = api.GetConfiguration();
+      List<TmdbMovie> allMoviesFound = new List<TmdbMovie>();
+      GUIDialogMenu dlg = (GUIDialogMenu)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_MENU);
 
       const int minChars = 2;
       const bool filter = true;
@@ -9990,38 +9789,40 @@ namespace MyFilmsPlugin.MyFilmsGUI
       {
         dlg.SelectedLabel = 0;
       }
-      if (dlg.SelectedLabel == -1) return -1;
-
-      if (dlg.SelectedLabel == 0)
+      switch (dlg.SelectedLabel)
       {
-        //First Show Dialog to choose Otitle, Ttitle or substrings - or Keyboard to manually enter searchstring!!!
-        var dlgSearchFilm = (GUIDialogMenu)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_MENU);
-        if (dlgSearchFilm == null) return -1;
-        dlgSearchFilm.Reset();
-        dlgSearchFilm.SetHeading(GUILocalizeStrings.Get(1079859)); // choose search expression
-        dlgSearchFilm.Add("  *****  " + GUILocalizeStrings.Get(1079858) + "  *****  ");
-        dlgSearchFilm.Add(title);
-        dlgSearchFilm.Add(title2);
-        foreach (object t in from object t in MyFilms.SubTitleGrabbing(title) where t.ToString().Length > 1 select t) dlgSearchFilm.Add(t.ToString());
-        foreach (object t in from object t in MyFilms.SubTitleGrabbing(title2) where t.ToString().Length > 1 select t) dlgSearchFilm.Add(t.ToString());
-        foreach (object t in from object t in MyFilms.SubWordGrabbing(title, minChars, filter) where t.ToString().Length > 1 select t) dlgSearchFilm.Add(t.ToString()); // Min 3 Chars, Filter true (no der die das)
-        foreach (object t in from object t in MyFilms.SubWordGrabbing(title2, minChars, filter) where t.ToString().Length > 1 select t) dlgSearchFilm.Add(t.ToString());
-        dlgSearchFilm.DoModal(wGetID);
+        case -1:
+          return -1;
+        case 0:
+          //First Show Dialog to choose Otitle, Ttitle or substrings - or Keyboard to manually enter searchstring!!!
+          var dlgSearchFilm = (GUIDialogMenu)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_MENU);
+          if (dlgSearchFilm == null) return -1;
+          dlgSearchFilm.Reset();
+          dlgSearchFilm.SetHeading(GUILocalizeStrings.Get(1079859)); // choose search expression
+          dlgSearchFilm.Add("  *****  " + GUILocalizeStrings.Get(1079858) + "  *****  ");
+          dlgSearchFilm.Add(title);
+          dlgSearchFilm.Add(title2);
+          foreach (string t in MyFilms.SubTitleGrabbing(title).Where(t => t.Length > 1)) dlgSearchFilm.Add(t);
+          foreach (string t in MyFilms.SubTitleGrabbing(title2).Where(t => t.Length > 1)) dlgSearchFilm.Add(t);
+          foreach (string t in MyFilms.SubWordGrabbing(title, minChars, filter).Where(t => t.Length > 1)) dlgSearchFilm.Add(t);
+          foreach (string t in MyFilms.SubWordGrabbing(title2, minChars, filter).Where(t => t.Length > 1)) dlgSearchFilm.Add(t);
+          dlgSearchFilm.DoModal(wGetID);
 
-        if (dlgSearchFilm.SelectedLabel == 0) // enter manual searchstring via VK
-        {
-          var keyboard = (VirtualKeyboard)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_VIRTUAL_KEYBOARD);
-          if (null == keyboard) return -1;
-          keyboard.Reset();
-          keyboard.SetLabelAsInitialText(false); // set to false, otherwise our intial text is cleared
-          keyboard.Text = title;
-          keyboard.DoModal(wGetID);
-          if (keyboard.IsConfirmed && keyboard.Text.Length > 0) return SearchTmdbMovie(keyboard.Text, title, title2, year, language, collectionsearch);
-        }
-        if (dlgSearchFilm.SelectedLabel > 0) return SearchTmdbMovie(dlgSearchFilm.SelectedLabelText, title, title2, year, language, collectionsearch);
+          if (dlgSearchFilm.SelectedLabel == 0) // enter manual searchstring via VK
+          {
+            VirtualKeyboard keyboard = (VirtualKeyboard)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_VIRTUAL_KEYBOARD);
+            if (null == keyboard) return -1;
+            keyboard.Reset();
+            keyboard.SetLabelAsInitialText(false); // set to false, otherwise our intial text is cleared
+            keyboard.Text = title;
+            keyboard.DoModal(wGetID);
+            if (keyboard.IsConfirmed && keyboard.Text.Length > 0) return SearchTmdbMovie(keyboard.Text, title, title2, year, language, collectionsearch);
+          }
+          if (dlgSearchFilm.SelectedLabel > 0) return SearchTmdbMovie(dlgSearchFilm.SelectedLabelText, title, title2, year, language, collectionsearch);
+          break;
+        default:
+          return allMoviesFound[dlg.SelectedLabel].id;
       }
-
-      if (dlg.SelectedLabel > 0) return allMoviesFound[dlg.SelectedLabel].id;
 
       return 0; // return 0 if no movie found or -1 if search was cancelled
     }
@@ -10031,9 +9832,9 @@ namespace MyFilmsPlugin.MyFilmsGUI
     //-------------------------------------------------------------------------------------------        
     public static void SearchTrailerLocal(DataRow[] r1, int index, bool extendedSearch, bool saveresult)
     {
-      var trailerFiles = new List<string>();
-      var split = MyFilms.r[index][MyFilms.conf.StrStorageTrailer].ToString().Split(new Char[] { ';', '|' }, StringSplitOptions.RemoveEmptyEntries);
-      var oldTrailerFiles = split.Distinct().ToList();
+      List<string> trailerFiles = new List<string>();
+      string[] split = MyFilms.r[index][MyFilms.conf.StrStorageTrailer].ToString().Split(new Char[] { ';', '|' }, StringSplitOptions.RemoveEmptyEntries);
+      List<string> oldTrailerFiles = split.Distinct().ToList();
 
       string titlename = MyFilms.r[index][MyFilms.conf.StrTitle1].ToString();
       if (titlename.Contains("\\")) titlename = titlename.Substring(titlename.LastIndexOf("\\", StringComparison.Ordinal) + 1);
@@ -10101,7 +9902,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
           #region First search rootdirectory for matching files
           LogMyFilms.Debug("(TrailersearchLocal) - TrailerSearchDirectory: '" + storage + "', search title1: '" + titlename.ToLower() + "', search title2: '" + titlename2.ToLower() + "'");
           string[] files = Directory.GetFiles(storage, "*.*", SearchOption.TopDirectoryOnly);
-          trailerFiles.AddRange(files.Where(MediaPortal.Util.Utils.IsVideo).Where(item => (!string.IsNullOrEmpty(titlename) && item.ToLower().Contains(titlename.ToLower())) || (!string.IsNullOrEmpty(titlename2) && item.ToLower().Contains(titlename2.ToLower()))));
+          trailerFiles.AddRange(files.Where(Utils.IsVideo).Where(item => (!string.IsNullOrEmpty(titlename) && item.ToLower().Contains(titlename.ToLower())) || (!string.IsNullOrEmpty(titlename2) && item.ToLower().Contains(titlename2.ToLower()))));
           #endregion
 
           #region Now search for subdirectories matching the movie and add the content of them as result
@@ -10115,7 +9916,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
               #region check for directories with matching title name
               LogMyFilms.Debug("(TrailersearchLocal) - Matching Directory found : '" + subdirectory + "'");
               files = Directory.GetFiles(subdirectory, "*.*", SearchOption.AllDirectories);
-              trailerFiles.AddRange(files.Where(MediaPortal.Util.Utils.IsVideo));
+              trailerFiles.AddRange(files.Where(Utils.IsVideo));
               #endregion
             }
             else
@@ -10159,7 +9960,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
     //-------------------------------------------------------------------------------------------
     //  Delete Trailer Entries From DB
     //-------------------------------------------------------------------------------------------        
-    public static void DeleteTrailerFromDB(DataRow[] r1, int index)
+    private static void DeleteTrailerFromDb(DataRow[] r1, int index)
     {
       MyFilms.r[index][MyFilms.conf.StrStorageTrailer] = string.Empty;
       LogMyFilms.Debug("DeleteTrailerFromDB() - Trailer entries Deleted for Current Movie !");
@@ -10175,8 +9976,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
       int intTimeOut;
 
       //Get settings from MediaPortal.xml
-      using (MediaPortal.Profile.Settings xmlreader = new MPSettings())
-      //using (Settings xmlreader = new MediaPortal.Profile.MPSettings())
+      using (Settings xmlreader = new MPSettings())
       {
         hostName = xmlreader.GetValueAsString("nas", "hostname", "");
         isWakeOnLanEnabled = xmlreader.GetValueAsBool("nas", "isWakeOnLanEnabled", false);
@@ -10184,109 +9984,95 @@ namespace MyFilmsPlugin.MyFilmsGUI
         intTimeOut = xmlreader.GetValueAsInt("nas", "WOLTimeOut", 10);
       }
 
-      //isWakeOnlanEnabled
       if (isWakeOnLanEnabled)
       {
-        //Check for multi-seat installation
-        //if (!IsSingleSeat())
-        if (true)
+        WakeOnLanManager wakeOnLanManager = new WakeOnLanManager();
+
+        //isAutoMacAddressEnabled
+        byte[] hwAddress;
+        String macAddress;
+        if (isAutoMacAddressEnabled)
         {
-          var wakeOnLanManager = new WakeOnLanManager();
+          IPAddress ipAddress = null;
 
-          //isAutoMacAddressEnabled
-          byte[] hwAddress;
-          String macAddress;
-          if (isAutoMacAddressEnabled)
+          //Check if we already have a valid IP address stored in RemoteControl.HostName, otherwise try to resolve the IP address
+          if (!IPAddress.TryParse(hostName, out ipAddress))
           {
-            IPAddress ipAddress = null;
-
-            //Check if we already have a valid IP address stored in RemoteControl.HostName,
-            //otherwise try to resolve the IP address
-            if (!IPAddress.TryParse(hostName, out ipAddress))
+            //Get IP address of the NAS server
+            try
             {
-              //Get IP address of the NAS server
-              try
+              IPAddress[] ips = Dns.GetHostAddresses(hostName);
+
+              LogMyFilms.Debug("(HandleWakeUpNas) : WOL - GetHostAddresses({0}) returns:", hostName);
+
+              foreach (IPAddress ip in ips)
               {
-                IPAddress[] ips = Dns.GetHostAddresses(hostName);
-
-                LogMyFilms.Debug("(HandleWakeUpNas) : WOL - GetHostAddresses({0}) returns:", hostName);
-
-                foreach (IPAddress ip in ips)
-                {
-                  LogMyFilms.Debug("    {0}", ip);
-                }
-
-                //Use first valid IP address
-                ipAddress = ips[0];
+                LogMyFilms.Debug("    {0}", ip);
               }
-              catch (Exception ex)
-              {
-                LogMyFilms.Error("(HandleWakeUpNas) : WOL - Failed GetHostAddress - {0}", ex.Message);
-              }
+
+              //Use first valid IP address
+              ipAddress = ips[0];
             }
-
-            //Check for valid IP address
-            if (ipAddress != null)
+            catch (Exception ex)
             {
-              //Update the MAC address if possible
-              hwAddress = wakeOnLanManager.GetHardwareAddress(ipAddress);
+              LogMyFilms.Error("(HandleWakeUpNas) : WOL - Failed GetHostAddress - {0}", ex.Message);
+            }
+          }
 
-              if (wakeOnLanManager.IsValidEthernetAddress(hwAddress))
+          //Check for valid IP address
+          if (ipAddress != null)
+          {
+            //Update the MAC address if possible
+            hwAddress = wakeOnLanManager.GetHardwareAddress(ipAddress);
+
+            if (wakeOnLanManager.IsValidEthernetAddress(hwAddress))
+            {
+              LogMyFilms.Debug("(HandleWakeUpNas) : WOL - Valid auto MAC address: {0:x}:{1:x}:{2:x}:{3:x}:{4:x}:{5:x}", hwAddress[0], hwAddress[1], hwAddress[2], hwAddress[3], hwAddress[4], hwAddress[5]);
+
+              //Store MAC address
+              macAddress = BitConverter.ToString(hwAddress).Replace("-", ":");
+
+              LogMyFilms.Debug("(HandleWakeUpNas) : WOL - Store MAC address: {0}", macAddress);
+
+              using (Settings xmlwriter = new MPSettings())
               {
-                LogMyFilms.Debug("(HandleWakeUpNas) : WOL - Valid auto MAC address: {0:x}:{1:x}:{2:x}:{3:x}:{4:x}:{5:x}"
-                          , hwAddress[0], hwAddress[1], hwAddress[2], hwAddress[3], hwAddress[4], hwAddress[5]);
-
-                //Store MAC address
-                macAddress = BitConverter.ToString(hwAddress).Replace("-", ":");
-
-                LogMyFilms.Debug("(HandleWakeUpNas) : WOL - Store MAC address: {0}", macAddress);
-
-                using (
-                  MediaPortal.Profile.Settings xmlwriter =
-                    new MediaPortal.Profile.MPSettings())
-                {
-                  xmlwriter.SetValue("nas", "macAddress", macAddress);
-                }
+                xmlwriter.SetValue("nas", "macAddress", macAddress);
               }
             }
           }
+        }
 
-          //Use stored MAC address
-          using (MediaPortal.Profile.Settings xmlreader = new MPSettings())
+        //Use stored MAC address
+        using (MediaPortal.Profile.Settings xmlreader = new MPSettings())
+        {
+          macAddress = xmlreader.GetValueAsString("nas", "macAddress", null);
+        }
+
+        LogMyFilms.Debug("(HandleWakeUpNas) : WOL - Use stored MAC address: {0}", macAddress);
+
+        try
+        {
+          hwAddress = wakeOnLanManager.GetHwAddrBytes(macAddress);
+          if (wakeOnLanManager.WakeupSystem(hwAddress, hostName, intTimeOut))
           {
-            macAddress = xmlreader.GetValueAsString("nas", "macAddress", null);
+            LogMyFilms.Info("(HandleWakeUpNas) : WOL - The NAS server started successfully!");
           }
-
-          LogMyFilms.Debug("(HandleWakeUpNas) : WOL - Use stored MAC address: {0}", macAddress);
-
-          try
+          else
           {
-            hwAddress = wakeOnLanManager.GetHwAddrBytes(macAddress);
-
-            //Finally, start up the TV server
-            LogMyFilms.Info("(HandleWakeUpNas) : WOL - Start the NAS server");
-
-            if (wakeOnLanManager.WakeupSystem(hwAddress, hostName, intTimeOut))
-            {
-              LogMyFilms.Info("(HandleWakeUpNas) : WOL - The NAS server started successfully!");
-            }
-            else
-            {
-              LogMyFilms.Error("(HandleWakeUpNas) : WOL - Failed to start the NAS server");
-            }
+            LogMyFilms.Error("(HandleWakeUpNas) : WOL - Failed to start the NAS server");
           }
-          catch (Exception ex)
-          {
-            LogMyFilms.Error("(HandleWakeUpNas) : WOL - Failed to start the NAS server - {0}", ex.Message);
-          }
+        }
+        catch (Exception ex)
+        {
+          LogMyFilms.Error("(HandleWakeUpNas) : WOL - Failed to start the NAS server - {0}", ex.Message);
         }
       }
     }
 
     internal KeyValuePair<string, object>? ShowSelectionDialog(string headline, List<KeyValuePair<string, object>> itemsList)
     {
-      var choiceView = new List<object>();
-      var dlg = (GUIDialogMenu)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_MENU);
+      List<object> choiceView = new List<object>();
+      GUIDialogMenu dlg = (GUIDialogMenu)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_MENU);
       if (dlg == null) return null;
       dlg.Reset();
       dlg.SetHeading(headline);
@@ -10331,23 +10117,27 @@ namespace MyFilmsPlugin.MyFilmsGUI
 
     public static bool ExtendedStartmode(PluginMode pluginMode, string disabledfeature)
     {
+      bool enabled;
       switch (pluginMode)
       {
         case (PluginMode.Test): // for public user testing
-          if (MyFilmsPlugin.MyFilmsGUI.Configuration.PluginMode == "extended") return true; 
-          if (MyFilmsPlugin.MyFilmsGUI.Configuration.PluginMode == "test") return true;
-          else LogMyFilms.Debug("PluginMode: '{0}', disabled feature: '{1}", MyFilmsPlugin.MyFilmsGUI.Configuration.PluginMode, disabledfeature);
-          return false;
+          if (Configuration.PluginMode == "extended") enabled = true; 
+          if (Configuration.PluginMode == "test") enabled = true;
+          enabled = false;
+          break;
 
         case (PluginMode.Extended): // for developer features only - set manually in config
-          if (MyFilmsPlugin.MyFilmsGUI.Configuration.PluginMode == "extended") return true;
-          else LogMyFilms.Debug("PluginMode: '{0}', disabled feature: '{1}", MyFilmsPlugin.MyFilmsGUI.Configuration.PluginMode, disabledfeature);
-          return false;
+          if (Configuration.PluginMode == "extended") enabled = true;
+          enabled = false;
+          break;
 
         case (PluginMode.Normal):
         default:
-          return true;
+          enabled = true;
+          break;
       }
+      if (!enabled) LogMyFilms.Debug("PluginMode: '{0}', disabled feature: '{1}", Configuration.PluginMode, disabledfeature);
+      return enabled;
     }
 
     /// <summary>
@@ -10413,11 +10203,11 @@ namespace MyFilmsPlugin.MyFilmsGUI
       return strUrl;
     }
     /// <summary>
-    /// cuts end of sting after strWord
+    /// cuts end of string after strWord
     /// </summary>
     private static void RemoveAllAfter(ref string strLine, string strWord)
     {
-      int iPos = strLine.IndexOf(strWord, System.StringComparison.Ordinal);
+      int iPos = strLine.IndexOf(strWord, StringComparison.Ordinal);
       if (iPos > 0)
       {
         strLine = strLine.Substring(0, iPos);
@@ -10573,20 +10363,15 @@ namespace MyFilmsPlugin.MyFilmsGUI
       return string.Empty;
     }
 
-    public bool CheckHasLocalSubtitles(List<string> filenames)
+    public bool CheckHasSubtitles(List<string> filenames, bool useMediaInfo = false)
     {
-      return CheckHasSubtitles(filenames, false);
-    }
-
-    public bool CheckHasSubtitles(List<string> filenames, bool useMediaInfo)
-    {
-      if (filenames.Count == 0)
-        return false;
+      if (filenames.Count == 0) return false;
 
       int textCount = -1;
       if (useMediaInfo)
       {
         textCount = 0;
+        // ToDo: add MediaInfo subtitle detection
       }
 
       if (Helper.IsSubCentralAvailableAndEnabled)
@@ -10599,36 +10384,11 @@ namespace MyFilmsPlugin.MyFilmsGUI
 
     private bool checkHasSubtitlesFromSubCentral(List<string> files, bool useMediaInfo, int textCount)
     {
-      LogMyFilms.Debug(string.Format("Using SubCentral for checkHasSubtitles(), useMediaInfo = {0}, textCount = {1}", useMediaInfo.ToString(), textCount.ToString()));
+      LogMyFilms.Debug("Using SubCentral for checkHasSubtitles(), useMediaInfo = {0}, textCount = {1}", useMediaInfo.ToString(), textCount.ToString());
       List<FileInfo> fiFiles = files.Select(file => new FileInfo(file)).ToList();
       bool result = ExternalPlugins::SubCentral.Utils.SubCentralUtils.MediaHasSubtitles(fiFiles, false, textCount, !useMediaInfo);
-      LogMyFilms.Debug(string.Format("SubCentral returned {0}", result));
+      LogMyFilms.Debug("SubCentral returned {0}", result);
       return result;
-    }
-
-    bool isWritable(FileInfo fileInfo)
-    {
-      FileStream stream = null;
-      try
-      {
-        stream = fileInfo.Open(FileMode.Open, FileAccess.ReadWrite, FileShare.None);
-      }
-      catch
-      {
-        return true;
-      }
-      finally
-      {
-        if (stream != null) stream.Close();
-      }
-      return false;
-    }
-
-    public bool isWritable(string file)
-    {
-      if (string.IsNullOrEmpty(file)) return false;
-      var fi = new FileInfo(file);
-      return isWritable(fi);
     }
 
     private void GUIWindowManager_OnNewMessage(GUIMessage message)
@@ -10695,7 +10455,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
         GUIUtils.ShowNotifyDialog("Error", "MissingExternalPlayerExe");
         LogMyFilms.Warn("The external player executable '{0}' is missing.", execPath);
         // do nothing
-        resetPlayer();
+        ResetPlayer();
         return;
       }
 
@@ -10703,7 +10463,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
       string arguments = MyFilms.conf.ExternalPlayerStartParams;
       string videoRoot = Utility.GetMovieBaseDirectory(new FileInfo(videoPath).Directory).FullName;
       string filename = Utility.IsDriveRoot(videoRoot) ? videoRoot : videoPath;
-      double fps = GetFPS(videoPath);
+      double fps = GetFps(videoPath);
       string virtualDrive = DaemonTools.GetVirtualDrive();
       if (virtualDrive.LastIndexOf("\\") != virtualDrive.Length - 1) virtualDrive = virtualDrive.Trim() + "\\";
 
@@ -10761,7 +10521,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
       catch (Exception e)
       {
         LogMyFilms.Error(e, "HD Playback: Could not start the external player process.");
-        resetPlayer();
+        ResetPlayer();
       }
     }
 
@@ -10785,7 +10545,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
       LogMyFilms.Info("HD Playback: The external player has exited.");
     }
 
-    private static void resetPlayer()
+    private static void ResetPlayer()
     {
       //// If we have an image mounted, unmount it
       //if (mountedPlayback)
@@ -10813,7 +10573,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
     /// <summary>
     /// Disable MediaPortal AutoPlay
     /// </summary>
-    private static void disableNativeAutoplay()
+    private static void DisableNativeAutoplay()
     {
       LogMyFilms.Info("Disabling native autoplay.");
       AutoPlay.StopListening();
@@ -10822,7 +10582,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
     /// <summary>
     /// Enable MediaPortal AutoPlay
     /// </summary>
-    private static void enableNativeAutoplay()
+    private static void EnableNativeAutoplay()
     {
       if (GUIGraphicsContext.CurrentState == GUIGraphicsContext.State.RUNNING)
       {
@@ -10834,13 +10594,10 @@ namespace MyFilmsPlugin.MyFilmsGUI
     /// <summary>
     /// Get refresh rate for file
     /// </summary>
-    private static double GetFPS(string file)
+    private static double GetFps(string file)
     {
       LogMyFilms.Debug("GetFPS - Get RefreshRate for file '" + file + "'");
-      if (!File.Exists(file))
-      {
-        return -1;
-      }
+      if (!File.Exists(file)) return -1;
 
       double fps = -1;
       string bdFramerate;
@@ -10885,8 +10642,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
       }
       catch (Exception e)
       {
-        LogMyFilms.Error("GetFPS() - failed to get refresh rate from disk!");
-        LogMyFilms.Error(e, "GetFPS() - exception {0}", e.Message);
+        LogMyFilms.Error(e, "GetFPS() - failed to get refresh rate from disk! Exception {0}", e.Message);
         return -1;
       }
       LogMyFilms.Debug("GetFPS - bdFramerate = '" + bdFramerate + "', -> fps = '" + fps + "'");
@@ -10895,7 +10651,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
 
     #endregion
 
-    public static void AddPersonsToDownloadQueue() // add persons of current movie to download queue
+    private static void AddPersonsToDownloadQueue() // add persons of current movie to download queue
     {
       new Thread(delegate()
       {
@@ -10907,10 +10663,9 @@ namespace MyFilmsPlugin.MyFilmsGUI
             if (MyFilms.conf.UseThumbsForPersons && Directory.Exists(MyFilms.conf.StrPathArtist) && MyFilms.r != null && MyFilms.r.Length > MyFilms.conf.StrIndex)
             {
               string persons = MyFilms.r[MyFilms.conf.StrIndex]["Persons"].ToString();
-              ArrayList wTableau = MyFilms.Search_String(persons);
-              foreach (string personsname in from object t in wTableau select t.ToString())
+              foreach (string personsname in MyFilms.Search_String(persons))
               {
-                if (!(File.Exists(MyFilms.conf.StrPathArtist + "\\" + personsname + ".jpg")))
+                if (!File.Exists(MyFilms.conf.StrPathArtist + "\\" + personsname + ".jpg"))
                 {
                   if (DownloadPersonImage(personsname))
                     LogMyFilms.Debug("Person '" + personsname + "' added to downloadQueue !");
@@ -10919,7 +10674,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
                 }
                 else LogMyFilms.Debug("Person '" + personsname + "' NOT added to downloadQueue - image already exists !");
               }
-              // if (PersonstoDownloadQueue.Count > 0 && !downloadingWorker.IsBusy) downloadingWorker.RunWorkerAsync(); // already doine in submethod !
+              // if (PersonstoDownloadQueue.Count > 0 && !downloadingWorker.IsBusy) downloadingWorker.RunWorkerAsync(); // already done in submethod !
             }
           }
           catch (Exception ex)
@@ -10941,7 +10696,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
     {
       bool added = false;
       // we need to get it, let's queue them up and download in the background
-      var person = new DbPersonInfo { Name = personname };
+      DbPersonInfo person = new DbPersonInfo { Name = personname };
       lock (PersonstoDownloadQueue)
       {
         if (PersonstoDownloadQueue.Any(personInfo => personInfo.Name == personname))
@@ -11028,7 +10783,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
           LogMyFilms.Debug("IMDB - " + personUrls.Count + " person(s) found for '" + personname + "' with person grabber script '" + grabberscript + "'"); 
           if (personUrls.Count > 0)
           {
-            var wurl = (Grabber_URLClass.IMDBUrl)personUrls[0];
+            var wurl = (GrabberUrlClass.IMDBUrl)personUrls[0];
             if (wurl.URL.Length != 0)
             {
               if (item != null) item.Label3 = "Loading IMDB details ...";
@@ -11332,7 +11087,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
         return;
       }
       // var dlg = (GUIDialogMenu)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_MENU);
-      var dlgMenuOrg = (GUIWindow)GUIWindowManager.GetWindow(2012);
+      GUIWindow dlgMenuOrg = (GUIWindow)GUIWindowManager.GetWindow(2012);
       var dlg = new GUIDialogImageSelect();
       if (dlg == null) return;
       dlg.Init();

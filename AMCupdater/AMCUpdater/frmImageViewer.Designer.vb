@@ -1,5 +1,5 @@
 ﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
-Partial Class frmImageViewer
+Partial Class FrmImageViewer
     Inherits System.Windows.Forms.Form
 
     'Das Formular überschreibt den Löschvorgang, um die Komponentenliste zu bereinigen.
@@ -37,7 +37,7 @@ Partial Class frmImageViewer
         Me.PictureBoxImageViewer.TabIndex = 0
         Me.PictureBoxImageViewer.TabStop = False
         '
-        'frmImageViewer
+        'FrmImageViewer
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font

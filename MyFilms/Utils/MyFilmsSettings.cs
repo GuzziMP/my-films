@@ -31,21 +31,20 @@ namespace MyFilmsPlugin.Utils
   static class MyFilmsSettings
   {
     private static NLog.Logger LogMyFilms = NLog.LogManager.GetCurrentClassLogger();  //log
-    //public const bool newAPI = true;
 
     public enum Path
     {
-      log,
-      logBackup,
-      lang,
+      Log,
+      LogBackup,
+      Lang,
       MyFilmsPath,
       MyFilmsThumbsPath,
       ThumbsCache,
       DefaultImages,
       ViewImages,
       GrabberScripts,
-      app,
-      skin
+      App,
+      Skin
     };
 
     public enum MinimumVersion
@@ -88,7 +87,7 @@ namespace MyFilmsPlugin.Utils
         MPVersion = Assembly.GetEntryAssembly().GetName().Version;
         MPSkinVersion = MediaPortal.Common.Utils.CompatibilityManager.SkinVersion;
         BuildDate = GetLinkerTimeStamp(Assembly.GetAssembly(typeof(MyFilmsSettings)).Location);
-        MPBuildDate = GetLinkerTimeStamp(System.IO.Path.Combine(GetPath(Path.app), "MediaPortal.exe"));
+        MPBuildDate = GetLinkerTimeStamp(System.IO.Path.Combine(GetPath(Path.App), "MediaPortal.exe"));
         UserAgent = string.Format("MyFilms{0}/{1}", isConfig ? "Config" : string.Empty, Version);
       }
       catch (Exception)
@@ -167,8 +166,7 @@ namespace MyFilmsPlugin.Utils
 
     public static string UserAgent { get; private set; }
 
-    public static int WebRequestCacheMinutes
-    { get { return 180; } }
+    public static int WebRequestCacheMinutes { get { return 180; } }
 
 
     #endregion
@@ -183,11 +181,11 @@ namespace MyFilmsPlugin.Utils
     {
       switch (path)
       {
-        case Path.log:
+        case Path.Log:
           return logPath;
-        case Path.logBackup:
+        case Path.LogBackup:
           return backupLogPath;
-        case Path.lang:
+        case Path.Lang:
           return langPath;
         case Path.DefaultImages:
           return DefaultImages;
@@ -201,11 +199,12 @@ namespace MyFilmsPlugin.Utils
           return ThumbsCachePath;
         case Path.GrabberScripts:
           return GrabberScripts;
-        case Path.app:
+        case Path.App:
           return apppath;
-        case Path.skin:
+        case Path.Skin:
           return skinPath;
-        default: return string.Empty;
+        default: 
+          return string.Empty;
       }
     }
 
@@ -240,7 +239,7 @@ namespace MyFilmsPlugin.Utils
       }
       catch (Exception ex)
       {
-        LogMyFilms.Error("Error initiating Paths: " + ex.Message);
+        LogMyFilms.Error(ex, "Error initiating Paths: " + ex.Message);
       }
     }
 

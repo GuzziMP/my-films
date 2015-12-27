@@ -26,11 +26,11 @@ namespace Grabber.Util
 
         const string remotedirectory = @"http://code.google.com/p/my-films/source/browse/trunk/Installer/Config/scripts/MyFilms/";
         // ToDo: Add routine to check for all remote files
-        const string ScraperUpdateFile = remotedirectory + "IMDB.xml";
+        const string scraperUpdateFile = remotedirectory + "IMDB.xml";
         string scraperLocalFile = Path.Combine(localscriptpath, @"IMDB.xml");
 
         string localFile = GetTempFilename();
-        if (DownloadFile(ScraperUpdateFile, localFile))
+        if (DownloadFile(scraperUpdateFile, localFile))
         {
           if (!FilesAreEqual(localFile, scraperLocalFile))
           {

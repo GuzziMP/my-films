@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using MediaPortal.GUI.Library;
 
 namespace MyFilmsPlugin.DataBase
 {
@@ -55,7 +54,7 @@ namespace MyFilmsPlugin.DataBase
     {
       get
       {
-        return (Title == string.Empty) || (Title == Strings.Unknown);
+        return (Title == string.Empty) || (Title == "unknown");
       }
     }
 
@@ -139,7 +138,7 @@ namespace MyFilmsPlugin.DataBase
 
     private MFMovie GetCurrentMovie()
     {
-      var movie = new MFMovie
+      MFMovie movie = new MFMovie
         {
           ID = ID,
           Title = Title,
@@ -188,9 +187,9 @@ namespace MyFilmsPlugin.DataBase
     internal string GetStringValue(List<string> input)
     {
       string output = string.Empty;
-      var itemList = input.Select(x => x.Trim()).Where(x => x.Length > 0).Distinct().ToList();
+      List<string> itemList = input.Select(x => x.Trim()).Where(x => x.Length > 0).Distinct().ToList();
       itemList.Sort();
-      foreach (var s in itemList)
+      foreach (string s in itemList)
       {
         if (output.Length > 0) output += ", ";
         output += s;

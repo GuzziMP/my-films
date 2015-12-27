@@ -1,4 +1,4 @@
-﻿Public Class frmImageViewer
+﻿Public Class FrmImageViewer
     Sub main()
 
     End Sub
@@ -8,7 +8,7 @@
     End Sub
 
     Private Sub frmImageViewer_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
-        'Me.AddOwnedForm(frmImageViewer)
+        'Me.AddOwnedForm(FrmImageViewer)
         If My.Settings.ImageFormLocation.X > 0 And My.Settings.ImageFormLocation.Y > 0 And (My.Settings.ImageFormLocation.X + My.Settings.ImageFormSize.Width) < System.Windows.Forms.SystemInformation.VirtualScreen.Width And (My.Settings.ImageFormLocation.Y + My.Settings.ImageFormSize.Height) < Windows.Forms.SystemInformation.VirtualScreen.Height Then
             Me.Location = My.Settings.ImageFormLocation
         End If
@@ -40,7 +40,7 @@
     End Sub
 
     Private Sub frmImageViewer_Enter(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Enter
-        'Me.AddOwnedForm(frmImageViewer)
+        'Me.AddOwnedForm(FrmImageViewer)
         If My.Settings.ImageFormLocation.X > 0 And My.Settings.ImageFormLocation.Y > 0 And (My.Settings.ImageFormLocation.X + My.Settings.ImageFormSize.Width) < System.Windows.Forms.SystemInformation.VirtualScreen.Width And (My.Settings.ImageFormLocation.Y + My.Settings.ImageFormSize.Height) < Windows.Forms.SystemInformation.VirtualScreen.Height Then
             Me.Location = My.Settings.ImageFormLocation
         End If

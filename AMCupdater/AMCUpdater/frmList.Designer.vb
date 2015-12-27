@@ -1,5 +1,5 @@
 <Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
-Partial Class frmList
+Partial Class FrmList
     Inherits System.Windows.Forms.Form
 
     'Form overrides dispose to clean up the component list.
@@ -469,7 +469,7 @@ Partial Class frmList
         Me.pbCoverPreview.TabStop = False
         Me.pbCoverPreview.Visible = False
         '
-        'frmList
+        'FrmList
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font

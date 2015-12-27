@@ -486,13 +486,13 @@ Public Class AntRecord
             If IsInternetLookupNeeded() = True Then
                 wurl.Clear()
                 Dim wpage As Int16 = -1
-                Dim Gb As Grabber_URLClass = New Grabber_URLClass
+                Dim gb As GrabberUrlClass = New GrabberUrlClass
                 While (True)
                     'If _InternetSearchHintIMDB_Id.Length > 0 Then
                     If _internetSearchHintImdbId.Length > 0 And (_dontAskInteractive = True Or _internetLookupAlwaysPrompt = False) Then
-                        wurl = Gb.ReturnURL(_internetSearchHintImdbId, _parserPath, wpage, _internetLookupAlwaysPrompt, _filePath)
+                        wurl = gb.ReturnURL(_internetSearchHintImdbId, _parserPath, wpage, _internetLookupAlwaysPrompt, _filePath)
                         If (wurl.Count = 1) And _internetLookupAlwaysPrompt = False Then
-                            _internetData = Gb.GetDetail(wurl.Item(0).URL, _imagePath, _parserPath, _downloadImage, _grabberOverrideLanguage, _grabberOverridePersonLimit, _grabberOverrideTitleLimit, _grabberOverrideGetRoles)
+                            _internetData = gb.GetDetail(wurl.Item(0).URL, _imagePath, _parserPath, _downloadImage, _grabberOverrideLanguage, _grabberOverridePersonLimit, _grabberOverrideTitleLimit, _grabberOverrideGetRoles)
                             _internetLookupOk = True
                             _lastOutputMessage = SearchString & " - " & " Movie found by imdb hint (" & _internetSearchHintImdbId & ")."
                             If bgwFolderScanUpdate.CancellationPending = True Then
@@ -503,12 +503,12 @@ Public Class AntRecord
                     End If
 
                     wurl.Clear() ' clear to make sure nothing left from tt request ...
-                    wurl = Gb.ReturnURL(SearchString, _parserPath, wpage, True, _filePath) 'wurl = Gb.ReturnURL(SearchString, _parserPath, wpage, _internetLookupAlwaysPrompt, _filePath)
+                    wurl = gb.ReturnURL(SearchString, _parserPath, wpage, True, _filePath) 'wurl = Gb.ReturnURL(SearchString, _parserPath, wpage, _internetLookupAlwaysPrompt, _filePath)
                     If (wurl.Count = 1) And _internetLookupAlwaysPrompt = False Then
 
                         '_InternetData = Gb.GetDetail(wurl.Item(0).URL, _ImagePath, _ParserPath, _downloadImage)
                         '_internetData = Gb.GetDetail(wurl.Item(0).URL, _imagePath, _parserPath, _downloadImage, _grabberOverrideLanguage, _grabberOverridePersonLimit, _grabberOverrideTitleLimit, _grabberOverrideGetRoles)
-                        _internetData = Gb.GetDetail(wurl.Item(0).URL, _imagePath, _parserPath, _downloadImage, _grabberOverrideLanguage, _grabberOverridePersonLimit, _grabberOverrideTitleLimit, _grabberOverrideGetRoles, _filePath)
+                        _internetData = gb.GetDetail(wurl.Item(0).URL, _imagePath, _parserPath, _downloadImage, _grabberOverrideLanguage, _grabberOverridePersonLimit, _grabberOverrideTitleLimit, _grabberOverrideGetRoles, _filePath)
                         _internetLookupOk = True
                         _lastOutputMessage = SearchString & " - " & " Movie found by 'single result' automatch."
 
@@ -557,7 +557,7 @@ Public Class AntRecord
                                         wimdb = wurl.Item(i).IMDB_ID.ToString
                                         wtmdb = wurl.Item(i).TMDB_ID.ToString
                                         If (wimdb = _internetSearchHintImdbId And wimdb.Length > 3) Then
-                                            _internetData = Gb.GetDetail(wurl.Item(i).URL, _imagePath, _parserPath, _downloadImage, _grabberOverrideLanguage, _grabberOverridePersonLimit, _grabberOverrideTitleLimit, _grabberOverrideGetRoles)
+                                            _internetData = gb.GetDetail(wurl.Item(i).URL, _imagePath, _parserPath, _downloadImage, _grabberOverrideLanguage, _grabberOverridePersonLimit, _grabberOverrideTitleLimit, _grabberOverrideGetRoles)
                                             _internetLookupOk = True
                                             _lastOutputMessage = SearchString & " - " & " Movie found by imdb hint (" & _internetSearchHintImdbId & ")."
                                             If bgwFolderScanUpdate.CancellationPending = True Then
@@ -573,7 +573,7 @@ Public Class AntRecord
                                     indexWithOptions = FuzzyMatch(SearchString, wurl, False, searchyearHint, 0, matchingDistanceWithOptions, CountTitleMatch, TitleMatch)
                                     index = FuzzyMatch(SearchString, wurl, True, searchyearHint, 0, matchingDistance, CountTitleMatch, TitleMatch)
                                     If index > -1 And matchingDistance < 3 And matchingDistance <= matchingDistanceWithOptions Then
-                                        _internetData = Gb.GetDetail(wurl.Item(index).URL, _imagePath, _parserPath, _downloadImage, _grabberOverrideLanguage, _grabberOverridePersonLimit, _grabberOverrideTitleLimit, _grabberOverrideGetRoles)
+                                        _internetData = gb.GetDetail(wurl.Item(index).URL, _imagePath, _parserPath, _downloadImage, _grabberOverrideLanguage, _grabberOverridePersonLimit, _grabberOverrideTitleLimit, _grabberOverrideGetRoles)
                                         _internetLookupOk = True
                                         _lastOutputMessage = SearchString & " - " & " Movie found by year hint (" & _internetSearchHintYear & ") and name match (" & TitleMatch & ") with FuzziDistance = '" & matchingDistance.ToString & "' and Optionsfilter 'on'."
                                         If bgwFolderScanUpdate.CancellationPending = True Then
@@ -584,7 +584,7 @@ Public Class AntRecord
 
                                     index = FuzzyMatch(SearchString, wurl, False, searchyearHint, 0, matchingDistance, CountTitleMatch, TitleMatch)
                                     If index > -1 And matchingDistance < 3 Then
-                                        _internetData = Gb.GetDetail(wurl.Item(index).URL, _imagePath, _parserPath, _downloadImage, _grabberOverrideLanguage, _grabberOverridePersonLimit, _grabberOverrideTitleLimit, _grabberOverrideGetRoles)
+                                        _internetData = gb.GetDetail(wurl.Item(index).URL, _imagePath, _parserPath, _downloadImage, _grabberOverrideLanguage, _grabberOverridePersonLimit, _grabberOverrideTitleLimit, _grabberOverrideGetRoles)
                                         _internetLookupOk = True
                                         _lastOutputMessage = SearchString & " - " & " Movie found by year hint (" & _internetSearchHintYear & ") and name match (" & TitleMatch & ") with FuzziDistance = '" & matchingDistance.ToString & "' and Optionsfilter 'off'."
                                         If bgwFolderScanUpdate.CancellationPending = True Then
@@ -595,7 +595,7 @@ Public Class AntRecord
                                 Else
                                     index = FuzzyMatch(SearchString, wurl, True, 0, 0, matchingDistance, CountTitleMatch, TitleMatch)
                                     If index > -1 And matchingDistance < 2 Then
-                                        _internetData = Gb.GetDetail(wurl.Item(index).URL, _imagePath, _parserPath, _downloadImage, _grabberOverrideLanguage, _grabberOverridePersonLimit, _grabberOverrideTitleLimit, _grabberOverrideGetRoles)
+                                        _internetData = gb.GetDetail(wurl.Item(index).URL, _imagePath, _parserPath, _downloadImage, _grabberOverrideLanguage, _grabberOverridePersonLimit, _grabberOverrideTitleLimit, _grabberOverrideGetRoles)
                                         _internetLookupOk = True
                                         _lastOutputMessage = SearchString & " - " & " Movie found by name match (" & TitleMatch & ") with FuzziDistance = '" & matchingDistance.ToString & "' and Optionsfilter 'on'."
                                         If bgwFolderScanUpdate.CancellationPending = True Then
@@ -605,7 +605,7 @@ Public Class AntRecord
                                     End If
                                     index = FuzzyMatch(SearchString, wurl, False, 0, 0, matchingDistance, CountTitleMatch, TitleMatch)
                                     If index > -1 And matchingDistance < 2 Then
-                                        _internetData = Gb.GetDetail(wurl.Item(index).URL, _imagePath, _parserPath, _downloadImage, _grabberOverrideLanguage, _grabberOverridePersonLimit, _grabberOverrideTitleLimit, _grabberOverrideGetRoles)
+                                        _internetData = gb.GetDetail(wurl.Item(index).URL, _imagePath, _parserPath, _downloadImage, _grabberOverrideLanguage, _grabberOverridePersonLimit, _grabberOverrideTitleLimit, _grabberOverrideGetRoles)
                                         _internetLookupOk = True
                                         _lastOutputMessage = SearchString & " - " & " Movie found by name match (" & TitleMatch & ") with FuzziDistance = '" & matchingDistance.ToString & "' and Optionsfilter 'on'."
                                         If bgwFolderScanUpdate.CancellationPending = True Then
@@ -660,7 +660,7 @@ Public Class AntRecord
                                     wOptions = wurl.Item(i).Options.ToString
                                     wmovieurl = wurl.Item(i).URL.ToString
                                     If (_internetSearchHint.Length > 0 And (wdirector.Contains(_internetSearchHint) Or wyear.Contains(_internetSearchHint)) And _internetLookupAlwaysPrompt = False And (wlimityear = False Or wyear = _internetSearchHintYear)) Then
-                                        _internetData = Gb.GetDetail(wurl.Item(i).URL, _imagePath, _parserPath, _downloadImage, _grabberOverrideLanguage, _grabberOverridePersonLimit, _grabberOverrideTitleLimit, _grabberOverrideGetRoles)
+                                        _internetData = gb.GetDetail(wurl.Item(i).URL, _imagePath, _parserPath, _downloadImage, _grabberOverrideLanguage, _grabberOverridePersonLimit, _grabberOverrideTitleLimit, _grabberOverrideGetRoles)
                                         _internetLookupOk = True
                                         If bgwFolderScanUpdate.CancellationPending = True Then
                                             Exit Sub
@@ -697,15 +697,15 @@ Public Class AntRecord
 
                             Dim returnValue As System.Windows.Forms.DialogResult
 
-                            'frmList.Parent = Form1
+                            'FrmList.Parent = Form1
                             returnValue = frmList.ShowDialog()
                             SearchString = frmList.txtSearchString.Text
                             Dim blah4 As Boolean = frmList.chkDontAskAgain.Checked
-                            'Dim wentry As Integer = frmList.lstOptions.SelectedIndex
+                            'Dim wentry As Integer = FrmList.lstOptions.SelectedIndex
                             Dim wentry As Integer = frmList.lstOptionsExt.Rows.GetFirstRow(DataGridViewElementStates.Selected)
 
                             If ((returnValue = Windows.Forms.DialogResult.OK) And (wentry > -1) And frmList.lstOptionsExt("Title", wentry).Value.ToString() = "Movie not found...") Then
-                                'If ((returnValue = Windows.Forms.DialogResult.OK) And (wentry > -1) And frmList.lstOptions.SelectedItem.ToString = "Movie not found...") Then
+                                'If ((returnValue = Windows.Forms.DialogResult.OK) And (wentry > -1) And FrmList.lstOptions.SelectedItem.ToString = "Movie not found...") Then
                                 _internetLookupOk = False
                                 _lastOutputMessage = "Failed to load Internet Data for " & FilePath
                                 Exit While
@@ -722,9 +722,9 @@ Public Class AntRecord
                                         Exit While
                                     End If
                                     If ((returnValue = Windows.Forms.DialogResult.OK) And (wentry > -1) And (frmList.lstOptionsExt("Title", wentry).Value.ToString().Length > 0)) Then
-                                        '_InternetData = Gb.GetDetail(wurl.Item(wentry).url, _ImagePath, frmList.txtTmpParserFilePath.Text, _downloadImage)
-                                        _internetData = Gb.GetDetail(wurl.Item(wentry).url, _imagePath, frmList.txtTmpParserFilePath.Text, _downloadImage, _grabberOverrideLanguage, _grabberOverridePersonLimit, _grabberOverrideTitleLimit, _grabberOverrideGetRoles)
-                                        '_InternetData = Gb.GetDetail(frmList.lstOptionsExt("Weblink", wentry).Value.ToString(), _ImagePath, frmList.txtTmpParserFilePath.Text, _downloadImage, _GrabberOverrideLanguage, _GrabberOverridePersonLimit, _GrabberOverrideTitleLimit, _GrabberOverrideGetRoles)
+                                        '_InternetData = Gb.GetDetail(wurl.Item(wentry).url, _ImagePath, FrmList.txtTmpParserFilePath.Text, _downloadImage)
+                                        _internetData = gb.GetDetail(wurl.Item(wentry).url, _imagePath, frmList.txtTmpParserFilePath.Text, _downloadImage, _grabberOverrideLanguage, _grabberOverridePersonLimit, _grabberOverrideTitleLimit, _grabberOverrideGetRoles)
+                                        '_InternetData = Gb.GetDetail(FrmList.lstOptionsExt("Weblink", wentry).Value.ToString(), _ImagePath, FrmList.txtTmpParserFilePath.Text, _downloadImage, _GrabberOverrideLanguage, _GrabberOverridePersonLimit, _GrabberOverrideTitleLimit, _GrabberOverrideGetRoles)
                                         _internetLookupOk = True
                                         _lastOutputMessage = SearchString & " - " & " Movie found by user's manual selection"
                                         Exit While
@@ -763,7 +763,7 @@ Public Class AntRecord
                                     'If (_InternetSearchHint.Length > 0 And wtitle.Contains(_InternetSearchHint)) Then
                                     If ((wdirector.Contains(_internetSearchHint) Or wyear.Contains(_internetSearchHint))) Then
                                         'Dim datas As String()
-                                        _internetData = Gb.GetDetail(wurl.Item(i).URL, _imagePath, _parserPath, _downloadImage, _grabberOverrideLanguage, _grabberOverridePersonLimit, _grabberOverrideTitleLimit, _grabberOverrideGetRoles)
+                                        _internetData = gb.GetDetail(wurl.Item(i).URL, _imagePath, _parserPath, _downloadImage, _grabberOverrideLanguage, _grabberOverridePersonLimit, _grabberOverrideTitleLimit, _grabberOverrideGetRoles)
                                         'CreateXmlnetInfos(datas)
                                         _internetLookupOk = True
                                         _lastOutputMessage = SearchString & " - " & " Movie found by AMCU internetsearchhint (" & _internetSearchHint & ")."
@@ -788,7 +788,7 @@ Public Class AntRecord
                                         wimdb = wurl.Item(i).IMDB_ID.ToString
                                         wtmdb = wurl.Item(i).TMDB_ID.ToString
                                         If (wimdb = _internetSearchHintImdbId) Then
-                                            _internetData = Gb.GetDetail(wurl.Item(i).URL, _imagePath, _parserPath, _downloadImage, _grabberOverrideLanguage, _grabberOverridePersonLimit, _grabberOverrideTitleLimit, _grabberOverrideGetRoles)
+                                            _internetData = gb.GetDetail(wurl.Item(i).URL, _imagePath, _parserPath, _downloadImage, _grabberOverrideLanguage, _grabberOverridePersonLimit, _grabberOverrideTitleLimit, _grabberOverrideGetRoles)
                                             _internetLookupOk = True
                                             _lastOutputMessage = SearchString & " - " & " Movie found by imdb hint (" & _internetSearchHintImdbId & ")."
                                             If bgwFolderScanUpdate.CancellationPending = True Then
@@ -813,7 +813,7 @@ Public Class AntRecord
                                         End If
                                         Exit While
                                     ElseIf index > -1 And matchingDistance < 5 And matchingDistance <= matchingDistanceWithOptions Then
-                                        _internetData = Gb.GetDetail(wurl.Item(index).URL, _imagePath, _parserPath, _downloadImage, _grabberOverrideLanguage, _grabberOverridePersonLimit, _grabberOverrideTitleLimit, _grabberOverrideGetRoles)
+                                        _internetData = gb.GetDetail(wurl.Item(index).URL, _imagePath, _parserPath, _downloadImage, _grabberOverrideLanguage, _grabberOverridePersonLimit, _grabberOverrideTitleLimit, _grabberOverrideGetRoles)
                                         _internetLookupOk = True
                                         _lastOutputMessage = SearchString & " - " & " Movie found by year hint (" & _internetSearchHintYear & ") and name match (" & TitleMatch & ") with FuzziDistance = '" & matchingDistance.ToString & "' and Optionsfilter 'on'."
                                         If bgwFolderScanUpdate.CancellationPending = True Then
@@ -832,7 +832,7 @@ Public Class AntRecord
                                         End If
                                         Exit While
                                     ElseIf index > -1 And matchingDistance < 5 Then
-                                        _internetData = Gb.GetDetail(wurl.Item(index).URL, _imagePath, _parserPath, _downloadImage, _grabberOverrideLanguage, _grabberOverridePersonLimit, _grabberOverrideTitleLimit, _grabberOverrideGetRoles)
+                                        _internetData = gb.GetDetail(wurl.Item(index).URL, _imagePath, _parserPath, _downloadImage, _grabberOverrideLanguage, _grabberOverridePersonLimit, _grabberOverrideTitleLimit, _grabberOverrideGetRoles)
                                         _internetLookupOk = True
                                         _lastOutputMessage = SearchString & " - " & " Movie found by year hint (" & _internetSearchHintYear & ") and name match (" & TitleMatch & ") with FuzziDistance = '" & matchingDistance.ToString & "' and Optionsfilter 'off'."
                                         If bgwFolderScanUpdate.CancellationPending = True Then
@@ -851,7 +851,7 @@ Public Class AntRecord
                                         End If
                                         Exit While
                                     ElseIf index > -1 And matchingDistance < 3 Then
-                                        _internetData = Gb.GetDetail(wurl.Item(index).URL, _imagePath, _parserPath, _downloadImage, _grabberOverrideLanguage, _grabberOverridePersonLimit, _grabberOverrideTitleLimit, _grabberOverrideGetRoles)
+                                        _internetData = gb.GetDetail(wurl.Item(index).URL, _imagePath, _parserPath, _downloadImage, _grabberOverrideLanguage, _grabberOverridePersonLimit, _grabberOverrideTitleLimit, _grabberOverrideGetRoles)
                                         _internetLookupOk = True
                                         _lastOutputMessage = SearchString & " - " & " Movie found by year hint and close match (+/- 1) (" & _internetSearchHintYear & ") and name match (" & TitleMatch & ") with FuzziDistance = '" & matchingDistance.ToString & "' and Optionsfilter 'on'."
                                         If bgwFolderScanUpdate.CancellationPending = True Then
@@ -870,7 +870,7 @@ Public Class AntRecord
                                         End If
                                         Exit While
                                     ElseIf index > -1 And matchingDistance < 3 Then
-                                        _internetData = Gb.GetDetail(wurl.Item(index).URL, _imagePath, _parserPath, _downloadImage, _grabberOverrideLanguage, _grabberOverridePersonLimit, _grabberOverrideTitleLimit, _grabberOverrideGetRoles)
+                                        _internetData = gb.GetDetail(wurl.Item(index).URL, _imagePath, _parserPath, _downloadImage, _grabberOverrideLanguage, _grabberOverridePersonLimit, _grabberOverrideTitleLimit, _grabberOverrideGetRoles)
                                         _internetLookupOk = True
                                         _lastOutputMessage = SearchString & " - " & " Movie found by year hint and close match (+/- 1) (" & _internetSearchHintYear & ") and name match (" & TitleMatch & ") with FuzziDistance = '" & matchingDistance.ToString & "' and Optionsfilter 'off'."
                                         If bgwFolderScanUpdate.CancellationPending = True Then
@@ -892,7 +892,7 @@ Public Class AntRecord
                                         End If
                                         Exit While
                                     ElseIf index > -1 And matchingDistance < 4 Then
-                                        _internetData = Gb.GetDetail(wurl.Item(index).URL, _imagePath, _parserPath, _downloadImage, _grabberOverrideLanguage, _grabberOverridePersonLimit, _grabberOverrideTitleLimit, _grabberOverrideGetRoles)
+                                        _internetData = gb.GetDetail(wurl.Item(index).URL, _imagePath, _parserPath, _downloadImage, _grabberOverrideLanguage, _grabberOverridePersonLimit, _grabberOverrideTitleLimit, _grabberOverrideGetRoles)
                                         _internetLookupOk = True
                                         _lastOutputMessage = SearchString & " - " & " Movie found by name match (" & TitleMatch & ") with FuzziDistance = '" & matchingDistance.ToString & "' and Optionsfilter 'on'."
                                         If bgwFolderScanUpdate.CancellationPending = True Then
@@ -911,7 +911,7 @@ Public Class AntRecord
                                         End If
                                         Exit While
                                     ElseIf index > -1 And matchingDistance < 4 Then
-                                        _internetData = Gb.GetDetail(wurl.Item(index).URL, _imagePath, _parserPath, _downloadImage, _grabberOverrideLanguage, _grabberOverridePersonLimit, _grabberOverrideTitleLimit, _grabberOverrideGetRoles)
+                                        _internetData = gb.GetDetail(wurl.Item(index).URL, _imagePath, _parserPath, _downloadImage, _grabberOverrideLanguage, _grabberOverridePersonLimit, _grabberOverrideTitleLimit, _grabberOverrideGetRoles)
                                         _internetLookupOk = True
                                         _lastOutputMessage = SearchString & " - " & " Movie found by name match (" & TitleMatch & ") with FuzziDistance = '" & matchingDistance.ToString & "' and Optionsfilter 'on'."
                                         If bgwFolderScanUpdate.CancellationPending = True Then
@@ -1881,7 +1881,7 @@ Public Class AntRecord
                         'use fanart TMDB loader
                         If _internetLookupOk = True And CurrentSettings.Prohibit_Internet_Lookup = False Then
                             Dim fanart As List(Of DbMovieInfo)
-                            Dim Gb As Grabber.Grabber_URLClass = New Grabber.Grabber_URLClass
+                            Dim Gb As Grabber.GrabberUrlClass = New Grabber.GrabberUrlClass
                             fanart = Gb.GetFanart(title, ttitle, year, director, _internetSearchHintImdbId, CurrentSettings.Movie_Fanart_Path, True, False, CurrentSettings.Master_Title, CurrentSettings.Movie_PersonArtwork_Path, CurrentSettings.Movie_Fanart_Number_Limit, CurrentSettings.Movie_Fanart_Resolution_Min, CurrentSettings.Movie_Fanart_Resolution_Max)
                             ' if there is exact = one match ... get backdrops
                             If fanart.Count = 1 Then

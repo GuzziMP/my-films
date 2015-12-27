@@ -1,5 +1,5 @@
 ﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
-Partial Class frmMovieUpdate
+Partial Class FrmMovieUpdate
     Inherits System.Windows.Forms.Form
 
     'Das Formular überschreibt den Löschvorgang, um die Komponentenliste zu bereinigen.
@@ -216,7 +216,7 @@ Partial Class frmMovieUpdate
         Me.tbNew.HeaderText = "New Value"
         Me.tbNew.Name = "tbNew"
         '
-        'frmMovieUpdate
+        'FrmMovieUpdate
         '
         Me.AcceptButton = Me.ButtonOK
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)

@@ -25,7 +25,7 @@ Public Module Module1
 
 
     'Private LogEventNew As NLog.Logger = NLog.LogManager.GetCurrentClassLogger() ' add nlog logging
-    Public watch As Stopwatch = New Stopwatch()
+    Public Watch As Stopwatch = New Stopwatch()
 
     Public Enum EventLogLevel As Integer
         None
@@ -144,9 +144,9 @@ Public Module Module1
     ''' <summary>
     ''' Generates a SHA1-Hash from a given filepath
     ''' </summary>
-    ''' <param name="filePath">path to the file</param>
+    ''' <param name="self">path to the file</param>
     ''' <returns>hash as an hexadecimal string </returns>
-    <System.Runtime.CompilerServices.Extension()>
+    <Runtime.CompilerServices.Extension()>
     Private Function ComputeSHA1Hash(self As FileInfo) As String
         Dim hashHex As String = Nothing
         If self.Exists Then
@@ -445,8 +445,8 @@ Public Module Module1
         End If
 
         'Take a snapshot of the folder contents
-        Dim dir As New System.IO.DirectoryInfo(directory)
-        Dim fileList = dir.GetFiles("*.m2ts", System.IO.SearchOption.AllDirectories)
+        Dim dir As New DirectoryInfo(directory)
+        Dim fileList = dir.GetFiles("*.m2ts", SearchOption.AllDirectories)
 
         ' Return the size of the largest file
         Dim maxSize = Aggregate aFile In fileList Into Max(GetFileLength(aFile))
@@ -1236,10 +1236,10 @@ Public Module Module1
                     'Console.WriteLine(f.Extension)
                     TempString = TempString.Replace(f.Extension, "")
                     'Put this bit in here to remove the '1of2' type bits using the system variable regex expression.
-                    Dim SplitText As New Regex("\(" & CurrentSettings.RegEx_Check_For_MultiPart_Files & "\)")
-                    TempString = SplitText.Replace(TempString, "")
-                    SplitText = New Regex(CurrentSettings.RegEx_Check_For_MultiPart_Files)
-                    TempString = SplitText.Replace(TempString, "")
+                    Dim splitText As New Regex("\(" & CurrentSettings.RegEx_Check_For_MultiPart_Files & "\)")
+                    TempString = splitText.Replace(TempString, "")
+                    splitText = New Regex(CurrentSettings.RegEx_Check_For_MultiPart_Files)
+                    TempString = splitText.Replace(TempString, "")
                     ReturnValue = TempString
 
                 Catch ex As Exception
@@ -1518,7 +1518,7 @@ Public Module Module1
     Public Sub LogEvent(ByVal EventString As String, ByVal LogLevel As EventLogLevel)
 
         If LogLevel = EventLogLevel.WriteBuffer Then
-            'If (Not dgLogWindow.IsHandleCreated And Not dgLogWindow.IsDisposed) Then Return
+            'If (Not DgLogWindow.IsHandleCreated And Not DgLogWindow.IsDisposed) Then Return
             dgLogWindow.txtLogWindow.AppendText(BufferedLogEvents.ToString())
             BufferedLogEvents.Length = 0 '.Remove(0, BufferedLogEvents.Length)
             'Form1.aTimer.Change(Timeout.Infinite, Timeout.Infinite)
@@ -1572,7 +1572,7 @@ Public Module Module1
         End If
 
         If Form1.Visible = True Then
-            'dgLogWindow.txtLogWindow.AppendText(LogText & vbCrLf)
+            'DgLogWindow.txtLogWindow.AppendText(LogText & vbCrLf)
             'LogEventNew.Debug(LogText & vbCrLf)
             BufferedLogEvents.AppendLine(LogText) 'BufferedLogEvents += LogText & vbCrLf
             If watch.Elapsed.TotalMilliseconds > 200 Then

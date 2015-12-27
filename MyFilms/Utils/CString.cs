@@ -97,7 +97,7 @@ namespace MyFilmsPlugin.Utils
     {
       if (source == null) throw new ArgumentNullException("source");
 
-      return source.IndexOf(findText);
+      return source.IndexOf(findText, StringComparison.Ordinal);
     }
 
     /// <summary>Non-static version of function below. Operates on NewString object</summary>

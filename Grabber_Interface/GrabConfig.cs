@@ -305,7 +305,7 @@ namespace Grabber_Interface
         //  TextURL.Text = "http://" + TextURL.Text;
 
         string strSearch = TextSearch.Text;
-        strSearch = GrabUtil.CleanupSearch(strSearch, textSearchCleanup.Text); // cleanup search expression
+        strSearch = GrabUtil.ReplaceNormalOrRegex(strSearch, textSearchCleanup.Text); // cleanup search expression
         if (!strSearch.Contains("\\"))
           strSearch = GrabUtil.EncodeSearch(strSearch, textEncoding.Text);
 
@@ -323,7 +323,7 @@ namespace Grabber_Interface
           Body = "";
           textBody.Text = "";
           listUrl.Clear();
-          listUrl.Add(new Grabber_URLClass.IMDBUrl(absoluteUri, TextSearch.Text + " (AutoRedirect)", null, null));
+          listUrl.Add(new GrabberUrlClass.IMDBUrl(absoluteUri, TextSearch.Text + " (AutoRedirect)", null, null));
 
           dataGridViewSearchResults.Rows.Clear();
           while (dataGridViewSearchResults.Rows.Count > 0)
@@ -332,7 +332,7 @@ namespace Grabber_Interface
           }
           for (int i = 0; i < 1; i++) // only add 1 line ...
           {
-            Grabber_URLClass.IMDBUrl singleUrl = (Grabber_URLClass.IMDBUrl)listUrl[i];
+            GrabberUrlClass.IMDBUrl singleUrl = (GrabberUrlClass.IMDBUrl)listUrl[i];
             Image image = GrabUtil.GetImageFromUrl(singleUrl.Thumb); // Image image = Image.FromFile(wurl.Thumb); // Image smallImage = image.GetThumbnailImage(20, 30, null, IntPtr.Zero);
             dataGridViewSearchResults.Rows.Add(new object[] { (i + 1).ToString(), image, singleUrl.Title, singleUrl.Year, singleUrl.Options, singleUrl.ID, singleUrl.URL, singleUrl.Director, singleUrl.Akas });
 
@@ -350,13 +350,13 @@ namespace Grabber_Interface
 
             //dataGridViewSearchResults.Rows[i].Cells[0].Value = i;
             //dataGridViewSearchResults.Rows[i].Cells[1].Value = image;
-            //dataGridViewSearchResults.Rows[i].Cells[2].Value = ((Grabber_URLClass.IMDBUrl)listUrl[0]).Title;
-            //dataGridViewSearchResults.Rows[i].Cells[3].Value = ((Grabber_URLClass.IMDBUrl)listUrl[0]).Year;
-            //dataGridViewSearchResults.Rows[i].Cells[4].Value = ((Grabber_URLClass.IMDBUrl)listUrl[0]).Options;
-            //dataGridViewSearchResults.Rows[i].Cells[5].Value = ((Grabber_URLClass.IMDBUrl)listUrl[0]).ID;
-            //dataGridViewSearchResults.Rows[i].Cells[6].Value = ((Grabber_URLClass.IMDBUrl)listUrl[0]).URL;
-            //dataGridViewSearchResults.Rows[i].Cells[7].Value = ((Grabber_URLClass.IMDBUrl)listUrl[0]).Director;
-            //dataGridViewSearchResults.Rows[i].Cells[8].Value = ((Grabber_URLClass.IMDBUrl)listUrl[0]).Akas;
+            //dataGridViewSearchResults.Rows[i].Cells[2].Value = ((GrabberUrlClass.IMDBUrl)listUrl[0]).Title;
+            //dataGridViewSearchResults.Rows[i].Cells[3].Value = ((GrabberUrlClass.IMDBUrl)listUrl[0]).Year;
+            //dataGridViewSearchResults.Rows[i].Cells[4].Value = ((GrabberUrlClass.IMDBUrl)listUrl[0]).Options;
+            //dataGridViewSearchResults.Rows[i].Cells[5].Value = ((GrabberUrlClass.IMDBUrl)listUrl[0]).ID;
+            //dataGridViewSearchResults.Rows[i].Cells[6].Value = ((GrabberUrlClass.IMDBUrl)listUrl[0]).URL;
+            //dataGridViewSearchResults.Rows[i].Cells[7].Value = ((GrabberUrlClass.IMDBUrl)listUrl[0]).Director;
+            //dataGridViewSearchResults.Rows[i].Cells[8].Value = ((GrabberUrlClass.IMDBUrl)listUrl[0]).Akas;
           }
 
           if (dataGridViewSearchResults.Rows.Count > 0)
@@ -511,7 +511,7 @@ namespace Grabber_Interface
       cbCertificationPreferredLanguage.Enabled = cbCertificationPreferredLanguage.Items.Count > 0;
 
       // Read Mapping Infos
-      List<string> fields = Grabber_URLClass.FieldList();
+      List<string> fields = GrabberUrlClass.FieldList();
 
       for (int i = 0; i < 40; i++)
       {
@@ -732,7 +732,7 @@ namespace Grabber_Interface
       button_GoDetailPage.Enabled = false;
       button_Preview.Enabled = false;
 
-      Grabber_URLClass grab = new Grabber_URLClass();
+      GrabberUrlClass grab = new GrabberUrlClass();
       int pageNumber = -1;
       if (!string.IsNullOrEmpty(textPage.Text))
         pageNumber = Convert.ToInt16(textPage.Text);
@@ -762,7 +762,7 @@ namespace Grabber_Interface
         //row.Cells[8].Value = wurl.Akas;
         //i = dataGridViewSearchResults.Rows.Add(row); // add row for config
 
-        var wurl = (Grabber_URLClass.IMDBUrl)listUrl[i];
+        var wurl = (GrabberUrlClass.IMDBUrl)listUrl[i];
         Image image = GrabUtil.GetImageFromUrl(wurl.Thumb); // Image image = Image.FromFile(wurl.Thumb); // Image smallImage = image.GetThumbnailImage(20, 30, null, IntPtr.Zero);
         dataGridViewSearchResults.Rows.Add(new object[] { (i + 1).ToString(), image, wurl.Title, wurl.Year, wurl.Options, wurl.ID, wurl.URL, wurl.Director, wurl.Akas });
 
@@ -3066,7 +3066,7 @@ namespace Grabber_Interface
           case "+++":
             {
               textPage.Text = Convert.ToString(Convert.ToInt16(textPage.Text) + Convert.ToInt16(textStepPage.Text));
-              Grabber_URLClass.IMDBUrl wurl = (Grabber_URLClass.IMDBUrl)listUrl[rowSelected];
+              GrabberUrlClass.IMDBUrl wurl = (GrabberUrlClass.IMDBUrl)listUrl[rowSelected];
               Load_Preview(true); // always ask - was false in earlier versions ...
               button_GoDetailPage.Enabled = false;
             }
@@ -3074,7 +3074,7 @@ namespace Grabber_Interface
           case "---":
             {
               textPage.Text = Convert.ToString(Convert.ToInt16(textPage.Text) - Convert.ToInt16(textStepPage.Text));
-              Grabber_URLClass.IMDBUrl wurl = (Grabber_URLClass.IMDBUrl)listUrl[rowSelected];
+              GrabberUrlClass.IMDBUrl wurl = (GrabberUrlClass.IMDBUrl)listUrl[rowSelected];
               Load_Preview(true); // always ask - gives all results - was "false" in earlier versions
               button_GoDetailPage.Enabled = false;
             }
@@ -3082,7 +3082,7 @@ namespace Grabber_Interface
           default:
             {
               File.Delete(textConfig.Text + ".tmp");
-              Grabber_URLClass.IMDBUrl wurl = (Grabber_URLClass.IMDBUrl)listUrl[rowSelected];
+              GrabberUrlClass.IMDBUrl wurl = (GrabberUrlClass.IMDBUrl)listUrl[rowSelected];
               TextURLDetail.Text = wurl.URL;
               EventArgs ea = new EventArgs();
               ButtonLoad_Click(Button_Load_URL, ea);
@@ -3111,7 +3111,7 @@ namespace Grabber_Interface
       labelImageSize.Text = "";
 
       SaveXml(textConfig.Text + ".tmp");
-      Grabber_URLClass grab = new Grabber_URLClass();
+      GrabberUrlClass grab = new GrabberUrlClass();
       string[] result = new string[80];
 
       try // http://akas.imdb.com/title/tt0133093/
@@ -4749,7 +4749,7 @@ namespace Grabber_Interface
 
     private void InitMappingTable()
     {
-      List<string> fields = Grabber_URLClass.FieldList();
+      List<string> fields = GrabberUrlClass.FieldList();
       for (int i = 0; i < 40; i++)
       {
         Fields[i] = fields[i];
@@ -4834,7 +4834,7 @@ namespace Grabber_Interface
       {
         if (TextURL.Text.StartsWith("http://") == false) TextURL.Text = "http://" + TextURL.Text;
         string strSearch = TextSearch.Text;
-        strSearch = GrabUtil.CleanupSearch(strSearch, textSearchCleanup.Text);
+        strSearch = GrabUtil.ReplaceNormalOrRegex(strSearch, textSearchCleanup.Text);
         strSearch = GrabUtil.EncodeSearch(strSearch, textEncoding.Text);
         string wurl = TextURL.Text.Replace("#Search#", strSearch);
         wurl = wurl.Replace("#page#", textPage.Text);

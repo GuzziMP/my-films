@@ -106,8 +106,9 @@
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="TMDbLib">
+    <Reference Include="TMDbLib, Version=0.7.7.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\TMDbLib.0.7.7\lib\net40\TMDbLib.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Utils, Version=1.6.0.0, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
@@ -131,6 +132,7 @@
       <DependentUpon>GrabberScript.xsd</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="GrabDetail.cs" />
     <Compile Include="GrabUtil.cs" />
     <Compile Include="Importer\DeviceManager.cs" />
     <Compile Include="Importer\DriveInfoExtensions.cs" />
@@ -253,6 +255,7 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="Data\GrabberScript.xsc">
       <DependentUpon>GrabberScript.xsd</DependentUpon>
     </None>

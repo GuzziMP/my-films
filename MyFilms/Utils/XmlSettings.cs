@@ -24,58 +24,8 @@ using System.Globalization;
 using System.IO;
 using MediaPortal.Profile;
 
-//using MediaPortal.GUI.Library;
-
 namespace MyFilmsPlugin.Utils
 {
-  ///// <summary>
-  ///// MPSettings allows to read and write MediaPortal.xml configuration file
-  ///// (wrapper class to unify path handling)
-  ///// </summary>
-  //public class MPSettings : Settings
-  //{
-  //  private static string _configPathName;
-
-  //  public static string ConfigPathName
-  //  {
-  //    get
-  //    {
-  //      if (string.IsNullOrEmpty(_configPathName))
-  //      {
-  //        _configPathName = Configuration.Config.GetFile(Configuration.Config.Dir.Config, "MediaPortal.xml");
-  //      }
-  //      return _configPathName;
-  //    }
-  //    set
-  //    {
-  //      if (string.IsNullOrEmpty(_configPathName))
-  //      {
-  //        _configPathName = value;
-  //        if (!Path.IsPathRooted(_configPathName))
-  //        {
-  //          _configPathName = Configuration.Config.GetFile(Configuration.Config.Dir.Config, _configPathName);
-  //        }
-  //      }
-  //      else
-  //      {
-  //        throw new InvalidOperationException("ConfigPathName already has a value.");
-  //      }
-  //    }
-  //  }
-
-  //  private static MPSettings _instance;
-
-  //  public static MPSettings Instance
-  //  {
-  //    get { return _instance ?? (_instance = new MPSettings()); }
-  //  }
-
-  //  // public constructor should be made/private protected, we should encourage the usage of Instance
-
-  //  public MPSettings()
-  //    : base(ConfigPathName) {}
-  //}
-
   /// <summary>
   /// Settings allows to read and write any xml configuration file
   /// </summary>
@@ -93,28 +43,10 @@ namespace MyFilmsPlugin.Utils
       if (xmlDoc == null)
       {
         xmlDoc = new CacheSettingsProvider(new XmlSettingsProvider(fileName));
-
-        if (_isCached)
+        if (_isCached) 
           xmlCache.Add(xmlFileName, xmlDoc);
       }
     }
-
-    //// Recover install MediaPortal path
-    //public string PathInstalMP()
-    //{
-    //  string path = Config.GetFolder(Config.Dir.Config);
-    //  return path;
-    //}
-
-    //// Build entire filename of config file
-    //public string EntireFilenameConfig(string FileName)
-    //{
-    //  if (FileName.Contains(":\\"))
-    //    return FileName;
-    //  string entirefilename = PathInstalMP() + @"\" + FileName + ".xml";
-    //  return entirefilename;
-    //}
-
 
     public string GetValue(string section, string entry)
     {
@@ -128,8 +60,7 @@ namespace MyFilmsPlugin.Utils
       return string.IsNullOrEmpty(strValue) ? defaultValue : conv(strValue);
     }
 
-    //ReadXmlConfig
-
+    
     public string GetValueAsString(string section, string entry, string strDefault)
     {
       return GetValueOrDefault(section, entry, val => val, strDefault);
@@ -175,19 +106,19 @@ namespace MyFilmsPlugin.Utils
       return fDefault;
     }
 
-    public string ReadXmlConfig(string FileName, string section, string entry, string strDefault)
+    public string ReadXmlConfig(string fileName, string section, string entry, string strDefault)
     {
       return GetValueOrDefault(section, entry, val => val, strDefault);
     }
 
-    public bool ReadXmlConfig(string FileName, string section, string entry, bool bDefault)
+    public bool ReadXmlConfig(string fileName, string section, string entry, bool bDefault)
     {
       return GetValueOrDefault(section, entry,
                                val => val.Equals("yes", StringComparison.InvariantCultureIgnoreCase),
                                bDefault);
     }
 
-    public int ReadXmlConfig(string FileName, string section, string entry, int iDefault)
+    public int ReadXmlConfig(string fileName, string section, string entry, int iDefault)
     {
       return GetValueOrDefault(section, entry,
                                val =>
@@ -197,7 +128,7 @@ namespace MyFilmsPlugin.Utils
                                }, iDefault);
     }
 
-    public void WriteXmlConfig(string FileName, string section, string entry, object objValue)
+    public void WriteXmlConfig(string fileName, string section, string entry, object objValue)
     {
       SetValue(section, entry, objValue);
     }
@@ -207,7 +138,7 @@ namespace MyFilmsPlugin.Utils
       xmlDoc.SetValue(section, entry, objValue);
     }
 
-    public void WriteXmlConfig(string FileName, string section, string entry, bool bValue)
+    public void WriteXmlConfig(string fileName, string section, string entry, bool bValue)
     {
       SetValueAsBool(section, entry, bValue);
     }
@@ -217,7 +148,7 @@ namespace MyFilmsPlugin.Utils
       SetValue(section, entry, bValue ? "yes" : "no");
     }
 
-    public void RemoveEntry(string FileName, string section, string entry)
+    public void RemoveEntry(string fileName, string section, string entry)
     {
       xmlDoc.RemoveEntry(section, entry);
     }

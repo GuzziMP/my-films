@@ -3,25 +3,25 @@ Imports Grabber
 Imports MediaPortal.Configuration
 Imports Grabber.Util
 
-Public Class frmList
+Public Class FrmList
 
     Dim DialogRename As New DialogRename()
     Private SearchTextChanged As Boolean = False
 
-    Private Sub lstOptionsExt_DoubleClick(ByVal sender As Object, ByVal e As System.EventArgs) Handles lstOptionsExt.DoubleClick
+    Private Sub lstOptionsExt_DoubleClick(ByVal sender As Object, ByVal e As EventArgs) Handles lstOptionsExt.DoubleClick
         Me.DialogResult = Windows.Forms.DialogResult.OK
     End Sub
 
-    Private Sub btnSearchAgain_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnSearchAgain.Click
+    Private Sub btnSearchAgain_Click(ByVal sender As System.Object, ByVal e As EventArgs) Handles btnSearchAgain.Click
         Dim distance As String
         btnSearchAgain.Enabled = False
         lstOptionsExt.Rows.Clear()
         'lstOptionsExt.Rows.Add(New String() {Nothing, "... now searching for results ...", "", "", "", "", "", ""})
         'Thread.Sleep(5)
         If txtSearchString.Text <> "" Then
-            Dim Gb As Grabber.Grabber_URLClass = New Grabber.Grabber_URLClass
+            Dim gb As Grabber.GrabberUrlClass = New GrabberUrlClass
             wurl.Clear()
-            wurl = Gb.ReturnURL(txtSearchString.Text, txtTmpParserFilePath.Text, -1, True, String.Empty) 'wurl = Gb.ReturnURL(txtSearchString.Text, txtTmpParserFilePath.Text, -1, CurrentSettings.Internet_Lookup_Always_Prompt)
+            wurl = gb.ReturnURL(txtSearchString.Text, txtTmpParserFilePath.Text, -1, True, String.Empty) 'wurl = Gb.ReturnURL(txtSearchString.Text, txtTmpParserFilePath.Text, -1, CurrentSettings.Internet_Lookup_Always_Prompt)
             lstOptionsExt.Rows.Clear()
             If (wurl.Count > 0) Then
                 For i As Integer = 0 To wurl.Count - 1
@@ -54,12 +54,12 @@ Public Class frmList
 
     Private Sub btnSearchAgainWithIMDB_Id_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnSearchAgainWithIMDB_Id.Click
         If txtSearchhintIMDB_Id.Text <> "" And txtSearchhintIMDB_Id.Text.StartsWith("tt") Then
-            Dim Gb As Grabber.Grabber_URLClass = New Grabber.Grabber_URLClass
+            Dim gb As Grabber.GrabberUrlClass = New Grabber.GrabberUrlClass
             'Dim wurl As ArrayList
             lstOptionsExt.Rows.Clear()
             lstOptionsExt.Rows.Add(New Object() {Nothing, "... now searching for results ...", "", "", "", "", "", ""})
             wurl.Clear()
-            wurl = Gb.ReturnURL(txtSearchhintIMDB_Id.Text, txtTmpParserFilePath.Text, 1, True, String.Empty) 'wurl = Gb.ReturnURL(txtSearchhintIMDB_Id.Text, txtTmpParserFilePath.Text, 1, CurrentSettings.Internet_Lookup_Always_Prompt)
+            wurl = gb.ReturnURL(txtSearchhintIMDB_Id.Text, txtTmpParserFilePath.Text, 1, True, String.Empty) 'wurl = Gb.ReturnURL(txtSearchhintIMDB_Id.Text, txtTmpParserFilePath.Text, 1, CurrentSettings.Internet_Lookup_Always_Prompt)
             lstOptionsExt.Rows.Clear()
             If (wurl.Count > 0) Then
                 For i As Integer = 0 To wurl.Count - 1
@@ -79,17 +79,17 @@ Public Class frmList
             MsgBox("There must be a valid IMDB-Id (ttxxxxxxx) present!", MsgBoxStyle.OkOnly)
         End If
     End Sub
-    Private Sub btnDontAskAgain_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnDontAskAgain.Click
+    Private Sub btnDontAskAgain_Click(ByVal sender As System.Object, ByVal e As EventArgs) Handles btnDontAskAgain.Click
         'Add to xml file to ignore in future scans:
-        Me.chkDontAskAgain.Checked() = True
-        Me.DialogResult = Windows.Forms.DialogResult.Ignore
+        chkDontAskAgain.Checked() = True
+        DialogResult = Windows.Forms.DialogResult.Ignore
     End Sub
 
-    Private Sub btnSelectParserFile_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnSelectParserFile.Click
-        Dim OpenParserFileDialog = New System.Windows.Forms.OpenFileDialog
+    Private Sub btnSelectParserFile_Click(ByVal sender As System.Object, ByVal e As EventArgs) Handles btnSelectParserFile.Click
+        Dim OpenParserFileDialog = New Windows.Forms.OpenFileDialog
         Try
             With OpenParserFileDialog
-                If System.IO.Directory.Exists(Config.GetDirectoryInfo(Config.Dir.Config).ToString & "\scripts\MyFilms") Then
+                If Directory.Exists(Config.GetDirectoryInfo(Config.Dir.Config).ToString & "\scripts\MyFilms") Then
                     .InitialDirectory = Config.GetDirectoryInfo(Config.Dir.Config).ToString & "\scripts\MyFilms"
                 Else
                     .InitialDirectory = Environment.SpecialFolder.Desktop
@@ -119,12 +119,12 @@ Public Class frmList
             End With
         Catch ex As Exception
             LogEvent("ErrorEvent : " + ex.Message, EventLogLevel.ErrorEvent)
-            MsgBox(ex.Message, MsgBoxStyle.Exclamation, Me.Text)
+            MsgBox(ex.Message, MsgBoxStyle.Exclamation, Text)
         End Try
     End Sub
 
-    Private Sub btnCancel_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnCancel.Click
-        Me.DialogResult = Windows.Forms.DialogResult.Cancel
+    Private Sub btnCancel_Click(ByVal sender As System.Object, ByVal e As EventArgs) Handles btnCancel.Click
+        DialogResult = Windows.Forms.DialogResult.Cancel
     End Sub
 
     Private Sub txtSearchString_KeyPress(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyPressEventArgs) Handles txtSearchString.KeyPress
@@ -147,19 +147,19 @@ Public Class frmList
         End If
     End Sub
 
-    Private Sub frmList_KeyDown(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles Me.KeyDown
+    Private Sub frmList_KeyDown(ByVal sender As Object, ByVal e As Windows.Forms.KeyEventArgs) Handles Me.KeyDown
         'Console.WriteLine(e.KeyCode.ToString)
         If e.KeyCode = Windows.Forms.Keys.Up Or e.KeyCode = Windows.Forms.Keys.Down Then
-            Dim rowSelected As Int32 = Me.lstOptionsExt.Rows.GetFirstRow(DataGridViewElementStates.Selected)
+            Dim rowSelected As Int32 = lstOptionsExt.Rows.GetFirstRow(DataGridViewElementStates.Selected)
             If e.KeyCode = Windows.Forms.Keys.Up Then
                 If rowSelected > 0 Then
-                    Me.lstOptionsExt.Rows(rowSelected).Selected = False
-                    Me.lstOptionsExt.Rows(rowSelected - 1).Selected = True
+                    lstOptionsExt.Rows(rowSelected).Selected = False
+                    lstOptionsExt.Rows(rowSelected - 1).Selected = True
                 End If
             ElseIf e.KeyCode = Windows.Forms.Keys.Down Then
-                If rowSelected < Me.lstOptionsExt.Rows.Count - 1 Then
-                    Me.lstOptionsExt.Rows(rowSelected).Selected = False
-                    Me.lstOptionsExt.Rows(rowSelected + 1).Selected = True
+                If rowSelected < lstOptionsExt.Rows.Count - 1 Then
+                    lstOptionsExt.Rows(rowSelected).Selected = False
+                    lstOptionsExt.Rows(rowSelected + 1).Selected = True
                 End If
             End If
             e.Handled = True
@@ -172,7 +172,7 @@ Public Class frmList
         Me.btnSearchAllPages.Enabled = True
     End Sub
 
-    Private Sub ButtonGrabberOptions_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ButtonGrabberOptions.Click
+    Private Sub ButtonGrabberOptions_Click(ByVal sender As System.Object, ByVal e As EventArgs) Handles ButtonGrabberOptions.Click
         Using p = New Process
             Dim psi As New ProcessStartInfo
             psi.FileName = Config.GetDirectoryInfo(Config.Dir.Base).ToString & "\MyFilms_Grabber_Interface.exe"
@@ -192,7 +192,7 @@ Public Class frmList
 
     End Sub
 
-    Private Sub btnCancelFromDialog_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnCancelFromDialog.Click
+    Private Sub btnCancelFromDialog_Click(ByVal sender As System.Object, ByVal e As EventArgs) Handles btnCancelFromDialog.Click
         'Me.DialogResult = Windows.Forms.DialogResult.Cancel
         Me.DialogResult = Windows.Forms.DialogResult.Abort
         'Dim AntProc As New AntProcessor
@@ -201,7 +201,7 @@ Public Class frmList
         'Form1.btnCancelProcessing.Enabled = False
     End Sub
 
-    Private Sub txtSearchhintIMDB_Id_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles txtSearchhintIMDB_Id.TextChanged
+    Private Sub txtSearchhintIMDB_Id_TextChanged(ByVal sender As System.Object, ByVal e As EventArgs) Handles txtSearchhintIMDB_Id.TextChanged
         If txtSearchhintIMDB_Id.Text <> "" Then
             btnSearchAgainWithIMDB_Id.Enabled = True
         Else
@@ -209,20 +209,20 @@ Public Class frmList
         End If
     End Sub
 
-    Private Sub txtSearchString_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles txtSearchString.TextChanged
+    Private Sub txtSearchString_TextChanged(ByVal sender As System.Object, ByVal e As EventArgs) Handles txtSearchString.TextChanged
         btnSearchAgain.Enabled = True
         btnSearchAllPages.Enabled = True
     End Sub
 
-    Private Sub txtTmpParserFilePathShort_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles txtTmpParserFilePathShort.TextChanged
+    Private Sub txtTmpParserFilePathShort_TextChanged(ByVal sender As System.Object, ByVal e As EventArgs) Handles txtTmpParserFilePathShort.TextChanged
         btnSearchAgain.Enabled = True
         btnSearchAllPages.Enabled = True
     End Sub
 
-    Private Sub lstOptionsExt_CellContentClick(ByVal sender As System.Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles lstOptionsExt.CellContentClick
+    Private Sub lstOptionsExt_CellContentClick(ByVal sender As System.Object, ByVal e As Windows.Forms.DataGridViewCellEventArgs) Handles lstOptionsExt.CellContentClick
         Try
             If (e.ColumnIndex = Me.lstOptionsExt.Columns("Weblink").Index) Then
-                Dim Filepath As String = Me.lstOptionsExt("Weblink", e.RowIndex).Value.ToString()
+                Dim Filepath As String = lstOptionsExt("Weblink", e.RowIndex).Value.ToString()
                 'WebBrowserPreview.Url = New System.Uri(Filepath)
                 'WebBrowserPreview.Refresh()
 
@@ -250,35 +250,35 @@ Public Class frmList
         Catch ex As Exception
         End Try
     End Sub
-    Private Sub lstOptionsExt_CellMouseEnter(ByVal sender As System.Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles lstOptionsExt.CellMouseEnter
+    Private Sub lstOptionsExt_CellMouseEnter(ByVal sender As System.Object, ByVal e As Windows.Forms.DataGridViewCellEventArgs) Handles lstOptionsExt.CellMouseEnter
         Try
             'e.RowIndex, e.ColumnIndex
-            If Me.lstOptionsExt("Thumb", e.RowIndex).Value IsNot Nothing Then
+            If lstOptionsExt("Thumb", e.RowIndex).Value IsNot Nothing Then
                 Label3.Visible = False
                 Label4.Visible = False
                 LabelSourcePath.Visible = False
                 pbCoverPreview.Visible = True
-                pbCoverPreview.Image = Me.lstOptionsExt("Thumb", e.RowIndex).Value
+                pbCoverPreview.Image = lstOptionsExt("Thumb", e.RowIndex).Value
             End If
-            If e.ColumnIndex = Me.lstOptionsExt.Columns("AKA").Index And Me.lstOptionsExt("AKA", e.RowIndex).Value IsNot Nothing Then
+            If e.ColumnIndex = lstOptionsExt.Columns("AKA").Index And Me.lstOptionsExt("AKA", e.RowIndex).Value IsNot Nothing Then
                 Dim TooltipMovieInfo As String = ""
-                Dim AkaTitles As String() = Me.lstOptionsExt("AKA", e.RowIndex).Value.Split(New Char() {"|"}, StringSplitOptions.RemoveEmptyEntries)
+                Dim AkaTitles As String() = lstOptionsExt("AKA", e.RowIndex).Value.Split(New Char() {"|"}, StringSplitOptions.RemoveEmptyEntries)
                 For Each AkaTitle As String In AkaTitles
                     If TooltipMovieInfo.Length > 0 Then
                         TooltipMovieInfo = TooltipMovieInfo + vbCrLf
                     End If
                     TooltipMovieInfo = TooltipMovieInfo + AkaTitle.Trim
                 Next
-                Me.lstOptionsExt("AKA", e.RowIndex).ToolTipText = TooltipMovieInfo
-                'Me.ToolTipImportDialog.ToolTipTitle = "Movie Details ..."
-                'Me.ToolTipImportDialog.Show(TooltipMovieInfo, Me.lstOptionsExt.Columns("AKA"))
+                lstOptionsExt("AKA", e.RowIndex).ToolTipText = TooltipMovieInfo
+                'ToolTipImportDialog.ToolTipTitle = "Movie Details ..."
+                'ToolTipImportDialog.Show(TooltipMovieInfo, lstOptionsExt.Columns("AKA"))
             Else
-                Me.lstOptionsExt("AKA", e.RowIndex).ToolTipText = ""
+                lstOptionsExt("AKA", e.RowIndex).ToolTipText = ""
             End If
         Catch ex As Exception
         End Try
     End Sub
-    Private Sub lstOptionsExt_CellMouseLeave(ByVal sender As System.Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles lstOptionsExt.CellMouseLeave
+    Private Sub lstOptionsExt_CellMouseLeave(ByVal sender As System.Object, ByVal e As Windows.Forms.DataGridViewCellEventArgs) Handles lstOptionsExt.CellMouseLeave
         Label3.Visible = True
         Label4.Visible = True
         LabelSourcePath.Visible = True
@@ -287,7 +287,7 @@ Public Class frmList
         'Me.ToolTipImportDialog.Hide(Me.lstOptionsExt.Columns("AKA"))
     End Sub
 
-    Private Sub btnSearchGoogle_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnSearchGoogle.Click
+    Private Sub btnSearchGoogle_Click(ByVal sender As System.Object, ByVal e As EventArgs) Handles btnSearchGoogle.Click
         Dim t As String = txtSearchString.Text & " (" & txtSearchintYear.Text & ")"
         Try
             'WebBrowserPreview.Url = New System.Uri(txtSearchintYear.Text)
@@ -297,7 +297,7 @@ Public Class frmList
         End Try
     End Sub
 
-    Private Sub btnRenameAndCancel_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnRenameAndCancel.Click
+    Private Sub btnRenameAndCancel_Click(ByVal sender As System.Object, ByVal e As EventArgs) Handles btnRenameAndCancel.Click
         ' launches Rename Dialog and "ignores" file for later import after rescanning
         Dim currentPathAllFiles As String = ""
         Dim currentPathFull As String = ""
@@ -358,7 +358,7 @@ Public Class frmList
             End With
         Catch ex As Exception
             LogEvent("ErrorEvent : " + ex.Message, EventLogLevel.ErrorEvent)
-            MsgBox(ex.Message, MsgBoxStyle.Exclamation, Me.Text)
+            MsgBox(ex.Message, MsgBoxStyle.Exclamation, Text)
         End Try
         Me.ValidateChildren()
     End Sub
@@ -384,11 +384,11 @@ Public Class frmList
         If txtSearchString.Text <> "" Then
             lstOptionsExt.Rows.Clear()
             wurl.Clear()
-            Dim Gb As Grabber.Grabber_URLClass = New Grabber.Grabber_URLClass
+            Dim gb As Grabber.GrabberUrlClass = New Grabber.GrabberUrlClass
             While SearchPage < 25
                 SearchPage += 1
                 pageurl.Clear()
-                pageurl = Gb.ReturnURL(txtSearchString.Text, txtTmpParserFilePath.Text, SearchPage, True, String.Empty) 'pageurl = Gb.ReturnURL(txtSearchString.Text, txtTmpParserFilePath.Text, SearchPage, CurrentSettings.Internet_Lookup_Always_Prompt)
+                pageurl = gb.ReturnURL(txtSearchString.Text, txtTmpParserFilePath.Text, SearchPage, True, String.Empty) 'pageurl = Gb.ReturnURL(txtSearchString.Text, txtTmpParserFilePath.Text, SearchPage, CurrentSettings.Internet_Lookup_Always_Prompt)
                 If (pageurl.Count > 0) Then
                     wurl.AddRange(pageurl)
                 ElseIf (SearchPage > 1) Then ' If no results AND page is 2 or bigger, stop loop

@@ -54,7 +54,7 @@ namespace MyFilmsPlugin.Utils
     {
     }
 
-    static public void Dispose()
+    public static void Dispose()
     {
       if (_stringProvider != null)
         _stringProvider.Dispose();
@@ -71,7 +71,7 @@ namespace MyFilmsPlugin.Utils
     /// false when it was unable to load the text
     /// </returns>
     //[Obsolete("This method has changed", true)]
-    static public bool Load(string language)
+    public static bool Load(string language)
     {
       bool isPrefixEnabled = true;
 
@@ -95,7 +95,7 @@ namespace MyFilmsPlugin.Utils
       return true;
     }
 
-    static public string CurrentLanguage()
+    public static string CurrentLanguage()
     {
       //string Lang;
       //try
@@ -110,7 +110,7 @@ namespace MyFilmsPlugin.Utils
       return _stringProvider.CurrentLanguage.EnglishName;
     }
 
-    static public void ChangeLanguage(string language)
+    public static void ChangeLanguage(string language)
     {
       if (_stringProvider == null)
         Load(language);
@@ -127,7 +127,7 @@ namespace MyFilmsPlugin.Utils
     /// <returns>
     /// string containing the translated text
     /// </returns>
-    static public string Get(int dwCode, object[] parameters)
+    public static string Get(int dwCode, object[] parameters)
     {
       if (_stringProvider == null)
         Load(null);
@@ -160,7 +160,7 @@ namespace MyFilmsPlugin.Utils
     /// <returns>
     /// string containing the translated text
     /// </returns>
-    static public string Get(int dwCode)
+    public static string Get(int dwCode)
     {
       if (_stringProvider == null)
         Load(null);
@@ -176,7 +176,7 @@ namespace MyFilmsPlugin.Utils
       return translation;
     }
 
-    static public void LocalizeLabel(ref string strLabel)
+    public static void LocalizeLabel(ref string strLabel)
     {
       if (_stringProvider == null)
         Load(null);
@@ -193,7 +193,7 @@ namespace MyFilmsPlugin.Utils
 
       try
       {
-        dwLabelID = System.Int32.Parse(strLabel);
+        dwLabelID = Int32.Parse(strLabel);
       }
       catch (FormatException e)
       {

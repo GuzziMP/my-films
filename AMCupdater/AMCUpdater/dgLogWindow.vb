@@ -1,6 +1,6 @@
 Imports System.Windows.Forms
 
-Public Class dgLogWindow
+Public Class DgLogWindow
 
     Private Sub dgLogWindow_Disposed(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Disposed
         Form1.btnShowHideLog.Text = "Show Log >>"
@@ -13,6 +13,6 @@ Public Class dgLogWindow
 
         'Me.SetDesktopLocation(Form1.Location.X + Form1.Width, Form1.Location.Y)
         'Me.Height = Form1.Height
-        ''dgLogWindow.SetDesktopLocation(Me.Location.X + Me.Width, Me.Location.Y)
+        ''DgLogWindow.SetDesktopLocation(Me.Location.X + Me.Width, Me.Location.Y)
     End Sub
 End Class

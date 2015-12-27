@@ -48,7 +48,7 @@ namespace MyFilmsPlugin.Utils
   {
     public static bool IsNumerical(this string number)
     {
-      double isNumber = 0;
+      double isNumber;
       return Double.TryParse(number, out isNumber);
     }
 
@@ -433,6 +433,36 @@ namespace MyFilmsPlugin.Utils
       { return t.Hours.ToString("0") + ":" + t.Minutes.ToString("00") + ":" + t.Seconds.ToString("00"); }
       //cs1 playtimes < 1 hour -> MM:SS 
       else { return t.Minutes.ToString("00") + ":" + t.Seconds.ToString("00"); }
+    }
+
+    /// <summary>
+    /// Checks, if a given filename is writable
+    /// </summary>
+    /// <param name="file"></param>
+    /// <returns></returns>
+    public bool IsWritable(string file)
+    {
+      if (string.IsNullOrEmpty(file)) return false;
+      FileInfo fi = new FileInfo(file);
+      return IsWritable(fi);
+    }
+
+    private bool IsWritable(FileInfo fileInfo)
+    {
+      FileStream stream = null;
+      try
+      {
+        stream = fileInfo.Open(FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+      }
+      catch
+      {
+        return true;
+      }
+      finally
+      {
+        if (stream != null) stream.Close();
+      }
+      return false;
     }
 
     /// <summary>
@@ -1090,7 +1120,7 @@ namespace MyFilmsPlugin.Utils
       else if (byteCount >= 1024.0)
         size = String.Format("{0:##.##}", byteCount / 1024.0) + " KB";
       else if (byteCount > 0 && byteCount < 1024.0)
-        size = byteCount.ToString() + " Bytes";
+        size = byteCount + " Bytes";
 
       return size;
     }
@@ -1170,7 +1200,7 @@ namespace MyFilmsPlugin.Utils
 
     public static bool SetPersonLastChecked(string path, string person)
     {
-      return SetLastModified(Path.Combine(path, (person + ".chk")));
+      return SetLastModified(Path.Combine(path, person + ".chk"));
     }
 
     private static bool SetLastModified(string filename)
@@ -1250,27 +1280,27 @@ namespace MyFilmsPlugin.Utils
 
         if (drv.Type == DriveTypes.CD_DVD)
         {
-          //					drv.TypeDescription = "CD/DVD Drive";
+          // drv.TypeDescription = "CD/DVD Drive";
           drv.TypeDescription = "CD";
         }
         else if (drv.Type == DriveTypes.FIXED)
         {
-          //					drv.TypeDescription = "HDD";
+          //	drv.TypeDescription = "HDD";
           drv.TypeDescription = "HDD";
         }
         else if (drv.Type == DriveTypes.RAMDISK)
         {
-          //					drv.TypeDescription = "RamDisk";
+          //	drv.TypeDescription = "RamDisk";
           drv.TypeDescription = "RAMDISK";
         }
         else if (drv.Type == DriveTypes.REMOTEDISK)
         {
-          //					drv.TypeDescription = "Network Drive";
+          //	drv.TypeDescription = "Network Drive";
           drv.TypeDescription = "NETWORK";
         }
         else if (drv.Type == DriveTypes.REMOVEABLE)
         {
-          //					drv.TypeDescription = "Removeable";
+          //	drv.TypeDescription = "Removeable";
           drv.TypeDescription = "REMOVEABLE";
         }
         drives.Add(drv);

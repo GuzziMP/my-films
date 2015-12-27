@@ -1169,15 +1169,15 @@ Public Class Form1
             btnShowHideLog.Text = "Show Log >>"
             btnShowHideLogTest.Text = "Show Log >>"
         Else
-            'dgLogWindow.SetDesktopLocation(Me.Location.X, Me.Location.Y + Me.Height)
-            'dgLogWindow.Width = Me.Width
-            ''dgLogWindow.Height = 150
+            'DgLogWindow.SetDesktopLocation(Me.Location.X, Me.Location.Y + Me.Height)
+            'DgLogWindow.Width = Me.Width
+            ''DgLogWindow.Height = 150
             dgLogWindow.Show()
 
-            'dgLogWindow.Height = Me.Height
-            'dgLogWindow.SetDesktopLocation(Me.Location.X + Me.Width, Me.Location.Y)
-            'dgLogWindow.Show()
-            ''Me.AddOwnedForm(dgLogWindow)
+            'DgLogWindow.Height = Me.Height
+            'DgLogWindow.SetDesktopLocation(Me.Location.X + Me.Width, Me.Location.Y)
+            'DgLogWindow.Show()
+            ''Me.AddOwnedForm(DgLogWindow)
 
             btnShowHideLog.Text = "<< Hide Log"
             btnShowHideLogTest.Text = "<< Hide Log"
@@ -1188,9 +1188,9 @@ Public Class Form1
         If dgLogWindow.Visible = True And dgLogWindow.Location.X = Me.Location.X Then
 
             dgLogWindow.SetDesktopLocation(Me.Location.X, Me.Location.Y + Me.Height)
-            'dgLogWindow.SetDesktopLocation(Me.Location.X + Me.Width, Me.Location.Y)
+            'DgLogWindow.SetDesktopLocation(Me.Location.X + Me.Width, Me.Location.Y)
 
-            'dgLogWindow.BringToFront()
+            'DgLogWindow.BringToFront()
             'Me.BringToFront()
         End If
     End Sub
@@ -3443,8 +3443,8 @@ Public Class Form1
 
         'Dim logWindowTarget As RichTextBoxTarget = New RichTextBoxTarget()
         'logWindowTarget.Name = "WindowLog"
-        'logWindowTarget.FormName = "dgLogWindow"
-        'logWindowTarget.ControlName = "RichTextBoxLogWindow" 'dgLogWindow.RichTextBoxLogWindow.Name
+        'logWindowTarget.FormName = "DgLogWindow"
+        'logWindowTarget.ControlName = "RichTextBoxLogWindow" 'DgLogWindow.RichTextBoxLogWindow.Name
         'logWindowTarget.Layout = "${date:format=dd-MMM-yyyy HH\\:mm\\:ss,fff} " & "${level:fixedLength=true:padding=5} " & "[${logger:fixedLength=true:padding=20:shortName=true}]: ${message} " & "${exception:format=tostring}"
         ''logWindowTarget.Layout = "${longdate}|${level:uppercase=true}|${logger}|${message}"
         'logWindowTarget.UseDefaultRowColoringRules = True

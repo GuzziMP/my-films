@@ -190,7 +190,7 @@ namespace MyFilmsPlugin
 
     private static Dictionary<string, ReaderWriterLockSlim> GetLockerList()
     {
-      var lockDictionary = new Dictionary<string, ReaderWriterLockSlim>();
+      Dictionary<string, ReaderWriterLockSlim> lockDictionary = new Dictionary<string, ReaderWriterLockSlim>();
       using (var xmlConfig = new XmlSettings(Config.GetFile(Config.Dir.Config, "MyFilms.xml")))
       {
         int mesFilmsNbConfig = xmlConfig.ReadXmlConfig("MyFilms", "MyFilms", "NbConfig", -1);
@@ -201,11 +201,11 @@ namespace MyFilmsPlugin
 
     private static void InitData()
     {
-      var initDataWatch = new Stopwatch();
+      Stopwatch initDataWatch = new Stopwatch();
       initDataWatch.Reset(); initDataWatch.Start();
-      bool success = LoadMyFilmsFromDisk(MyFilmsGUI.MyFilms.conf.StrFileXml);
+      bool success = LoadMyFilmsFromDisk(MyFilms.conf.StrFileXml);
       initDataWatch.Stop();
-      LogMyFilms.Debug("initData() - End reading catalogfile '" + MyFilmsGUI.MyFilms.conf.StrFileXml + "' (success = '" + success + "') (" + (initDataWatch.ElapsedMilliseconds) + " ms)");
+      LogMyFilms.Debug("initData() - End reading catalogfile '" + MyFilms.conf.StrFileXml + "' (success = '" + success + "') (" + (initDataWatch.ElapsedMilliseconds) + " ms)");
     }
 
     private class DataColumnComparer : IEqualityComparer<DataColumn>
@@ -356,7 +356,7 @@ namespace MyFilmsPlugin
       var loadDataWatch = new Stopwatch(); loadDataWatch.Reset(); loadDataWatch.Start();
       foreach (var movieRow in data.Movie)
       {
-        var customFieldsRows = movieRow.GetCustomFieldsRows();
+        AntMovieCatalog.CustomFieldsRow[] customFieldsRows = movieRow.GetCustomFieldsRows();
         if (customFieldsRows.Length == 0) // create CustomFields Element, if not existing ...
         {
           AntMovieCatalog.CustomFieldsRow customFields = data.CustomFields.NewCustomFieldsRow();
@@ -426,7 +426,7 @@ namespace MyFilmsPlugin
         }
       }
       Watch.Stop();
-      MyFilmsGUI.MyFilms.LastDbUpdate = DateTime.Now;
+      MyFilms.LastDbUpdate = DateTime.Now;
       LogMyFilms.Debug("SaveMyFilmsToDisk() - Finished Saving ... (" + (Watch.ElapsedMilliseconds) + " ms)");
       return success;
     }
@@ -525,8 +525,8 @@ namespace MyFilmsPlugin
             movieRow.DateAdded = DateTime.MinValue;
           // movieRow.DateAdded = Convert.ToDateTime(movieRow.Date); // is same as: movieRow.DateAdded = DateTime.Parse(movieRow.Date, CultureInfo.CurrentCulture);
           movieRow.AgeAdded = (int)now.Subtract(movieRow.DateAdded).TotalDays; // sets integer value
-          movieRow.RecentlyAdded = MyFilmsGUI.MyFilms.GetDayRange(movieRow.AgeAdded);
-          string index = movieRow[MyFilmsGUI.MyFilms.conf.StrTitle1].ToString();
+          movieRow.RecentlyAdded = MyFilms.GetDayRange(movieRow.AgeAdded);
+          string index = movieRow[MyFilms.conf.StrTitle1].ToString();
           movieRow.IndexedTitle = (index.Length > 0) ? index.Substring(0, 1).ToUpper() : "";
           movieRow.Persons = (movieRow.Actors ?? " ") + ", " + (movieRow.Producer ?? " ") + ", " + (movieRow.Director ?? " ") + ", " + (movieRow.Writer ?? " "); // Persons: ISNULL(Actors,' ') + ', ' + ISNULL(Producer, ' ') + ', ' + ISNULL(Director, ' ') + ', ' + ISNULL(Writer, ' ')
           // if (!movieRow.IsLengthNull()) movieRow.Length_Num = Convert.ToInt32(movieRow.Length);
@@ -574,7 +574,7 @@ namespace MyFilmsPlugin
         LogMyFilms.Debug("LoadMyFilmsFromDisk() - Calc & CustomField Copy Finished ... (" + Watch.ElapsedMilliseconds + " ms)");
         #endregion
 
-        MyFilmsGUI.MyFilms.LastDbUpdate = DateTime.Now;
+        MyFilms.LastDbUpdate = DateTime.Now;
       }
       catch (Exception e)
       {
@@ -734,7 +734,7 @@ namespace MyFilmsPlugin
       #endregion
 
       #region length
-      int length = 0;
+      int length;
       Int32.TryParse(row["Length"].ToString(), out length);
       movie.Length = length;
       #endregion
@@ -772,7 +772,7 @@ namespace MyFilmsPlugin
       if (tmpconf.EnhancedWatchedStatusHandling)
       {
         MultiUserData multiUserData;
-        if (row[MultiUserStateField] == System.Convert.DBNull) // not yet migrated - do it now
+        if (row[MultiUserStateField] == Convert.DBNull) // not yet migrated - do it now
         {
           #region migration code for watched state - migrate status from configured (enhanced or standard)watched field to new MultiUserStates
           if (row[tmpconf.StrWatchedField].ToString().Contains(":"))
@@ -902,7 +902,7 @@ namespace MyFilmsPlugin
 
     private static void GetMovieArtworkDetails(ref MFMovie movie) // DataRow row, 
     {
-      var tempconf = new MyFilmsPlugin.MyFilmsGUI.Configuration(movie.Config, false, true, null);
+      var tempconf = new MyFilmsGUI.Configuration(movie.Config, false, true, null);
       try
       {
         #region Cover
@@ -1138,9 +1138,7 @@ namespace MyFilmsPlugin
                           else
                           {
                             #region old field was standard watched data - create MUS and add watched for current user
-                            bool tmpwatched = (!string.IsNullOrEmpty(GlobalUnwatchedOnlyValue) &&
-                                          sr[WatchedField].ToString().ToLower() != GlobalUnwatchedOnlyValue.ToLower() &&
-                                          sr[WatchedField].ToString().Length > 0);
+                            bool tmpwatched = (!string.IsNullOrEmpty(GlobalUnwatchedOnlyValue) && sr[WatchedField].ToString().ToLower() != GlobalUnwatchedOnlyValue.ToLower() && sr[WatchedField].ToString().Length > 0);
                             multiUserData = new MultiUserData("");
                             multiUserData.SetWatched(UserProfileName, tmpwatched);
                             if (sr["RatingUser"] != Convert.DBNull)
@@ -1148,8 +1146,8 @@ namespace MyFilmsPlugin
                             #endregion
                           }
                           sr.MultiUserState = multiUserData.ResultValueString();
-                          sr["DateWatched"] = multiUserData.GetUserState(MyFilmsGUI.MyFilms.conf.StrUserProfileName).WatchedDate;
-                          sr["RatingUser"] = multiUserData.GetUserState(MyFilmsGUI.MyFilms.conf.StrUserProfileName).UserRating == MultiUserData.NoRating ? Convert.DBNull : multiUserData.GetUserState(MyFilmsGUI.MyFilms.conf.StrUserProfileName).UserRating;
+                          sr["DateWatched"] = multiUserData.GetUserState(MyFilms.conf.StrUserProfileName).WatchedDate;
+                          sr["RatingUser"] = multiUserData.GetUserState(MyFilms.conf.StrUserProfileName).UserRating == MultiUserData.NoRating ? Convert.DBNull : multiUserData.GetUserState(MyFilms.conf.StrUserProfileName).UserRating;
                           #endregion
                         }
                         else
@@ -1176,7 +1174,7 @@ namespace MyFilmsPlugin
 
                         if (user.UserRating != Convert.ToDecimal(movie.RatingUser))
                         {
-                          LogMyFilms.Debug("UpdateMovies() - Updating 'UserRating' from '" + user.UserRating.ToString() + "' to '" + Convert.ToDecimal(movie.RatingUser).ToString() + "'" + movieinfo);
+                          LogMyFilms.Debug("UpdateMovies() - Updating 'UserRating' from '" + user.UserRating + "' to '" + Convert.ToDecimal(movie.RatingUser) + "'" + movieinfo);
                           multiUserData.SetRating(movie.Username, Convert.ToDecimal(movie.RatingUser));
                         }
                         string newEnhancedWatchedValue = multiUserData.ResultValueString();
@@ -1188,10 +1186,10 @@ namespace MyFilmsPlugin
                         if (movie.Username == UserProfileName)
                         {
                           // LogMyFilms.Debug("UpdateMovies() - Trakt updates are for current MyFilms user '" + movie.Username + "' - also updating DB fields directly");
-                          sr["DateWatched"] = (user.WatchedDate == MultiUserData.NoWatchedDate || user.Watched == false) ? System.Convert.DBNull : user.WatchedDate;
-                          sr["RatingUser"] = user.UserRating == MultiUserData.NoRating ? System.Convert.DBNull : user.UserRating;
+                          sr["DateWatched"] = (user.WatchedDate == MultiUserData.NoWatchedDate || user.Watched == false) ? Convert.DBNull : user.WatchedDate;
+                          sr["RatingUser"] = user.UserRating == MultiUserData.NoRating ? Convert.DBNull : user.UserRating;
                           if (WatchedField.Length > 0) sr[WatchedField] = user.Watched ? "true" : GlobalUnwatchedOnlyValue;
-                          if (UserProfileName.Length > 0 && sr["RatingUser"] != System.Convert.DBNull && sr.RatingUser != MultiUserData.NoRating)
+                          if (UserProfileName.Length > 0 && sr["RatingUser"] != Convert.DBNull && sr.RatingUser != MultiUserData.NoRating)
                           {
                             if (sr.RatingUser > MultiUserData.FavoriteRating)
                             {
@@ -1289,14 +1287,14 @@ namespace MyFilmsPlugin
                     #endregion
 
                     #region sync MUS state with direct DB fields for user rating, watched and Favorite (only when MUS already migrated and DB field exists)
-                    if (EnhancedWatchedStatusHandling && sr[MultiUserStateField] != System.Convert.DBNull)
+                    if (EnhancedWatchedStatusHandling && sr[MultiUserStateField] != Convert.DBNull)
                     {
                       var states = new MultiUserData(sr.MultiUserState);
                       var user = states.GetUserState(UserProfileName);
-                      sr["DateWatched"] = (user.WatchedDate == MultiUserData.NoWatchedDate || user.Watched == false) ? System.Convert.DBNull : user.WatchedDate;
-                      sr["RatingUser"] = user.UserRating == -1 ? System.Convert.DBNull : user.UserRating;
+                      sr["DateWatched"] = (user.WatchedDate == MultiUserData.NoWatchedDate || user.Watched == false) ? Convert.DBNull : user.WatchedDate;
+                      sr["RatingUser"] = user.UserRating == -1 ? Convert.DBNull : user.UserRating;
                       if (WatchedField.Length > 0) sr[WatchedField] = user.Watched ? "true" : GlobalUnwatchedOnlyValue;
-                      if (UserProfileName.Length > 0 && sr["RatingUser"] != System.Convert.DBNull && sr.RatingUser != MultiUserData.NoRating)
+                      if (UserProfileName.Length > 0 && sr["RatingUser"] != Convert.DBNull && sr.RatingUser != MultiUserData.NoRating)
                       {
                         if (sr.RatingUser > MultiUserData.FavoriteRating)
                         {
@@ -1327,10 +1325,10 @@ namespace MyFilmsPlugin
                   #endregion
 
                   #region (re)enable filesystem watcher to notify myfilms on update and disable trakt message handler
-                  MyFilmsGUI.MyFilms.SendTraktUpdateMessage = false;
+                  MyFilms.SendTraktUpdateMessage = false;
                   try
                   {
-                    if (MyFilmsGUI.MyFilms.FSwatcher.Path.Length > 0) MyFilmsGUI.MyFilms.FSwatcher.EnableRaisingEvents = true; // re enable watcher - as myfilms should auto update dataset for current config, if update is done from trakt 
+                    if (MyFilms.FSwatcher.Path.Length > 0) MyFilms.FSwatcher.EnableRaisingEvents = true; // re enable watcher - as myfilms should auto update dataset for current config, if update is done from trakt 
                   }
                   catch (Exception ex)
                   {
@@ -1350,7 +1348,7 @@ namespace MyFilmsPlugin
                       using (var myXmlTextWriter = new XmlTextWriter(fs, System.Text.Encoding.Default))
                       {
                         LogMyFilms.Debug("UpdateMovies() - writing '" + Catalog + "' as MyXmlTextWriter in FileStream");
-                        myXmlTextWriter.Formatting = System.Xml.Formatting.Indented;
+                        myXmlTextWriter.Formatting = Formatting.Indented;
                         myXmlTextWriter.WriteStartDocument();
                         dataImport.WriteXml(myXmlTextWriter, XmlWriteMode.IgnoreSchema);
                         myXmlTextWriter.Flush();
@@ -1363,7 +1361,7 @@ namespace MyFilmsPlugin
                   }
                   Thread.Sleep(50); // give time to release file handle
                   saveDataWatch.Stop();
-                  LogMyFilms.Debug("UpdateMovies() - finished saving databse ... (" + (saveDataWatch.ElapsedMilliseconds) + " ms)");
+                  LogMyFilms.Debug("UpdateMovies() - finished saving databse ... (" + saveDataWatch.ElapsedMilliseconds + " ms)");
                   #endregion
                 }
                 catch (Exception ex)
@@ -1419,7 +1417,7 @@ namespace MyFilmsPlugin
       LogMyFilms.Debug("ReadDataMovies() - Started with Expression = '" + strDfltSelect + strSelect + "|" + strSort + " " + strSortSens + "', all = '" + all + "', extrasort = '" + doextrasort + "', cached = '" + (data != null) + "'");
       var watchReadMovies = new Stopwatch(); watchReadMovies.Reset(); watchReadMovies.Start();
 
-      if (strSelect.Length == 0) strSelect = MyFilmsGUI.MyFilms.conf.StrTitle1 + " not like ''";
+      if (strSelect.Length == 0) strSelect = MyFilms.conf.StrTitle1 + " not like ''";
 
       if (data == null) InitData();
 
@@ -1437,7 +1435,7 @@ namespace MyFilmsPlugin
         movies = data.Movie.Select(strDfltSelect + strSelect, strSort + " " + strSortSens);
         if (movies.Length == 0 && all)
         {
-          strSelect = MyFilmsGUI.MyFilms.conf.StrTitle1 + " not like ''";
+          strSelect = MyFilms.conf.StrTitle1 + " not like ''";
           LogMyFilms.Debug("ReadDataMovies() - Switching to full list ...");
           movies = data.Movie.Select(strDfltSelect + strSelect, strSort + " " + strSortSens);
         }
@@ -1445,8 +1443,8 @@ namespace MyFilmsPlugin
         if (doextrasort)
         {
           var watchReadMoviesSort = new Stopwatch(); watchReadMoviesSort.Reset(); watchReadMoviesSort.Start();
-          MyFilmsGUI.MyFilms.FieldType fieldType = MyFilmsGUI.MyFilms.GetFieldType(strSort);
-          Type columnType = MyFilmsGUI.MyFilms.GetColumnType(strSort);
+          MyFilms.FieldType fieldType = MyFilms.GetFieldType(strSort);
+          Type columnType = MyFilms.GetColumnType(strSort);
           string strColumnType = (columnType == null) ? "<invalid>" : columnType.ToString();
 
           if (!string.IsNullOrEmpty(strSort) && columnType == typeof(string)) // don't apply special sorting on "native" types - only on string types !
@@ -1455,43 +1453,43 @@ namespace MyFilmsPlugin
             Watch.Reset(); Watch.Start();
             switch (fieldType)
             {
-              case MyFilmsGUI.MyFilms.FieldType.AlphaNumeric:
+              case MyFilms.FieldType.AlphaNumeric:
                 if (strSortSens == " ASC")
                 {
-                  IComparer myComparer = new MyFilmsGUI.MyFilms.AlphanumComparatorFast();
+                  IComparer myComparer = new MyFilms.AlphanumComparatorFast();
                   Array.Sort<DataRow>(movies, (a, b) => myComparer.Compare(a[strSort], b[strSort]));
                 }
                 else
                 {
-                  IComparer myComparer = new MyFilmsGUI.MyFilms.myReverserAlphanumComparatorFast();
+                  IComparer myComparer = new MyFilms.myReverserAlphanumComparatorFast();
                   Array.Sort<DataRow>(movies, (a, b) => myComparer.Compare(a[strSort], b[strSort]));
                   //r.Reverse();
                 }
                 break;
               #region Date and Decimal types are never used, as we do additional sorting for alphanumeric (string) values only !
-              case MyFilmsGUI.MyFilms.FieldType.Date:
+              case MyFilms.FieldType.Date:
                 if (strSortSens == " ASC")
                 {
-                  IComparer myComparer = new MyFilmsGUI.MyFilms.myDateComparer();
+                  IComparer myComparer = new MyFilms.myDateComparer();
                   Array.Sort<DataRow>(movies, (a, b) => myComparer.Compare(a[strSort], b[strSort]));
                 }
                 else
                 {
-                  IComparer myComparer = new MyFilmsGUI.MyFilms.myDateReverseComparer();
+                  IComparer myComparer = new MyFilms.myDateReverseComparer();
                   Array.Sort<DataRow>(movies, (a, b) => myComparer.Compare(a[strSort], b[strSort]));
                   //IComparer myComparer = new myDateComparer();
                   //Array.Sort<DataRow>(r, (a, b) => myComparer.Compare(b[strSort], a[strSort]));
                 }
                 break;
-              case MyFilmsGUI.MyFilms.FieldType.Decimal:
+              case MyFilms.FieldType.Decimal:
                 if (strSortSens == " ASC")
                 {
-                  IComparer myComparer = new MyFilmsGUI.MyFilms.myRatingComparer();
+                  IComparer myComparer = new MyFilms.myRatingComparer();
                   Array.Sort<DataRow>(movies, (a, b) => myComparer.Compare(a[strSort], b[strSort]));
                 }
                 else
                 {
-                  IComparer myComparer = new MyFilmsGUI.MyFilms.myRatingComparer();
+                  IComparer myComparer = new MyFilms.myRatingComparer();
                   Array.Sort<DataRow>(movies, (a, b) => myComparer.Compare(b[strSort], a[strSort]));
                   //r.Reverse();
                 }
@@ -1513,7 +1511,7 @@ namespace MyFilmsPlugin
       }
       watchReadMovies.Stop();
 
-      LogMyFilms.Debug("ReadDataMovies() - Finished ...  returning '" + movies.Length + "' movies (" + (watchReadMovies.ElapsedMilliseconds) + " ms)");
+      LogMyFilms.Debug("ReadDataMovies() - Finished ...  returning '" + movies.Length + "' movies (" + watchReadMovies.ElapsedMilliseconds + " ms)");
       return movies;
     }
 
@@ -1576,24 +1574,24 @@ namespace MyFilmsPlugin
     internal static void StopBackgroundWorker()
     {
       #region stop trailer thread downloader
-      MyFilmsGUI.MyFilms.bgDownloadTrailer.CancelAsync();
-      for (int f = 0; f < MyFilmsGUI.MyFilms.maxThreads; f++) MyFilmsGUI.MyFilms.threadArray[f].CancelAsync();
+      MyFilms.bgDownloadTrailer.CancelAsync();
+      for (int f = 0; f < MyFilms.maxThreads; f++) MyFilms.threadArray[f].CancelAsync();
       #endregion
 
       #region wait for background threads to finish before shutting down ...
-      if (MyFilmsGUI.MyFilms.bgDownloadTrailer != null && MyFilmsGUI.MyFilms.bgDownloadTrailer.IsBusy)
+      if (MyFilms.bgDownloadTrailer != null && MyFilms.bgDownloadTrailer.IsBusy)
       {
         LogMyFilms.Info("StopBackgroundWorker() - Trailer Download still active ! - waiting 120 sec. for background worker to complete ...");
-        MyFilmsGUI.MyFilms.bgDownloadTrailerDoneEvent.WaitOne(120000);
+        MyFilms.bgDownloadTrailerDoneEvent.WaitOne(120000);
         LogMyFilms.Info("StopBackgroundWorker() - Trailer Download in background worker thread finished");
       }
 
-      for (int f = 0; f < MyFilmsGUI.MyFilms.maxThreads; f++)
+      for (int f = 0; f < MyFilms.maxThreads; f++)
       {
-        if (MyFilmsGUI.MyFilms.threadArray[f] != null && MyFilmsGUI.MyFilms.threadArray[f].IsBusy)
+        if (MyFilms.threadArray[f] != null && MyFilms.threadArray[f].IsBusy)
         {
           LogMyFilms.Info("StopBackgroundWorker() - Trailer Download thread '" + f + "' still active ! - waiting 120 sec. for background worker to complete ...");
-          MyFilmsGUI.MyFilms.threadDoneEventArray[f].WaitOne(120000);
+          MyFilms.threadDoneEventArray[f].WaitOne(120000);
           LogMyFilms.Info("StopBackgroundWorker() - Trailer Download in background worker thread '" + f + "' finished");
         }
       }
@@ -1610,11 +1608,11 @@ namespace MyFilmsPlugin
     
     internal static void RestartBackgroundWorker()
     {
-      for (int f = 0; f < MyFilmsGUI.MyFilms.maxThreads; f++)
+      for (int f = 0; f < MyFilms.maxThreads; f++)
       {
-        if (MyFilmsGUI.MyFilms.threadArray[f] != null && !MyFilmsGUI.MyFilms.threadArray[f].IsBusy)
+        if (MyFilms.threadArray[f] != null && !MyFilms.threadArray[f].IsBusy)
         {
-          MyFilmsGUI.MyFilms.threadArray[f].RunWorkerAsync(f);
+          MyFilms.threadArray[f].RunWorkerAsync(f);
           LogMyFilms.Info("RestartBackgroundWorker() - restarted trailer background worker thread '" + f + "'");
         }
       }
@@ -1689,7 +1687,7 @@ namespace MyFilmsPlugin
       using (var xmlConfig = new XmlSettings(Config.GetFile(Config.Dir.Config, "MyFilms.xml")))
       {
         int mesFilmsNbConfig = xmlConfig.ReadXmlConfig("MyFilms", "MyFilms", "NbConfig", -1);
-        var configs = new ArrayList();
+        ArrayList configs = new ArrayList();
         for (int i = 0; i < mesFilmsNbConfig; i++) configs.Add(xmlConfig.ReadXmlConfig("MyFilms", "MyFilms", "ConfigName" + i, string.Empty));
 
         foreach (string config in configs)
@@ -1742,14 +1740,14 @@ namespace MyFilmsPlugin
     /// </summary>        
     public static IEnumerable<string> GetViewListValues(string config, string view)
     {
-      var values = new List<string>();
-      var movies = new ArrayList();
+      List<string> values = new List<string>();
+      ArrayList movies = new ArrayList();
       movies.Clear();
-      var dataExport = new AntMovieCatalog();
+      AntMovieCatalog dataExport = new AntMovieCatalog();
       if (string.IsNullOrEmpty(config) || string.IsNullOrEmpty(view))
         return null;
 
-      using (var xmlConfig = new XmlSettings(Config.GetFile(Config.Dir.Config, "MyFilms.xml")))
+      using (XmlSettings xmlConfig = new XmlSettings(Config.GetFile(Config.Dir.Config, "MyFilms.xml")))
       {
         string catalog = xmlConfig.ReadXmlConfig("MyFilms", config, "AntCatalog", string.Empty);
         string[] listSeparator = { string.Empty, string.Empty, string.Empty, string.Empty, string.Empty };
@@ -1868,7 +1866,7 @@ namespace MyFilmsPlugin
       LogMyFilms.Debug("GetMostRecent() - Called with type = '" + enumtype + "', days = '" + days + "', limit = '" + limit + "', unwatchedonly = '" + unwatchedOnly + "'");
 
       // Create Time Span to lookup most recents
-      var dateCompare = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
+      DateTime dateCompare = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
       dateCompare = dateCompare.Subtract(new TimeSpan(days, 0, 0, 0, 0));
       //string date = dateCompare.ToString("yyyy'-'MM'-'dd HH':'mm':'ss");
 
@@ -1886,7 +1884,7 @@ namespace MyFilmsPlugin
 
         case MostRecentType.Watched:
           // get the movies that we have watched
-          movielist = movielist.Where(m => m.Watched == true).ToList();
+          movielist = movielist.Where(m => m.Watched).ToList();
           break;
       }
 
@@ -1922,8 +1920,7 @@ namespace MyFilmsPlugin
     {
       public bool Equals(MFMovie x, MFMovie y)
       {
-        return x.Title == y.Title &&
-            x.File == y.File;
+        return x.Title == y.Title && x.File == y.File;
       }
       public int GetHashCode(MFMovie obj)
       {
@@ -1943,7 +1940,7 @@ namespace MyFilmsPlugin
       //  <Contents>
 
       bool isvaliddb = true;
-      var stopwatch = new Stopwatch();
+      Stopwatch stopwatch = new Stopwatch();
       stopwatch.Reset();
       stopwatch.Start();
 
@@ -2004,8 +2001,6 @@ namespace MyFilmsPlugin
       LogMyFilms.Debug("IsValidDB(): db format validity check = '" + isvaliddb + "' (" + stopwatch.ElapsedMilliseconds + " ms.)");
       return isvaliddb;
     }
-
-
 
     internal static string TranslateColumn(string column)
     {
@@ -2236,7 +2231,7 @@ namespace MyFilmsPlugin
     #endregion
   }
 
-  public static class DBNullableExtensions
+  public static class DbNullableExtensions
   {
     public static object ToDbValue<T>(this T? value) where T : struct
     {

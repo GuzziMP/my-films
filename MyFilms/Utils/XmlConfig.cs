@@ -175,7 +175,6 @@ namespace MyFilmsPlugin.Utils
       if (immediateWrite) configxml.Save(EntireFilenameConfig(fileName));
     }
 
-    // Remove an Entry
     public void RemoveEntry(string fileName, string Section, string Entry, bool immideateWrite = true)
     {
       // Return if xml file doesn't exist

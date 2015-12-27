@@ -19,17 +19,13 @@
 #endregion
 
 #region Usings
-
-
-
-#endregion
-
 using System;
 using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
+#endregion
 
 namespace MyFilmsPlugin.Utils
 {
@@ -110,10 +106,7 @@ namespace MyFilmsPlugin.Utils
 
         for (int i = 0; i < entries; i++)
         {
-          table[i] = (MIB_IPNETROW)Marshal.PtrToStructure(
-                                     new IntPtr(currentBuffer.ToInt64() + (i * Marshal.SizeOf(typeof(MIB_IPNETROW)))),
-                                     typeof(MIB_IPNETROW)
-                                     );
+          table[i] = (MIB_IPNETROW)Marshal.PtrToStructure(new IntPtr(currentBuffer.ToInt64() + (i * Marshal.SizeOf(typeof(MIB_IPNETROW)))), typeof(MIB_IPNETROW));
         }
       }
       finally

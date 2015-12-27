@@ -13,6 +13,7 @@ using MediaPortal.Configuration;
 using MediaPortal.GUI.Library;
 using MediaPortal.Player;
 using System.Threading;
+using MediaPortal.Dialogs;
 using MyFilmsPlugin.MyFilmsGUI;
 
 namespace MyFilmsPlugin.Utils
@@ -24,6 +25,21 @@ namespace MyFilmsPlugin.Utils
     private static NLog.Logger LogMyFilms = NLog.LogManager.GetCurrentClassLogger();  //log
 
     #region Static Methods
+
+    public static bool IsOnlineVideosReady()
+    {
+      try
+      {
+        string strUrl = ExternalPlugins::OnlineVideos.Hoster.HosterFactory.GetHoster("Youtube").GetHosterUrl();
+        return !String.IsNullOrEmpty(strUrl);
+      }
+      catch (Exception ex)
+      {
+        LogMyFilms.Debug(ex, "OnlineVideos is not ready!");
+        return false;
+        // throw;
+      }
+    }
 
     public static Dictionary<string, string> GetYoutubeDownloadUrls(string stream)
     {
@@ -82,7 +98,7 @@ namespace MyFilmsPlugin.Utils
           if (showPlaybackQualitySelectionDialog)
           {
             Dictionary<string, string> availableTrailerFiles = GetYoutubeDownloadUrls(stream);
-            var choiceView = new List<string>();
+            List<string> choiceView = new List<string>();
 
             //GUIWindowManager.SendThreadCallbackAndWait((p1, p2, o) =>
             //{
@@ -92,7 +108,7 @@ namespace MyFilmsPlugin.Utils
             //  return 0;
             //}, 0, 0, null);
             
-            var dlg = (MediaPortal.Dialogs.GUIDialogMenu)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_MENU);
+            GUIDialogMenu dlg = (MediaPortal.Dialogs.GUIDialogMenu)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_MENU);
             if (dlg == null) return false;
             dlg.Reset();
             dlg.SetHeading(GUILocalizeStrings.Get(10798994)); // Select quality ...
@@ -109,8 +125,8 @@ namespace MyFilmsPlugin.Utils
 
           if (!interactiveSuccessful)
           {
-            //var ovHosterProxy = ExternalPlugins::OnlineVideos.CrossDomain.OnlineVideosAppDomain.Domain.CreateInstanceAndUnwrap(typeof(OnlineVideosHosterProxy).Assembly.FullName, typeof(OnlineVideosHosterProxy).FullName) as OnlineVideosHosterProxy;
-            //stream = ovHosterProxy.GetVideoUrls(stream);
+            // OnlineVideosHosterProxy ovHosterProxy = ExternalPlugins::OnlineVideos.CrossDomain.OnlineVideosAppDomain.Domain.CreateInstanceAndUnwrap(typeof(OnlineVideosHosterProxy).Assembly.FullName, typeof(OnlineVideosHosterProxy).FullName) as OnlineVideosHosterProxy;
+            // stream = ovHosterProxy.GetVideoUrls(stream);
             stream = ExternalPlugins::OnlineVideos.Hoster.HosterFactory.GetHoster("Youtube").GetVideoUrl(stream);
           }
         }
@@ -130,7 +146,7 @@ namespace MyFilmsPlugin.Utils
 
       LogMyFilms.Info("Preparing graph for playback of '{0}'", stream);
 
-      var factory = new PlayerFactory(PlayerType.Internal, stream);
+      PlayerFactory factory = new PlayerFactory(PlayerType.Internal, stream);
       bool? prepareResult = ((OnlineVideosPlayer)factory.PreparedPlayer).PrepareGraph();
 
       if (prepareResult != true)
@@ -155,7 +171,7 @@ namespace MyFilmsPlugin.Utils
       },
       delegate(bool success, object result)
       {
-        if ((result as bool?) != null)
+        if (result is bool?)
         {
           (factory.PreparedPlayer as OVSPLayer).GoFullscreen = true;
 

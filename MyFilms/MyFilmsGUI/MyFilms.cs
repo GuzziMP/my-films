@@ -32,6 +32,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Xml;
@@ -74,8 +75,6 @@ namespace MyFilmsPlugin.MyFilmsGUI
   /// <summary>
   /// Summary description for GUIMyFilms.
   /// </summary>
-  //[PluginIcons("MesFilms.MyFilms.Resources.clapperboard-128x128.png", "MesFilms.MyFilms.Resources.clapperboard-128x128-faded.png")]
-  //[PluginIcons("MesFilms.MyFilms.Resources.logo_mesfilms.png", "MesFilms.MyFilms.Resources.logo_mesfilms-faded.png")]
   [PluginIcons("MyFilmsPlugin.Resources.film-reel-128x128.png", "MyFilmsPlugin.Resources.film-reel-128x128-faded.png")]
 
   public class MyFilms : GUIWindow, ISetupForm, IComparer<GUIListItem>
@@ -334,7 +333,6 @@ namespace MyFilmsPlugin.MyFilmsGUI
     }
     #endregion
 
-    // Log declarations
     private static Logger LogMyFilms = LogManager.GetCurrentClassLogger();
     // public XmlSettings XmlConfig = new XmlSettings(Config.GetFile(Config.Dir.Config, "MyFilms.xml"), true);
 
@@ -343,7 +341,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
     private const string LogFileNameGrabber = "MyFilmsGrabber.log";  //log's filename
     private const string OldLogFileNameGrabber = "MyFilmsGrabber.old.log";  //log's old filename
 
-    //private BaseMesFilms films;
+    // private BaseMesFilms films;
 
     #region Descriptif zones Ecran
     internal const int ID_MyFilms = 7986;
@@ -613,8 +611,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
     private string _currentSortDirection = " DESC";
 
     // os handler variables
-    private static bool m_bResumeFromStandby = false;
-    private static bool m_bIsNetworkAvailable = true;
+
     #endregion
 
     #region Enums
@@ -828,7 +825,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
 
       // load trailer queue
       TrailertoDownloadQueue = BaseMesFilms.LoadQueueFromDisk("Trailer");
-      InitializeQueuedTrailerDownloader(45); // initialize trailer download threads with delayed start (to let OV assembly initialize)
+      InitializeQueuedTrailerDownloader(90); // initialize trailer download threads with delayed start (to let OV assembly initialize)
 
       #region launch TMDB data loader in background ... (disabled)
       //new System.Threading.Thread(delegate()
@@ -1244,11 +1241,11 @@ namespace MyFilmsPlugin.MyFilmsGUI
         LogMyFilms.Warn("SyncConfigFromRemoteServer() - local file MyFilmsServer.xml not found - cannot read sync settings - exit sync.");
         return;
       }
-      var myFilmsServer = new XmlConfig();
+      XmlConfig myFilmsServer = new XmlConfig();
       string myFilmsCentralConfigDir = myFilmsServer.ReadXmlConfig("MyFilmsServer", "MyFilmsServerConfig", "MyFilmsCentralConfigFile", "");
       bool syncFromServerOnStartup = myFilmsServer.ReadXmlConfig("MyFilmsServer", "MyFilmsServerConfig", "SyncOnStartup", false);
       LogMyFilms.Info("SyncConfigFromRemoteServer() - SyncOnStartup = '" + syncFromServerOnStartup + "'");
-      if (syncFromServerOnStartup && System.IO.File.Exists(myFilmsCentralConfigDir + @"\MyFilms.xml"))
+      if (syncFromServerOnStartup && File.Exists(myFilmsCentralConfigDir + @"\MyFilms.xml"))
       {
         LogMyFilms.Info("SyncConfigFromRemoteServer() - Server Sync is enabled - remote directory: '" + myFilmsCentralConfigDir + "'");
         string serverConfigFile = myFilmsCentralConfigDir + @"\MyFilms.xml";
@@ -2049,7 +2046,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
       string wscript = MyFilmsSettings.GetPath(MyFilmsSettings.Path.GrabberScripts) + "\\IMDB-Top250.xml";
       if (!File.Exists(wscript)) return movies;
       
-      var grab = new Grabber_URLClass();
+      var grab = new GrabberUrlClass();
       var listUrl = new ArrayList();
 
       try
@@ -2067,7 +2064,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
       {
         try
         {
-          Grabber_URLClass.IMDBUrl wurl = (Grabber_URLClass.IMDBUrl)item;
+          GrabberUrlClass.IMDBUrl wurl = (GrabberUrlClass.IMDBUrl)item;
           TmdbMovieSearchResult movie = new TmdbMovieSearchResult();
           TmdbMovie tmdbmovie = api.GetMovieByIMDB(wurl.ID);
           movie.id = tmdbmovie.id;
@@ -2206,13 +2203,19 @@ namespace MyFilmsPlugin.MyFilmsGUI
 
       switch (conf.ViewContext)
       {
-        case ViewContext.TmdbMovies:
-          break;
         case ViewContext.MenuAll:
         case ViewContext.Menu:
           GetSelectFromMenuView(conf.BoolMenuShowAll);
           break;
+        case ViewContext.TmdbMovies:
+          break;
 
+        case ViewContext.Movie:
+        case ViewContext.MovieCollection:
+        case ViewContext.Group:
+        case ViewContext.Person:
+        case ViewContext.StartView:
+        case ViewContext.None:
         default:
           if (conf.Boolselect)
             GetSelectFromDivx(conf.StrSelect, conf.WStrSort, conf.WStrSortSens, conf.Wstar, true, "");
@@ -2248,18 +2251,16 @@ namespace MyFilmsPlugin.MyFilmsGUI
 
     private string ReverseName(string nonreversedName)
     {
-      if (nonreversedName.Contains(" ")) // Reverse Names "Bruce Willis" -> "Willis, Bruce"
-        return nonreversedName.Substring(nonreversedName.LastIndexOf(" ", StringComparison.OrdinalIgnoreCase) + 1) + ", " + nonreversedName.Substring(0, nonreversedName.LastIndexOf(" ", StringComparison.OrdinalIgnoreCase));
-      else
-        return nonreversedName;
+      return nonreversedName.Contains(" ")
+        ? nonreversedName.Substring(nonreversedName.LastIndexOf(" ", StringComparison.OrdinalIgnoreCase) + 1) + ", " + nonreversedName.Substring(0, nonreversedName.LastIndexOf(" ", StringComparison.OrdinalIgnoreCase))
+        : nonreversedName;
     }
 
     private string ReReverseName(string reversedName)
     {
-      if (reversedName.Contains(", ")) // "Re"Reverse Names "Willis, Bruce" --> "Bruce Willis"
-        return reversedName.Substring(reversedName.LastIndexOf(", ", StringComparison.Ordinal) + 2) + " " + reversedName.Substring(0, reversedName.LastIndexOf(", ", StringComparison.Ordinal));
-      else
-        return reversedName;
+      return reversedName.Contains(", ")
+        ? reversedName.Substring(reversedName.LastIndexOf(", ", StringComparison.Ordinal) + 2) + " " + reversedName.Substring(0, reversedName.LastIndexOf(", ", StringComparison.Ordinal))
+        : reversedName;
     }
 
     public static ArrayList GetDisplayItems(string displayoption)
@@ -2271,9 +2272,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
         {
           if (dc.ColumnName == null || dc.ColumnName == "Contents_Id" || dc.ColumnName == "Movie_Id" || dc.ColumnName == "IsOnline" || dc.ColumnName == "IsOnlineTrailer" || dc.ColumnName == "LastPosition" ||
               dc.ColumnName == BaseMesFilms.MultiUserStateField || dc.ColumnName == "VirtualPathTitle" ||
-              (conf.StrFileType == Configuration.CatalogType.AntMovieCatalog3 &&
-               !MyFilmsDetail.ExtendedStartmode(MyFilmsDetail.PluginMode.Extended,
-                 "Restrict DB field Selection for AMC3") &&
+              (conf.StrFileType == Configuration.CatalogType.AntMovieCatalog3 && !MyFilmsDetail.ExtendedStartmode(MyFilmsDetail.PluginMode.Extended, "Restrict DB field Selection for AMC3") &&
                (dc.ColumnName == "IMDB_Id" || dc.ColumnName == "TMDB_Id" || dc.ColumnName == "Watched" ||
                 dc.ColumnName == "Certification" || dc.ColumnName == "Writer" || dc.ColumnName == "SourceTrailer" ||
                 dc.ColumnName == "TagLine" || dc.ColumnName == "Tags" || dc.ColumnName == "RatingUser" ||
@@ -2725,7 +2724,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
       int iSelItem = typeof(T) == typeof(int) ? Int32.Parse(selItem) : -2;
       LogMyFilms.Debug("(GetFilmList) - selItem/iSelItem:               '" + selItem + "'/'" + iSelItem + "'");
 
-      var facadeDownloadItems = new List<GUIListItem>();
+      List<GUIListItem> facadeDownloadItems = new List<GUIListItem>();
 
       // setlabels
       // MyFilmsDetail.setGUIProperty("select", (conf.StrTxtSelect == "") ? " " : conf.StrTxtSelect.Replace(conf.TitleDelim, @"\"));// always show as though folder path using \ regardless what sep is used
@@ -2746,13 +2745,12 @@ namespace MyFilmsPlugin.MyFilmsGUI
         #region filter list by Wselectedlabel, if user is coming from group view
         if (conf.Boolreturn) //in case of selection by view verify if value correspond excatly to the searched string
         {
-          ArrayList wTableau = Search_String(sr[conf.WStrSort].ToString());
-          foreach (string s in from object t in wTableau select t.ToString())
+          List<string> wTableau = Search_String(sr[conf.WStrSort].ToString());
+          foreach (string s in wTableau)
           {
             if (isdate)
             {
-              if (string.Format("{0:dd/MM/yyyy}", DateTime.Parse(s).ToShortDateString()) ==
-                  string.Format("{0:dd/MM/yyyy}", DateTime.Parse(conf.Wselectedlabel).ToShortDateString()))
+              if (string.Format("{0:dd/MM/yyyy}", DateTime.Parse(s).ToShortDateString()) == string.Format("{0:dd/MM/yyyy}", DateTime.Parse(conf.Wselectedlabel).ToShortDateString()))
               {
                 goto suite;
               }
@@ -2872,8 +2870,8 @@ namespace MyFilmsPlugin.MyFilmsGUI
                 string label2 = sr[sortfield].ToString(); // string label2 = sr[conf.wStrSort].ToString();
                 if (IsSplittableField(sortfield))
                 {
-                  ArrayList wtab = Search_String(label2, false);
-                  if (wtab.Count > 0) label2 = wtab[0].ToString();
+                  List<string> wtab = Search_String(label2, false);
+                  if (wtab.Count > 0) label2 = wtab[0];
                   if (wtab.Count > 1) label2 += " ...";
                 }
                 if (label2.Length > 34) label2 = label2.Substring(0, 30) + " ...";
@@ -3320,14 +3318,13 @@ namespace MyFilmsPlugin.MyFilmsGUI
         {
           string language = null;
           Tmdb api = null;
-          TmdbConfiguration tmdbConf;
           if (conf.BoolEnableOnlineServices)
           {
             language = CultureInfo.CurrentCulture.Name.Substring(0, 2);
             LogMyFilms.Debug("GetImagesforTmdbFilmList - detected language = '" + language + "'");
             // grabber.TheMoviedb tmdbapi = new grabber.TheMoviedb();
             api = new Tmdb(TmdbApiKey, language); // language is optional, default is "en"
-            tmdbConf = api.GetConfiguration();
+            TmdbConfiguration tmdbConf = api.GetConfiguration();
             foreach (string posterSize in tmdbConf.images.poster_sizes)
             {
               LogMyFilms.Debug("Available TMDB Poster Size: '" + posterSize + "'");
@@ -3537,10 +3534,13 @@ namespace MyFilmsPlugin.MyFilmsGUI
           strSelect = labelNotEmpty ? conf.WStrSort + " like '" + StringExtensions.EscapeLikeValue(sLabel) + "'" : "(" + conf.WStrSort + " is NULL OR " + conf.WStrSort + " like '')";
         else
         {
-          if (conf.BoolDontSplitValuesInViews)
-            strSelect = labelNotEmpty ? conf.WStrSort + " like '" + StringExtensions.EscapeLikeValue(sLabel) + "'" : "(" + conf.WStrSort + " is NULL OR " + conf.WStrSort + " like '')";
-          else
-            strSelect = labelNotEmpty ? conf.WStrSort + " like '*" + StringExtensions.EscapeLikeValue(sLabel) + "*'" : "(" + conf.WStrSort + " is NULL OR " + conf.WStrSort + " like '')";
+          strSelect = conf.BoolDontSplitValuesInViews
+            ? (labelNotEmpty
+              ? conf.WStrSort + " like '" + StringExtensions.EscapeLikeValue(sLabel) + "'"
+              : "(" + conf.WStrSort + " is NULL OR " + conf.WStrSort + " like '')")
+            : (labelNotEmpty
+              ? conf.WStrSort + " like '*" + StringExtensions.EscapeLikeValue(sLabel) + "*'"
+              : "(" + conf.WStrSort + " is NULL OR " + conf.WStrSort + " like '')");
         }
       }
 
@@ -3563,7 +3563,6 @@ namespace MyFilmsPlugin.MyFilmsGUI
 
       if (conf.StrTitleSelect != "") delimCnt = NewString.PosCount(conf.TitleDelim, conf.StrTitleSelect, false) + 1; //get num .'s in title
       int number = -1;
-      ArrayList wTableau;
       bool isdate = IsDateField(conf.WStrSort);
 
       foreach (DataRow sr in rFanart)
@@ -3571,7 +3570,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
         number++;
         if (conf.Boolreturn)//in case of selection by view verify if value correspond excatly to the searched string
         {
-          wTableau = Search_String(sr[conf.WStrSort].ToString(), false);
+          List<string> wTableau = Search_String(sr[conf.WStrSort].ToString(), false);
           foreach (string val in wTableau)
           {
             if (isdate && string.Format("{0:dd/MM/yyyy}", DateTime.Parse(val).ToShortDateString()) == string.Format("{0:dd/MM/yyyy}", DateTime.Parse(conf.Wselectedlabel).ToShortDateString()))
@@ -4490,7 +4489,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
     private static int CountViewItems(IEnumerable<DataRow> filmrows, string wStrSort)
     {
       int count = 0;
-      var set = new HashSet<string>(StringComparer.OrdinalIgnoreCase); //List<string> itemList = new List<string>();
+      HashSet<string> set = new HashSet<string>(StringComparer.OrdinalIgnoreCase); //List<string> itemList = new List<string>();
 
       bool issplitfield = IsSplittableField(wStrSort);
       bool dontsplitvalues = conf.BoolDontSplitValuesInViews;
@@ -4501,10 +4500,11 @@ namespace MyFilmsPlugin.MyFilmsGUI
       {
         if (issplitfield && !dontsplitvalues)
         {
-          var wtab = Search_String(champselect, false);
+          List<string> wtab = Search_String(champselect, false);
           if (wtab.Count > 0) // itemList.AddRange(wtab);
           {
-            count += wtab.Cast<object>().Count(t => set.Add((string)t));
+            int count1 = wtab.Count(t => set.Add(t));
+            count += count1;
           }
           else if (showEmptyValues)  // only add empty entries, if they should show - speeds up sorting otherwise ...
           {
@@ -4665,7 +4665,6 @@ namespace MyFilmsPlugin.MyFilmsGUI
       // GUIPropertyManager.SetProperty("#currentmodule", GUILocalizeStrings.Get(MyFilms.ID_MyFilms) + "/" + GUIPropertyManager.GetProperty("#myfilms.view") + "/" + GUIPropertyManager.GetProperty("#myfilms.select")); // will be set in SetLabel
       LogMyFilms.Debug("GetSelectFromOnlineMenuView() - end facade load ...");
     }
-
 
     //--------------------------------------------------------------------------------------------
     //  Load Views for Video from facade list ...
@@ -4914,9 +4913,9 @@ namespace MyFilmsPlugin.MyFilmsGUI
                     valueFilter = mfView.DBfield + " like '*" + mfView.Value + "*'";
 
                   if (string.IsNullOrEmpty(mfView.Filter))
-                    newLabel = "(" + mfView.Value + ") " + BaseMesFilms.ReadDataMovies(conf.StrGlobalFilterString + conf.StrDfltSelect, valueFilter, conf.StrSorta, conf.StrSortSens).Select(p => p[conf.StrTitle1] != DBNull.Value).Count().ToString();
+                    newLabel = "(" + mfView.Value + ") " + BaseMesFilms.ReadDataMovies(conf.StrGlobalFilterString + conf.StrDfltSelect, valueFilter, conf.StrSorta, conf.StrSortSens).Select(p => p[conf.StrTitle1] != DBNull.Value).Count();
                   else
-                    newLabel = "(" + mfView.Value + ") " + BaseMesFilms.ReadDataMovies(conf.StrGlobalFilterString + mfView.Filter + " AND " + conf.StrDfltSelect, valueFilter, conf.StrSorta, conf.StrSortSens).Select(p => p[conf.StrTitle1] != DBNull.Value).Count().ToString();
+                    newLabel = "(" + mfView.Value + ") " + BaseMesFilms.ReadDataMovies(conf.StrGlobalFilterString + mfView.Filter + " AND " + conf.StrDfltSelect, valueFilter, conf.StrSorta, conf.StrSortSens).Select(p => p[conf.StrTitle1] != DBNull.Value).Count();
 
                   //newLabel = "(" + viewRow.Value + ")";
                   //newLabel = "(" + viewRow.Value + ") " + r.Select(p => p[viewRow.DBfield].Equals(viewRow.Value)).Count().ToString();
@@ -5036,10 +5035,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
       {
         #region sort for Online Movie Lists
         GUIDialogMenu dlg = (GUIDialogMenu)GUIWindowManager.GetWindow((int)Window.WINDOW_DIALOG_MENU);
-        if (dlg == null)
-        {
-          return;
-        }
+        if (dlg == null) return;
 
         dlg.Reset();
         dlg.SetHeading(495); // Sort options
@@ -5053,10 +5049,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
 
         // show dialog and wait for result
         dlg.DoModal(GetID);
-        if (dlg.SelectedId == -1)
-        {
-          return;
-        }
+        if (dlg.SelectedId == -1) return;
 
         _currentSortMethod = (SortMethod)dlg.SelectedLabel;
 
@@ -5390,11 +5383,10 @@ namespace MyFilmsPlugin.MyFilmsGUI
       }
       catch (Exception ex)
       {
-        LogMyFilms.Error("MyFilms Sort(): Error comparing GUIListitems - {0}", ex.ToString());
+        LogMyFilms.Error(ex, "MyFilms Sort(): Error comparing GUIListitems - {0}", ex.Message);
         return 0;
       }
     }
-
 
     //--------------------------------------------------------------------------------------------
     //  Select main Options
@@ -5403,7 +5395,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
     {
       var dlg1 = (GUIDialogMenu)GUIWindowManager.GetWindow((int)Window.WINDOW_DIALOG_MENU);
       if (dlg1 == null) return;
-      var choiceView = new List<string>();
+      List<string> choiceView = new List<string>();
       dlg1.Reset();
       dlg1.SetHeading(GUILocalizeStrings.Get(10798701)); // Options ...
       if (Configuration.NbConfig > 1)
@@ -5433,11 +5425,8 @@ namespace MyFilmsPlugin.MyFilmsGUI
       choiceView.Add("globalmappings");
 
       // Add Submenu for Wiki Online Help
-      //if (MyFilmsDetail.ExtendedStartmode("Contextmenu for Wiki Onlinehelp")) // check if specialmode is configured for disabled features
-      // {
       dlg1.Add(string.Format(GUILocalizeStrings.Get(10798699)));
       choiceView.Add("globalwikihelp");
-      //}
 
       dlg1.Add(string.Format(GUILocalizeStrings.Get(10798700))); // About ...
       choiceView.Add("about");
@@ -5596,7 +5585,6 @@ namespace MyFilmsPlugin.MyFilmsGUI
         default:
 
           #region show last searches or new dialog
-          if (dlg == null) return;
           dlg.Reset();
           choiceSearch.Clear();
           switch (menuselection)
@@ -5750,7 +5738,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
     {
       if (string.IsNullOrEmpty(fieldname)) return false;
 
-      using (var ds = new AntMovieCatalog())
+      using (AntMovieCatalog ds = new AntMovieCatalog())
       {
         return ds.Movie.Columns.Cast<DataColumn>().Any(dc => dc.ColumnName == fieldname);
       }
@@ -5918,7 +5906,13 @@ namespace MyFilmsPlugin.MyFilmsGUI
     static readonly Regex oRegex = new Regex("\\([^\\)]*?[,;].*?[\\(\\)]", RegexOptions.Compiled);
     static readonly Regex oRegexReplace = new Regex("[,;]", RegexOptions.Compiled);
 
-    public static ArrayList Search_String(string champselect, bool reverseNames = false)
+    static MyFilms()
+    {
+      IsNetworkAvailable = true;
+      IsResumeFromStandby = false;
+    }
+
+    public static List<string> Search_String(string champselect, bool reverseNames = false)
     {
       // Match theMatch = Regex.Match(source, pattern, RegexOptions.Compiled);
       // MatchCollection theMatches = Regex.Matches(source, pattern, RegexOptions.Compiled);
@@ -5927,47 +5921,38 @@ namespace MyFilmsPlugin.MyFilmsGUI
 
       MatchCollection oMatches = oRegex.Matches(champselect);
       champselect = oMatches.Cast<Match>().Aggregate(champselect, (current, oMatch) => current.Replace(oMatch.Value, oRegexReplace.Replace(oMatch.Value, string.Empty)));
-      ArrayList wtab = new ArrayList();
+      List<string> wtab = new List<string>();
 
-      int wi;
-      string[] sep = conf.ListSeparator;
-      string[] roleSep = conf.RoleSeparator;
-      //char[] SepAsChars; string tS = String.Empty; for (int i = 0; i <= Sep.Length; i++) tS += Sep[i]; SepAsChars = tS.ToCharArray(); string[] arSplit = champselect.Split(SepAsChars, StringSplitOptions.RemoveEmptyEntries);
-      string[] arSplit = champselect.Split(sep, StringSplitOptions.RemoveEmptyEntries);
-      string wzone;
-      int wzoneIndexPosition;
-      for (wi = 0; wi < arSplit.Length; wi++)
+      // char[] SepAsChars; string tS = String.Empty; for (int i = 0; i <= Sep.Length; i++) tS += Sep[i]; SepAsChars = tS.ToCharArray(); string[] arSplit = champselect.Split(SepAsChars, StringSplitOptions.RemoveEmptyEntries);
+      string[] arSplit = champselect.Split(conf.ListSeparator, StringSplitOptions.RemoveEmptyEntries);
+      foreach (string substring in arSplit)
       {
-        if (arSplit[wi].Length > 0)
+        if (substring.Length > 0)
         {
           // wzone = MediaPortal.Util.HTMLParser.removeHtml(arSplit[wi].Trim()); // Replaced for performancereasons - HTML cleanup was not necessary and was VERY slow!
-          wzone = arSplit[wi].Replace("  ", " ").Trim();
-          for (int i = 0; i <= 4; i++)
+          string wzone = substring.Replace("  ", " ").Trim();
+          string[] roleSep = conf.RoleSeparator;
+          foreach (string roleSeparator in roleSep.Where(roleSeparator => roleSeparator.Length > 0))
           {
-            if (roleSep[i].Length > 0)
-            {
-              wzoneIndexPosition = wzone.IndexOf(roleSep[i], StringComparison.OrdinalIgnoreCase); //wzoneIndexPosition = wzone.IndexOf(conf.RoleSeparator[i],StringComparison.OrdinalIgnoreCase);
+            int wzoneIndexPosition = wzone.IndexOf(roleSeparator, StringComparison.OrdinalIgnoreCase);
 
-              if (wzoneIndexPosition == wzone.Length - 1)
-              {
-                wzone = string.Empty;
-                break;
-              }
-              if (wzoneIndexPosition > 1 && wzoneIndexPosition < wzone.Length)
-              {
-                wzone = wzone.Substring(0, wzoneIndexPosition).Trim();
-              }
+            if (wzoneIndexPosition == wzone.Length - 1)
+            {
+              wzone = string.Empty;
+              break;
+            }
+            if (wzoneIndexPosition > 1 && wzoneIndexPosition < wzone.Length)
+            {
+              wzone = wzone.Substring(0, wzoneIndexPosition).Trim();
             }
           }
+
           if (reverseNames && wzone.Contains(" ")) // Reverse Names "Bruce Willis" -> "Willis, Bruce"
           {
             wzone = wzone.Substring(wzone.LastIndexOf(" ", StringComparison.OrdinalIgnoreCase) + 1) + ", " + wzone.Substring(0, wzone.LastIndexOf(" ", StringComparison.OrdinalIgnoreCase));
           }
 
-          if (wzone.Length > 0)
-          {
-            wtab.Add(wzone);
-          }
+          if (wzone.Length > 0) wtab.Add(wzone);
         }
       }
       return wtab;
@@ -5978,106 +5963,94 @@ namespace MyFilmsPlugin.MyFilmsGUI
 
       MatchCollection oMatches = oRegex.Matches(champselect);
       champselect = oMatches.Cast<Match>().Aggregate(champselect, (current, oMatch) => current.Replace(oMatch.Value, oRegexReplace.Replace(oMatch.Value, string.Empty)));
-      var wtab = new List<DbPersonInfo>();
+      List<DbPersonInfo> wtab = new List<DbPersonInfo>();
 
-      int wi;
       string[] sep = conf.ListSeparator;
       string[] roleSep = conf.RoleSeparator;
       //char[] SepAsChars; string tS = String.Empty; for (int i = 0; i <= Sep.Length; i++) tS += Sep[i]; SepAsChars = tS.ToCharArray(); string[] arSplit = champselect.Split(SepAsChars, StringSplitOptions.RemoveEmptyEntries);
       string[] arSplit = champselect.Split(sep, StringSplitOptions.RemoveEmptyEntries);
       string wzoneRole = string.Empty;
-      int wzoneIndexPosition;
-      for (wi = 0; wi < arSplit.Length; wi++)
+      foreach (string substring in arSplit.Where(substring => substring.Length > 0))
       {
-        if (arSplit[wi].Length > 0)
+        // wzone = MediaPortal.Util.HTMLParser.removeHtml(arSplit[wi].Trim()); // Replaced for performancereasons - HTML cleanup was not necessary and was VERY slow!
+        string wzone = substring.Replace("  ", " ").Trim();
+        for (int i = 0; i <= 4; i++)
         {
-          // wzone = MediaPortal.Util.HTMLParser.removeHtml(arSplit[wi].Trim()); // Replaced for performancereasons - HTML cleanup was not necessary and was VERY slow!
-          string wzone = arSplit[wi].Replace("  ", " ").Trim();
-          for (int i = 0; i <= 4; i++)
+          if (roleSep[i].Length > 0)
           {
-            if (roleSep[i].Length > 0)
-            {
-              wzoneIndexPosition = wzone.IndexOf(roleSep[i], StringComparison.OrdinalIgnoreCase); //wzoneIndexPosition = wzone.IndexOf(conf.RoleSeparator[i],StringComparison.OrdinalIgnoreCase);
+            int wzoneIndexPosition = wzone.IndexOf(roleSep[i], StringComparison.OrdinalIgnoreCase);
 
-              if (wzoneIndexPosition == wzone.Length - 1)
-              {
-                wzone = string.Empty;
-                wzoneRole = string.Empty;
-                break;
-              }
-              if (wzoneIndexPosition > 1 && wzoneIndexPosition < wzone.Length)
-              {
-                wzoneRole = wzone.Substring(wzoneIndexPosition + 1).Trim().Trim('(').Trim(')').Replace("as", "").Replace("  ", " ").Trim();
-                wzone = wzone.Substring(0, wzoneIndexPosition).Trim();
-              }
+            if (wzoneIndexPosition == wzone.Length - 1)
+            {
+              wzone = string.Empty;
+              wzoneRole = string.Empty;
+              break;
+            }
+            if (wzoneIndexPosition > 1 && wzoneIndexPosition < wzone.Length)
+            {
+              wzoneRole = wzone.Substring(wzoneIndexPosition + 1).Trim().Trim('(').Trim(')').Replace("as", "").Replace("  ", " ").Trim();
+              wzone = wzone.Substring(0, wzoneIndexPosition).Trim();
             }
           }
-          if (reverseNames && wzone.Contains(" ")) // Reverse Names "Bruce Willis" -> "Willis, Bruce"
-          {
-            wzone = wzone.Substring(wzone.LastIndexOf(" ", StringComparison.OrdinalIgnoreCase) + 1) + ", " + wzone.Substring(0, wzone.LastIndexOf(" ", StringComparison.OrdinalIgnoreCase));
-          }
+        }
+        if (reverseNames && wzone.Contains(" ")) // Reverse Names "Bruce Willis" -> "Willis, Bruce"
+        {
+          wzone = wzone.Substring(wzone.LastIndexOf(" ", StringComparison.OrdinalIgnoreCase) + 1) + ", " + wzone.Substring(0, wzone.LastIndexOf(" ", StringComparison.OrdinalIgnoreCase));
+        }
 
-          if (wzone.Length > 0)
-          {
-            var person = new DbPersonInfo { Name = wzone, Job = wzoneRole };
-            wtab.Add(person);
-          }
+        if (wzone.Length > 0)
+        {
+          DbPersonInfo person = new DbPersonInfo { Name = wzone, Job = wzoneRole };
+          wtab.Add(person);
         }
       }
       return wtab;
     }
 
-    private static ArrayList SubItemGrabbing(string champselect)
+    private static IEnumerable<string> SubItemGrabbing(string champselect)
     {
-      var oRegex = new Regex("\\([^\\)]*?[,;].*?[\\(\\)]");
+      Regex oRegex = new Regex("\\([^\\)]*?[,;].*?[\\(\\)]");
       MatchCollection oMatches = oRegex.Matches(champselect);
       foreach (Match oMatch in oMatches)
       {
-        var oRegexReplace = new Regex("[,;]");
+        Regex oRegexReplace = new Regex("[,;]");
         champselect = champselect.Replace(oMatch.Value, oRegexReplace.Replace(oMatch.Value, ""));
       }
-      ArrayList wtab = new ArrayList();
+      List<string> wtab = new List<string>();
 
-      int wi;
       string[] sep = conf.ListSeparator;
       string[] arSplit = champselect.Split(sep, StringSplitOptions.RemoveEmptyEntries);
-      for (wi = 0; wi < arSplit.Length; wi++)
+      foreach (string substring in arSplit.Where(substring => substring.Length > 0))
       {
-        if (arSplit[wi].Length > 0)
+        string wzone = HTMLParser.removeHtml(substring.Trim());
+        foreach (string roleSeparator in conf.RoleSeparator.Where(roleSeparator => roleSeparator.Length > 0))
         {
-          string wzone = HTMLParser.removeHtml(arSplit[wi].Trim());
-          for (int i = 0; i <= 4; i++)
+          if (wzone.Trim().IndexOf(roleSeparator) == wzone.Trim().Length - 1)
           {
-            if (conf.RoleSeparator[i].Length > 0)
-            {
-              if (wzone.Trim().IndexOf(conf.RoleSeparator[i]) == wzone.Trim().Length - 1)
-              {
-                wzone = string.Empty;
-                break;
-              }
-              if (wzone.Trim().IndexOf(conf.RoleSeparator[i]) > 1 && wzone.Trim().IndexOf(conf.RoleSeparator[i]) < wzone.Trim().Length)
-              {
-                wzone = wzone.Substring(0, wzone.IndexOf(conf.RoleSeparator[i])).Trim();
-              }
-            }
+            wzone = string.Empty;
+            break;
           }
-          if (wzone.Length > 0)
-            wtab.Add(wzone.Trim());
+          if (wzone.Trim().IndexOf(roleSeparator) > 1 && wzone.Trim().IndexOf(roleSeparator) < wzone.Trim().Length)
+          {
+            wzone = wzone.Substring(0, wzone.IndexOf(roleSeparator)).Trim();
+          }
         }
+        if (wzone.Length > 0) wtab.Add(wzone.Trim());
       }
-      return wtab;
+      return wtab.AsEnumerable();
     }
 
-    public static ArrayList SubTitleGrabbing(string champselect)
+    public static IEnumerable<string> SubTitleGrabbing(string champselect)
     {
-      var oRegex = new Regex("\\([^\\)]*?[,;].*?[\\(\\)]");
+      Regex oRegex = new Regex("\\([^\\)]*?[,;].*?[\\(\\)]");
       MatchCollection oMatches = oRegex.Matches(champselect);
       foreach (Match oMatch in oMatches)
       {
-        var oRegexReplace = new Regex("[,;]");
+        Regex oRegexReplace = new Regex("[,;]");
         champselect = champselect.Replace(oMatch.Value, oRegexReplace.Replace(oMatch.Value, ""));
       }
-      var wtab = new ArrayList();
+
+      List<string> wtab = new List<string>();
 
       int wi;
       string[] sep = { " - ", ":" }; //Only Dash as Separator for Movietitles !!!
@@ -6107,53 +6080,40 @@ namespace MyFilmsPlugin.MyFilmsGUI
             wtab.Add(wzone.Trim());
         }
       }
-      return wtab;
+      return wtab.AsEnumerable();
     }
 
-    public static ArrayList SubWordGrabbing(string champselect, int minchars, bool filter)
+    public static IEnumerable<string> SubWordGrabbing(string champselect, int minchars, bool filter)
     {
       LogMyFilms.Debug("(SubWordGrabbing): InputString: '" + champselect + "'");
       Regex oRegex = new Regex("\\([^\\)]*?[,;].*?[\\(\\)]");
       MatchCollection oMatches = oRegex.Matches(champselect);
       foreach (Match oMatch in oMatches)
       {
-        var oRegexReplace = new Regex("[,;]");
+        Regex oRegexReplace = new Regex("[,;]");
         champselect = champselect.Replace(oMatch.Value, oRegexReplace.Replace(oMatch.Value, ""));
         LogMyFilms.Debug("(SubWordGrabbing): RegExReplace: '" + champselect + "'");
       }
 
       string[] cleanerList = new[] { "Der ", "der ", "Die ", "die ", "Das ", "das", "des", " so", "sich", " a ", " A ", "The ", "the ", "- ", " -", " AT ", "in " };
-      int i = 0;
-      for (i = 0; i < 13; i++)
-      {
-        if ((cleanerList[i].Length > 0) && filter)
-        {
-          champselect = champselect.Replace(cleanerList[i], " ");
-          //LogMyFilms.Debug("(SubWordGrabbing): CleanerListItem: '" + CleanerList[i] + "'");
-        }
-      }
+      champselect = cleanerList.Where(s => (s.Length > 0) && filter).Aggregate(champselect, (current, s) => current.Replace(s, " "));
 
-      var wtab = new ArrayList();
+      List<string> wtab = new List<string>();
 
-      int wi;
       //string[] Sep = conf.ListSeparator;
       string[] sep = new[] { " ", ",", ";", "|", "/", "(", ")", ".", @"\", ":" };
       string[] arSplit = champselect.Split(sep, StringSplitOptions.RemoveEmptyEntries);
-      string wzone;
-      for (wi = 0; wi < arSplit.Length; wi++)
+      foreach (string s in arSplit.Where(s => s.Length > 0))
       {
-        if (arSplit[wi].Length > 0)
+        string wzone = HTMLParser.removeHtml(s.Trim());
+        LogMyFilms.Debug("(SubWordGrabbing): wzone: '" + wzone + "'");
+        if (wzone.Length >= minchars)//Only words with minimum 4 letters!
         {
-          wzone = HTMLParser.removeHtml(arSplit[wi].Trim());
-          LogMyFilms.Debug("(SubWordGrabbing): wzone: '" + wzone + "'");
-          if (wzone.Length >= minchars)//Only words with minimum 4 letters!
-          {
-            wtab.Add(wzone.Trim());
-            LogMyFilms.Debug("(SubWordGrabbing): AddWordToList: '" + wzone.Trim() + "'");
-          }
+          wtab.Add(wzone.Trim());
+          LogMyFilms.Debug("(SubWordGrabbing): AddWordToList: '" + wzone.Trim() + "'");
         }
       }
-      return wtab;
+      return wtab.AsEnumerable();
     }
 
     private bool LoadWatchedFlagPossible()
@@ -6235,17 +6195,11 @@ namespace MyFilmsPlugin.MyFilmsGUI
       try
       {
         if (facadeFilms.ListLayout != null) facadeFilms.ListLayout.Clear();
-
         if (facadeFilms.AlbumListLayout != null) facadeFilms.AlbumListLayout.Clear();
-
         if (facadeFilms.ThumbnailLayout != null) facadeFilms.ThumbnailLayout.Clear();
-
         if (facadeFilms.FilmstripLayout != null) facadeFilms.FilmstripLayout.Clear();
-
         if (facadeFilms.CoverFlowLayout != null) facadeFilms.CoverFlowLayout.Clear();
-
         if (facadeFilms != null) facadeFilms.Clear();
-
         if (facadeFilms != null) facadeFilms.Focus = true;
       }
       catch (Exception ex)
@@ -6433,7 +6387,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
           }
           catch (Exception ex)
           {
-            LogMyFilms.Error("Error sorting items - {0}", ex.ToString());
+            LogMyFilms.Error(ex, "Error sorting items - {0}", ex.Message);
           }
           #endregion
 
@@ -6635,14 +6589,14 @@ namespace MyFilmsPlugin.MyFilmsGUI
                   //#endregion
 
                   movie.MovieImages = api.GetMovieImages(movie.MovieSearchResult.id, language);
-                  if (movie.MovieImages.posters.Count == 0)
+                  if (movie.MovieImages.posters == null || movie.MovieImages.posters.Count == 0)
                   {
                     movie.MovieImages = api.GetMovieImages(movie.MovieSearchResult.id, null);
-                    LogMyFilms.Debug("GetImagesTMDB() - no '" + language + "' posters found - used default and found '" + movie.MovieImages.posters.Count + "'");
+                    LogMyFilms.Debug("GetImagesTMDB() - no '" + language + "' posters found - used default and found '" + (movie.MovieImages.posters != null ? movie.MovieImages.posters.Count : 0) + "'");
                   }
 
                   LogMyFilms.Debug("GetImagesTMDB() - localThumb = '" + localThumb + "'");
-                  string remoteThumb = movie.MovieImages.posters.Count > 0
+                  string remoteThumb = movie.MovieImages.posters != null && movie.MovieImages.posters.Count > 0
                                          ? tmdbConf.images.base_url + "w500" + movie.MovieImages.posters[0].file_path
                                          : "";
                   LogMyFilms.Debug("GetImagesTMDB() - remoteThumb = '" + remoteThumb + "'");
@@ -6734,7 +6688,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
                   bool localtraileravailable = false;
                   #region load trailer info from TMDB
                   movie.Trailers = api.GetMovieTrailers(movie.MovieSearchResult.id, language);
-                  if (movie.Trailers.youtube.Count == 0)
+                  if (movie.Trailers.youtube == null || movie.Trailers.youtube.Count == 0)
                   {
                     // LogMyFilms.Debug("GetTrailers - no trailer found for language '" + language + "' - try default");
                     movie.Trailers = api.GetMovieTrailers(movie.MovieSearchResult.id, null);
@@ -6746,35 +6700,38 @@ namespace MyFilmsPlugin.MyFilmsGUI
                                   ? releasedate.Year.ToString()
                                   : "";
 
-                  for (int j = 0; j < movie.Trailers.youtube.Count; j++)
+                  if (movie.Trailers.youtube != null)
                   {
-                    LogMyFilms.Debug("GetTrailers - Trailer #'" + j + "', name = '" + movie.Trailers.youtube[j].name + "', size = '" + movie.Trailers.youtube[j].size + "', source = '" + movie.Trailers.youtube[j].source + "'");
-                    if (j == 0)
+                    for (int j = 0; j < movie.Trailers.youtube.Count; j++)
                     {
-                      item.Path = "http://www.youtube.com/watch?v=" + movie.Trailers.youtube[j].source; // http://www.youtube.com/watch?v=KwPTIEWTYEI
-                      remotetraileravailable = true;
-                    }
-
-                    #region add trailers to trailer download queue for caching
-
-                    if (conf.CacheOnlineTrailer && conf.StrDirStorTrailer.Length > 0) // if (MyFilms.conf.BoolEnableOnlineServices)
-                    {
-                      string destinationDirectory = Path.Combine(conf.StrDirStorTrailer + @"OnlineTrailerCache\", item.Label + (year.Length > 0 ? " (" + year + ")" : ""));
-                      Trailer trailer = new Trailer
+                      LogMyFilms.Debug("GetTrailers - Trailer #'" + j + "', name = '" + movie.Trailers.youtube[j].name + "', size = '" + movie.Trailers.youtube[j].size + "', source = '" + movie.Trailers.youtube[j].source + "'");
+                      if (j == 0)
                       {
-                        MovieTitle = item.Label,
-                        Trailername = movie.Trailers.youtube[j].name,
-                        OriginalUrl = "http://www.youtube.com/watch?v=" + movie.Trailers.youtube[j].source,
-                        SourceUrl = null,
-                        Quality = null,
-                        DestinationDirectory = destinationDirectory
-                      };
-                      LogMyFilms.Debug("GetImagesForTmdbFilmList() - trailer caching - add trailer '#" + j + "', path '" + destinationDirectory + "'");
-                      AddTrailerToDownloadQueue(trailer);
-                    }
+                        item.Path = "http://www.youtube.com/watch?v=" + movie.Trailers.youtube[j].source; // http://www.youtube.com/watch?v=KwPTIEWTYEI
+                        remotetraileravailable = true;
+                      }
 
-                    #endregion
-                  }
+                      #region add trailers to trailer download queue for caching
+
+                      if (conf.CacheOnlineTrailer && conf.StrDirStorTrailer.Length > 0) // if (MyFilms.conf.BoolEnableOnlineServices)
+                      {
+                        string destinationDirectory = Path.Combine(conf.StrDirStorTrailer + @"OnlineTrailerCache\", item.Label + (year.Length > 0 ? " (" + year + ")" : ""));
+                        Trailer trailer = new Trailer
+                        {
+                          MovieTitle = item.Label,
+                          Trailername = movie.Trailers.youtube[j].name,
+                          OriginalUrl = "http://www.youtube.com/watch?v=" + movie.Trailers.youtube[j].source,
+                          SourceUrl = null,
+                          Quality = null,
+                          DestinationDirectory = destinationDirectory
+                        };
+                        LogMyFilms.Debug("GetImagesForTmdbFilmList() - trailer caching - add trailer '#" + j + "', path '" + destinationDirectory + "'");
+                        AddTrailerToDownloadQueue(trailer);
+                      }
+
+                      #endregion
+                    }
+                  } 
                   #endregion
 
                   #region search locally cached trailers
@@ -6805,7 +6762,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
               catch (Exception ex)
               {
                 LogMyFilms.Debug("GetImagesForTmdbFilmList() - Error: '" + ex.Message + "'");
-                LogMyFilms.Debug("GetImagesForTmdbFilmList() - Exception: '" + ex.StackTrace + "'");
+                LogMyFilms.Debug(ex, "GetImagesForTmdbFilmList() - Exception: '" + ex.Message + "'");
               }
               #endregion
             }
@@ -6877,8 +6834,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
               }
               catch (Exception ex)
               {
-                LogMyFilms.Debug("GetImagesForTmdbFilmList() - Error: '" + ex.Message + "'");
-                LogMyFilms.Debug("GetImagesForTmdbFilmList() - Exception: '" + ex.StackTrace + "'");
+                LogMyFilms.Debug(ex, "GetImagesForTmdbFilmList() - Error: '" + ex.Message + "'");
               }
               #endregion
             }
@@ -7172,7 +7128,6 @@ namespace MyFilmsPlugin.MyFilmsGUI
       string champselect;
       string wchampselect = "";
       string wchampselectIndexed = "";
-      ArrayList wTableau = new ArrayList();
 
       FieldType fieldType = GetFieldType(wStrSort);
       bool isperson = IsPersonField(fieldType);
@@ -7213,12 +7168,14 @@ namespace MyFilmsPlugin.MyFilmsGUI
 
       #region Collection of all items or subitems
       // Collect List of all attributes in w_tableau
+      List<string> wTableau = new List<string>();
       int wnbEnr = 0;
       int wnbEnrIndexed = 0; // counts for indexed views
       int wi;
       conf.DbSelection = new[] { globalFilterString + conf.StrViewSelect + conf.StrDfltSelect, wstrSelect, wStrSort, wStrSortSens, false.ToString(), false.ToString() };
 
       watch.Reset(); watch.Start();
+
       foreach (DataRow row in BaseMesFilms.ReadDataMovies(globalFilterString + conf.StrViewSelect + conf.StrDfltSelect, wstrSelect, wStrSort, wStrSortSens))
       {
         if (isdate)
@@ -7234,10 +7191,10 @@ namespace MyFilmsPlugin.MyFilmsGUI
 
         if (issplitfield && !dontsplitvalues)
         {
-          ArrayList wtab = Search_String(champselect, reversenames); //ArrayList wtab = Search_String(champselect, isperson);
+          List<string> wtab = Search_String(champselect, reversenames); //ArrayList wtab = Search_String(champselect, isperson);
           if (wtab.Count > 0)
           {
-            for (wi = 0; wi < wtab.Count; wi++) wTableau.Add(wtab[wi]); //w_tableau.AddRange(wtab);
+            wTableau.AddRange(wtab);
           }
           else if (showEmptyValues)  // only add empty entries, if they should show - speeds up sorting otherwise ...
           {
@@ -7264,13 +7221,11 @@ namespace MyFilmsPlugin.MyFilmsGUI
         case FieldType.Decimal:
           if (wStrSortSens == " ASC")
           {
-            IComparer myComparer = new AlphanumComparatorFast();
-            wTableau.Sort(0, wTableau.Count, myComparer);
+            wTableau.Sort(0, wTableau.Count, new AlphanumComparatorFastString());
           }
           else
           {
-            IComparer myComparer = new AlphanumComparatorFast();
-            wTableau.Sort(0, wTableau.Count, myComparer);
+            wTableau.Sort(0, wTableau.Count, new AlphanumComparatorFastString());
             wTableau.Reverse();
           }
           break;
@@ -7279,16 +7234,14 @@ namespace MyFilmsPlugin.MyFilmsGUI
           if (wStrSortSens == " ASC")
           {
             wTableau.Sort(0, wTableau.Count, StringComparer.OrdinalIgnoreCase);
-            //IComparer myComparer = new myForwarderClass();
-            //w_tableau.Sort(0, w_tableau.Count, myComparer);
+            //w_tableau.Sort(0, w_tableau.Count, new myForwarderClass());
             //w_tableau.Sort(0, w_tableau.Count, null);
           }
           else
           {
             wTableau.Sort(0, wTableau.Count, StringComparer.OrdinalIgnoreCase);
             wTableau.Reverse();
-            //IComparer myComparer = new myReverserClass();
-            //w_tableau.Sort(0, w_tableau.Count, myComparer);
+            //w_tableau.Sort(0, w_tableau.Count, new myReverserClass());
           }
           break;
       }
@@ -7304,7 +7257,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
         string currentitem = "";
         string itemValue = "";
 
-        var list = new List<KeyValuePair<string, int>>();
+        List<KeyValuePair<string, int>> list = new List<KeyValuePair<string, int>>();
         for (wi = 0; wi != wTableau.Count; wi++)
         {
           itemValue = wTableau[wi].ToString();
@@ -7330,7 +7283,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
             }
             // LogMyFilms.Debug("(GetSelectFromDivx) - Counting item: '" + currentitem + "', Count = '" + itemcount + "'");
             itemcount = 1;
-            currentitem = wTableau[wi].ToString();
+            currentitem = wTableau[wi];
           }
         }
         if (itemcount > 0 && itemValue.Length > 0)
@@ -7379,11 +7332,9 @@ namespace MyFilmsPlugin.MyFilmsGUI
       bool createFanartDir = IsCategoryYearCountryField(wStrSort);
 
       if (!Directory.Exists(strThumbDirectory)) // Check groupview thumbs cache directories and create them
-        try { Directory.CreateDirectory(strThumbDirectory); }
-        catch (Exception) { }
+        try { Directory.CreateDirectory(strThumbDirectory); } catch (Exception) { }
       if (conf.StrPathViews.Length > 0 && !Directory.Exists(conf.StrPathViews + @"\" + wStrSort.ToLower())) // Check groupview thumbs (sub)directories and create them
-        try { Directory.CreateDirectory(conf.StrPathViews + @"\" + wStrSort.ToLower()); }
-        catch (Exception) { }
+        try { Directory.CreateDirectory(conf.StrPathViews + @"\" + wStrSort.ToLower()); } catch (Exception) { }
       #endregion
 
       // if (isperson) { AsynUpdateActors(w_tableau); } // Launch Backgroundworker to (off)-load actors artwork and create cache thumbs
@@ -7395,7 +7346,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
       watch.Reset(); watch.Start();
       for (wi = 0; wi != wTableau.Count; wi++)
       {
-        champselect = wTableau[wi].ToString();
+        champselect = wTableau[wi];
         if (!isindexed && string.Compare(champselect, wchampselect, StringComparison.OrdinalIgnoreCase) == 0)  // if (!MyFilms.conf.Boolindexed && string.Compare(champselect, wchampselect, true) == 0) // Are the strings equal? Then add count!
         {
           wnbEnr++; // count items of distinct property
@@ -7535,9 +7486,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
     {
       if (filterlist.IndexOf(',') >= 0) // comma separated list ... so process it ...
       {
-        // string[] split = filterlist.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-        var split = Search_String(filterlist, reversenames);
-        foreach (string s in split)
+        foreach (string s in Search_String(filterlist, reversenames))
         {
           if (indexedview)
           {
@@ -7677,8 +7626,8 @@ namespace MyFilmsPlugin.MyFilmsGUI
               Thread.Sleep(50);
               stopwatch.Reset(); stopwatch.Start();
               bool isReversed = conf.BoolReverseNames;
-              var facadeLabel = new string[facadeFilms.Count];
-              var facadeCounts = new int[facadeFilms.Count];
+              string[] facadeLabel = new string[facadeFilms.Count];
+              int[] facadeCounts = new int[facadeFilms.Count];
               // string label2NamePrefix = BaseMesFilms.TranslateColumn(wStrSort);
 
               try
@@ -7917,14 +7866,14 @@ namespace MyFilmsPlugin.MyFilmsGUI
       }
     }
 
-    private void UpdatePersons(ArrayList persons, bool showprogressdialog)
+    private void UpdatePersons(List<string> persons, bool showprogressdialog)
     {
       LogMyFilms.Debug("UpdatePersons() - persons to update: '" + persons.Count + "'");
       new Thread(delegate(object o)
       {
         try
         {
-          var wTableau = (ArrayList)o;
+          List<string> wTableau = (List<string>)o;
           GUIDialogProgress dlgPrgrs = showprogressdialog ? (GUIDialogProgress)GUIWindowManager.GetWindow((int)Window.WINDOW_DIALOG_PROGRESS) : null;
           if (dlgPrgrs != null)
           {
@@ -7937,10 +7886,10 @@ namespace MyFilmsPlugin.MyFilmsGUI
             dlgPrgrs.Percentage = 0;
 
             int i = 0;
-            foreach (string personsname in from object t in wTableau select t.ToString())
+            foreach (string personsname in wTableau)
             {
               if (dlgPrgrs != null) dlgPrgrs.SetLine(2, "Loading Updates for '" + personsname + "'");
-              if (dlgPrgrs != null) dlgPrgrs.Percentage = i * 100 / wTableau.Count;
+              if (dlgPrgrs != null) dlgPrgrs.Percentage = i*100/wTableau.Count;
               LogMyFilms.Info("MyFilmsPersonsUpdater - updating person '" + personsname + "'");
               bool success = MyFilmsDetail.UpdatePersonDetails(personsname, null, true, false);
               i++;
@@ -8057,7 +8006,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
     {
       if (isPerson && reversenames) itemlabel = ReReverseName(itemlabel);
 
-      var thumbimages = new string[2];
+      string[] thumbimages = new string[2];
       thumbimages[0] = string.Empty; // ThumbnailImage
       thumbimages[1] = string.Empty; //IconImage
       string strThumb = strThumbDirectory + itemlabel + ".png";
@@ -8105,7 +8054,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
                 break;
               case Configuration.CatalogType.EaxMovieCatalog2:
               case Configuration.CatalogType.EaxMovieCatalog3:
-                if (System.IO.File.Exists(strPathArtist + itemlabel.Replace(" ", ".") + ".jpg")) strThumbSource = strPathArtist + itemlabel.Replace(" ", ".") + ".jpg";
+                if (File.Exists(strPathArtist + itemlabel.Replace(" ", ".") + ".jpg")) strThumbSource = strPathArtist + itemlabel.Replace(" ", ".") + ".jpg";
                 break;
               case Configuration.CatalogType.PersonalVideoDatabase: // PVD artist thumbs: e.g. Natalie Portman_1.jpg , then Natalie Portman_2.jpg 
                 if (!string.IsNullOrEmpty(conf.StrPathArtist)) //Search matching files in PVD picture directory
@@ -8313,7 +8262,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
       }
     }
 
-    internal static bool SaveThumbnailFile(string thumbSource, string thumbTarget)
+    private static bool SaveThumbnailFile(string thumbSource, string thumbTarget)
     {
       try
       {
@@ -8753,8 +8702,105 @@ namespace MyFilmsPlugin.MyFilmsGUI
     }
 
     //----------------------------------------------------------------------------------------------
-    //  Alphanumeric Sort
+    //  Alphanumeric Sort for strings
     //----------------------------------------------------------------------------------------------
+    public class AlphanumComparatorFastString : IComparer<string>
+    {
+      public int Compare(string x, string y)
+      {
+        //if (x == null)
+        //  return (y == null) ? 0 : 1;
+        //if (y == null)
+        //  return -1;
+
+        string s1 = x;
+        string s2 = y;
+
+        if (s1 == null)
+          return s2 == null ? 0 : 1;
+        if (s2 == null)
+          return -1;
+
+        //if (s1 == null) return 0;
+        //if (s2 == null) return 0;
+
+        int len1 = s1.Length;
+        int len2 = s2.Length;
+        int marker1 = 0;
+        int marker2 = 0;
+
+        // Walk through two the strings with two markers.
+        while (marker1 < len1 && marker2 < len2)
+        {
+          char ch1 = s1[marker1];
+          char ch2 = s2[marker2];
+
+          // Some buffers we can build up characters in for each chunk.
+          char[] space1 = new char[len1];
+          int loc1 = 0;
+          char[] space2 = new char[len2];
+          int loc2 = 0;
+
+          // Walk through all following characters that are digits or
+          // characters in BOTH strings starting at the appropriate marker.
+          // Collect char arrays.
+          do
+          {
+            space1[loc1++] = ch1;
+            marker1++;
+
+            if (marker1 < len1)
+            {
+              ch1 = s1[marker1];
+            }
+            else
+            {
+              break;
+            }
+          } while (char.IsDigit(ch1) == char.IsDigit(space1[0]));
+
+          do
+          {
+            space2[loc2++] = ch2;
+            marker2++;
+
+            if (marker2 < len2)
+            {
+              ch2 = s2[marker2];
+            }
+            else
+            {
+              break;
+            }
+          } while (char.IsDigit(ch2) == char.IsDigit(space2[0]));
+
+          // If we have collected numbers, compare them numerically.
+          // Otherwise, if we have strings, compare them alphabetically.
+          string str1 = new string(space1);
+          string str2 = new string(space2);
+
+          int result;
+
+          if (char.IsDigit(space1[0]) && char.IsDigit(space2[0]))
+          {
+            int thisNumericChunk = int.Parse(str1);
+            int thatNumericChunk = int.Parse(str2);
+            result = thisNumericChunk.CompareTo(thatNumericChunk);
+          }
+          else
+          {
+            result = str1.CompareTo(str2);
+          }
+
+          if (result != 0)
+          {
+            return result;
+          }
+        }
+        return len1 - len2;
+      }
+    }
+
     public class myReverserAlphanumComparatorFast : IComparer
     {
       public int Compare(object x, object y)
@@ -8851,11 +8897,353 @@ namespace MyFilmsPlugin.MyFilmsGUI
         return len1 - len2;
       }
     }
+
+    public class AlphanumComparatorFastForList : IComparer
+    {
+      List<string> GetList(string s1)
+      {
+        List<string> SB1 = new List<string>();
+        string st1, st2, st3;
+        st1 = "";
+        bool flag = char.IsDigit(s1[0]);
+        foreach (char c in s1)
+        {
+          if (flag != char.IsDigit(c) || c == '\'')
+          {
+            if (st1 != "")
+              SB1.Add(st1);
+            st1 = "";
+            flag = char.IsDigit(c);
+          }
+          if (char.IsDigit(c))
+          {
+            st1 += c;
+          }
+          if (char.IsLetter(c))
+          {
+            st1 += c;
+          }
+
+
+        }
+        SB1.Add(st1);
+        return SB1;
+      }
+
+
+
+      public int Compare(object x, object y)
+      {
+        string s1 = x as string;
+        if (s1 == null)
+        {
+          return 0;
+        }
+        string s2 = y as string;
+        if (s2 == null)
+        {
+          return 0;
+        }
+        if (s1 == s2)
+        {
+          return 0;
+        }
+        int len1 = s1.Length;
+        int len2 = s2.Length;
+        int marker1 = 0;
+        int marker2 = 0;
+
+        // Walk through two the strings with two markers.
+        List<string> str1 = GetList(s1);
+        List<string> str2 = GetList(s2);
+        while (str1.Count != str2.Count)
+        {
+          if (str1.Count < str2.Count)
+          {
+            str1.Add("");
+          }
+          else
+          {
+            str2.Add("");
+          }
+        }
+        int x1 = 0; int res = 0; int x2 = 0; string y2 = "";
+        bool status = false;
+        string y1 = ""; bool s1Status = false; bool s2Status = false;
+        //s1status ==false then string ele int;
+        //s2status ==false then string ele int;
+        int result = 0;
+        for (int i = 0; i < str1.Count && i < str2.Count; i++)
+        {
+          status = int.TryParse(str1[i].ToString(), out res);
+          if (res == 0)
+          {
+            y1 = str1[i].ToString();
+            s1Status = false;
+          }
+          else
+          {
+            x1 = Convert.ToInt32(str1[i].ToString());
+            s1Status = true;
+          }
+
+          status = int.TryParse(str2[i].ToString(), out res);
+          if (res == 0)
+          {
+            y2 = str2[i].ToString();
+            s2Status = false;
+          }
+          else
+          {
+            x2 = Convert.ToInt32(str2[i].ToString());
+            s2Status = true;
+          }
+          //checking --the data comparision
+          if (!s2Status && !s1Status)    //both are strings
+          {
+            result = str1[i].CompareTo(str2[i]);
+          }
+          else if (s2Status && s1Status) //both are intergers
+          {
+            if (x1 == x2)
+            {
+              if (str1[i].ToString().Length < str2[i].ToString().Length)
+              {
+                result = 1;
+              }
+              else if (str1[i].ToString().Length > str2[i].ToString().Length)
+                result = -1;
+              else
+                result = 0;
+            }
+            else
+            {
+              int st1ZeroCount = str1[i].ToString().Trim().Length - str1[i].ToString().TrimStart(new char[] { '0' }).Length;
+              int st2ZeroCount = str2[i].ToString().Trim().Length - str2[i].ToString().TrimStart(new char[] { '0' }).Length;
+              if (st1ZeroCount > st2ZeroCount)
+                result = -1;
+              else if (st1ZeroCount < st2ZeroCount)
+                result = 1;
+              else
+                result = x1.CompareTo(x2);
+
+            }
+          }
+          else
+          {
+            result = str1[i].CompareTo(str2[i]);
+          }
+          if (result == 0)
+          {
+            continue;
+          }
+          else
+            break;
+
+        }
+        return result;
+      }
+    }
+
+    public class AlphanumComparator : IComparer
+    {
+      private enum ChunkType { Alphanumeric, Numeric };
+      private bool InChunk(char ch, char otherCh)
+      {
+        ChunkType type = ChunkType.Alphanumeric;
+
+        if (char.IsDigit(otherCh))
+        {
+          type = ChunkType.Numeric;
+        }
+
+        if ((type == ChunkType.Alphanumeric && char.IsDigit(ch)) || (type == ChunkType.Numeric && !char.IsDigit(ch)))
+        {
+          return false;
+        }
+
+        return true;
+      }
+
+      public int Compare(object x, object y)
+      {
+        String s1 = x as string;
+        String s2 = y as string;
+        if (s1 == null || s2 == null)
+        {
+          return 0;
+        }
+
+        int thisMarker = 0, thisNumericChunk = 0;
+        int thatMarker = 0, thatNumericChunk = 0;
+
+        while ((thisMarker < s1.Length) || (thatMarker < s2.Length))
+        {
+          if (thisMarker >= s1.Length)
+          {
+            return -1;
+          }
+          else if (thatMarker >= s2.Length)
+          {
+            return 1;
+          }
+          char thisCh = s1[thisMarker];
+          char thatCh = s2[thatMarker];
+
+          StringBuilder thisChunk = new StringBuilder();
+          StringBuilder thatChunk = new StringBuilder();
+
+          while ((thisMarker < s1.Length) && (thisChunk.Length == 0 || InChunk(thisCh, thisChunk[0])))
+          {
+            thisChunk.Append(thisCh);
+            thisMarker++;
+
+            if (thisMarker < s1.Length)
+            {
+              thisCh = s1[thisMarker];
+            }
+          }
+
+          while ((thatMarker < s2.Length) && (thatChunk.Length == 0 || InChunk(thatCh, thatChunk[0])))
+          {
+            thatChunk.Append(thatCh);
+            thatMarker++;
+
+            if (thatMarker < s2.Length)
+            {
+              thatCh = s2[thatMarker];
+            }
+          }
+
+          int result = 0;
+          // If both chunks contain numeric characters, sort them numerically
+          if (char.IsDigit(thisChunk[0]) && char.IsDigit(thatChunk[0]))
+          {
+            thisNumericChunk = Convert.ToInt32(thisChunk.ToString());
+            thatNumericChunk = Convert.ToInt32(thatChunk.ToString());
+
+            if (thisNumericChunk < thatNumericChunk)
+            {
+              result = -1;
+            }
+
+            if (thisNumericChunk > thatNumericChunk)
+            {
+              result = 1;
+            }
+          }
+          else
+          {
+            result = thisChunk.ToString().CompareTo(thatChunk.ToString());
+          }
+
+          if (result != 0)
+          {
+            return result;
+          }
+        }
+
+        return 0;
+      }
+    }
+
+    public class AlphanumComparatorFastNew : IComparer
+    {
+      public int Compare(object x, object y)
+      {
+        string s1 = x as string;
+        if (s1 == null)
+        {
+          return 0;
+        }
+        string s2 = y as string;
+        if (s2 == null)
+        {
+          return 0;
+        }
+
+        int len1 = s1.Length;
+        int len2 = s2.Length;
+        int marker1 = 0;
+        int marker2 = 0;
+
+        // Walk through two the strings with two markers.
+        while (marker1 < len1 && marker2 < len2)
+        {
+          char ch1 = s1[marker1];
+          char ch2 = s2[marker2];
+
+          // Some buffers we can build up characters in for each chunk.
+          char[] space1 = new char[len1];
+          int loc1 = 0;
+          char[] space2 = new char[len2];
+          int loc2 = 0;
+
+          // Walk through all following characters that are digits or
+          // characters in BOTH strings starting at the appropriate marker.
+          // Collect char arrays.
+          do
+          {
+            space1[loc1++] = ch1;
+            marker1++;
+
+            if (marker1 < len1)
+            {
+              ch1 = s1[marker1];
+            }
+            else
+            {
+              break;
+            }
+          } while (char.IsDigit(ch1) == char.IsDigit(space1[0]));
+
+          do
+          {
+            space2[loc2++] = ch2;
+            marker2++;
+
+            if (marker2 < len2)
+            {
+              ch2 = s2[marker2];
+            }
+            else
+            {
+              break;
+            }
+          } while (char.IsDigit(ch2) == char.IsDigit(space2[0]));
+
+          // If we have collected numbers, compare them numerically.
+          // Otherwise, if we have strings, compare them alphabetically.
+          string str1 = new string(space1);
+          string str2 = new string(space2);
+
+          int result;
+
+          if (char.IsDigit(space1[0]) && char.IsDigit(space2[0]))
+          {
+            int thisNumericChunk = int.Parse(str1);
+            int thatNumericChunk = int.Parse(str2);
+            result = thisNumericChunk.CompareTo(thatNumericChunk);
+          }
+          else
+          {
+            result = str1.CompareTo(str2);
+          }
+
+          if (result != 0)
+          {
+            return result;
+          }
+        }
+        return len1 - len2;
+      }
+    }
+
     #endregion
 
     private static bool Load_Config(string currentConfig, bool createTemp, LoadParameterInfo loadParams)
     {
-      var stopwatch = new Stopwatch(); stopwatch.Reset(); stopwatch.Start();
+      Stopwatch stopwatch = new Stopwatch(); stopwatch.Reset(); stopwatch.Start();
       string oldXmlDb = conf != null ? conf.StrFileXml : "";
       conf = new Configuration(currentConfig, true, createTemp, loadParams);
       conf.IsDbReloadRequired = oldXmlDb != conf.StrFileXml;
@@ -9450,7 +9838,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
       switch (selectedView)
       {
         #region Special Views ...
-        case "All": //  Change View All Films - this is not a "DB field", buT a synthetic view ...
+        case "All": //  Change View All Films - this is not a "DB field", but a synthetic view ...
           conf.ViewContext = ViewContext.Movie;
           conf.StrSelect = conf.StrTitleSelect = conf.StrTxtSelect = ""; //clear all selects
           conf.WStrSort = conf.StrSTitle;
@@ -10440,28 +10828,13 @@ namespace MyFilmsPlugin.MyFilmsGUI
           //GUIControl.FocusControl(GetID, (int)Controls.CTRL_ListFilms);
           //break;
 
-          var ds = new AntMovieCatalog();
-          var w_index = new ArrayList();
-          int w_index_count = 0;
-          string t_number_id = "";
+          // AntMovieCatalog ds = new AntMovieCatalog();
+
           DataRow[] wr = BaseMesFilms.ReadDataMovies(conf.StrDfltSelect, conf.StrTitle1 + " like '*'", conf.StrSorta, conf.StrSortSens);
           //Now build a list of valid movies in w_index with Number registered
-          foreach (DataRow wsr in wr)
-          {
-            foreach (DataColumn dc in ds.Movie.Columns.Cast<DataColumn>().Where(dc => dc.ColumnName.ToString() == "Number"))
-            {
-              t_number_id = wsr[dc.ColumnName].ToString();
-              //LogMyFilms.Debug("(GlobalSearchTrailerLocal) - Movienumber stored as '" + t_number_id + "'");
-            }
-            foreach (DataColumn dc in ds.Movie.Columns.Cast<DataColumn>().Where(dc => dc.ColumnName.ToLower() == "translatedtitle"))
-            {
-              w_index.Add(t_number_id);
-              LogMyFilms.Debug("(GlobalSearchTrailerLocal) - Add MovieIDs to indexlist: dc: '" + dc + "' and Number(ID): '" + t_number_id + "'");
-              w_index_count = w_index_count + 1;
-            }
-          }
-          ds.Dispose();
-          LogMyFilms.Debug("(GlobalSearchTrailerLocal) - Number of Records found: " + w_index_count);
+          List<string[]> movielist = wr.Select(wsr => new string[] {wsr["Number"].ToString(), wsr["TranslatedTitle"].ToString()}).ToList();
+          int wIndexCount = movielist.Count;
+          LogMyFilms.Debug("(GlobalSearchTrailerLocal) - Number of Records found: " + wIndexCount);
 
           bool doExtendedSearch = false;
           // if (GUIUtils.ShowYesNoDialog(GUILocalizeStrings.Get(10798940), GUILocalizeStrings.Get(10798803))) doExtendedSearch = true; // Trailer // Include extended directories ?
@@ -10493,15 +10866,15 @@ namespace MyFilmsPlugin.MyFilmsGUI
           }
           new Thread(delegate()
               {
-                for (int i = 0; i < w_index_count; i++)
+                for (int i = 0; i < wIndexCount; i++)
                 {
                   try
                   {
                     string title = wr[i][conf.StrTitle1].ToString();
-                    LogMyFilms.Debug("GlobalSearchTrailerLocal - Number: '" + i + "' - Index to search: '" + w_index[i] + "'");
+                    LogMyFilms.Debug("GlobalSearchTrailerLocal - Number: '" + i + "' - Index to search: '" + movielist[i][0] + "'");
                     // MyFilmsDetail.setGUIProperty("statusmessage", "Register trailer for '" + title + "'");
                     if (dlgPrgrs != null) dlgPrgrs.SetLine(1, "Register trailer for '" + title + "'");
-                    int iprogress = i * 100 / w_index_count;
+                    int iprogress = i * 100 / wIndexCount;
                     if (iprogress > 100) iprogress = 100;
                     if (dlgPrgrs != null) dlgPrgrs.Percentage = iprogress;
                     MyFilmsDetail.SearchTrailerLocal(r, Convert.ToInt32(i), doExtendedSearch, false);
@@ -10936,7 +11309,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
       if (dlg == null) return;
       dlg.Reset();
       dlg.SetHeading(string.Format(GUILocalizeStrings.Get(1079840), conf.StrUserProfileName)); // Choose User Profile Name ... GUILocalizeStrings.Get(1079840), conf.StrUserProfileName)
-      var choiceGlobalUserProfileName = new List<string>();
+      List<string> choiceGlobalUserProfileName = new List<string>();
       string oldUserProfileName = conf.StrUserProfileName;
 
       dlg.Add("<" + GUILocalizeStrings.Get(10798630) + ">"); // Add User ...
@@ -11109,11 +11482,11 @@ namespace MyFilmsPlugin.MyFilmsGUI
 
     private bool Delete_UserProfileName()
     {
-      var dlg = (GUIDialogMenu)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_MENU);
+      GUIDialogMenu dlg = (GUIDialogMenu)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_MENU);
       if (dlg == null) return false;
       dlg.Reset();
       dlg.SetHeading(GUILocalizeStrings.Get(1079818)); // Delete User Profile Name
-      var choiceGlobalUserProfileName = new List<string>();
+      List<string> choiceGlobalUserProfileName = new List<string>();
 
       // add Trakt user, if there is any configured:
       if (Helper.IsTraktAvailableAndEnabled)
@@ -11336,7 +11709,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
         }
 
         // MyFilmsDetail.Searchtitles sTitles;
-        menunavigationstack.Push(new MyFilmsPlugin.Utils.MenuNavigationObject((Menu)menuaction, dlg.SelectedId));
+        menunavigationstack.Push(new MenuNavigationObject((Menu)menuaction, dlg.SelectedId));
         switch (dlg.SelectedId) // what was chosen?
         {
           case (int)Menu.SubmenuOptions:
@@ -11354,17 +11727,13 @@ namespace MyFilmsPlugin.MyFilmsGUI
     //--------------------------------------------------------------------------------------------
     //   Display Context Menu for Movie 
     //--------------------------------------------------------------------------------------------
-    private void Context_Menu_Movie(int selecteditem)
-    {
-      Context_Menu_Movie(selecteditem, string.Empty); // call base context menu by default
-    }
-    private void Context_Menu_Movie(int selecteditem, string contextmenuselection)
+    private void Context_Menu_Movie(int selecteditem, string contextmenuselection = "")
     {
       LogMyFilms.Debug("Context_Menu_Movie() - context = '" + conf.ViewContext + "', contextmenuselection = '" + contextmenuselection + "'");
 
-      var dlg = (GUIDialogMenu)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_MENU);
-      var dlgYesNo = (GUIDialogYesNo)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_YES_NO);
-      var choice = new List<string>();
+      GUIDialogMenu dlg = (GUIDialogMenu)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_MENU);
+      GUIDialogYesNo dlgYesNo = (GUIDialogYesNo)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_YES_NO);
+      List<string> choice = new List<string>();
       MyFilmsDetail.Searchtitles sTitles;
 
       Context_Menu = true;
@@ -11678,7 +12047,6 @@ namespace MyFilmsPlugin.MyFilmsGUI
         }
         #endregion
 
-
         dlg.DoModal(GetID);
         if (dlg.SelectedLabel == -1) return;
         contextmenuselection = choice[dlg.SelectedLabel];
@@ -11977,7 +12345,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
             GUIUtils.ShowNotifyDialog("OnlineVideos is not available!");
             return;
           }
-          MyFilmsDetail.SearchAndDownloadTrailerOnlineTMDB(r, conf.StrIndex, false, true, (conf.StrDirStorTrailer.Length > 0) ? conf.StrDirStorTrailer : null); // MyFilmsDetail.SearchAndDownloadTrailerOnlineTMDB(r, conf.StrIndex, false, true, null);
+          MyFilmsDetail.SearchAndDownloadTrailerOnlineTmdb(r, conf.StrIndex, false, true, (conf.StrDirStorTrailer.Length > 0) ? conf.StrDirStorTrailer : null); // MyFilmsDetail.SearchAndDownloadTrailerOnlineTMDB(r, conf.StrIndex, false, true, null);
           break;
 
         case "downloadtrailertmdball":
@@ -11987,7 +12355,6 @@ namespace MyFilmsPlugin.MyFilmsGUI
               GUIUtils.ShowNotifyDialog("OnlineVideos is not available!");
               return;
             }
-
             #region add trailers for selected films to trailer download queue
             StopAddingTrailers = false;
             new Thread(delegate()
@@ -12002,7 +12369,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
                     if (StopAddingTrailers) return;
                     try
                     {
-                      MyFilmsDetail.SearchAndDownloadTrailerOnlineTMDB(r, i, true, false, (conf.StrDirStorTrailer.Length > 0) ? conf.StrDirStorTrailer : null);
+                      MyFilmsDetail.SearchAndDownloadTrailerOnlineTmdb(r, i, true, false, (conf.StrDirStorTrailer.Length > 0) ? conf.StrDirStorTrailer : null);
                       MyFilmsDetail.setGUIProperty("statusmessage", "adding TMDB trailers to download queue for '" + r[i][conf.StrTitle1] + "'", false);
                     }
                     catch (Exception ie)
@@ -12465,7 +12832,6 @@ namespace MyFilmsPlugin.MyFilmsGUI
 
                 // offer menu to user about actions
                 GUIListItem item;
-                string AntFilteritem = "";
                 List<string> filteritems = new List<string>(); 
 
                 GUIDialogMenu dlgmenu = (GUIDialogMenu)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_MENU);
@@ -12485,9 +12851,11 @@ namespace MyFilmsPlugin.MyFilmsGUI
                 ArrayList displayItems = GetDisplayItems("view");
                 foreach (string[] displayItem in displayItems)
                 {
-                  item = new GUIListItem();
-                  item.Label = (string.IsNullOrEmpty(displayItem[1])) ? displayItem[0] : displayItem[1];
-                  item.DVDLabel = displayItem[0];
+                  item = new GUIListItem
+                  {
+                    Label = (string.IsNullOrEmpty(displayItem[1])) ? displayItem[0] : displayItem[1],
+                    DVDLabel = displayItem[0]
+                  };
                   dlgmenu.Add(item);
                   filteritems.Add(displayItem[0]);
                 }
@@ -12520,29 +12888,39 @@ namespace MyFilmsPlugin.MyFilmsGUI
                     break;
 
                   default:
-                    AntFilteritem = filteritems[dlgmenu.SelectedLabel];
+                    string antFilteritem = filteritems[dlgmenu.SelectedLabel];
                     List<GUIListItem> filteroptions = new List<GUIListItem>(); 
+                    
                     dlgmenu.Reset();
                     dlgmenu.SetHeading("add filter - choose operator");
+
                     #region add filter options
-                    item = new GUIListItem();
-                    item.Label = "Contains ...";
-                    item.DVDLabel = "like";
+                    item = new GUIListItem
+                    {
+                      Label = "Contains ...",
+                      DVDLabel = "like"
+                    };
                     dlgmenu.Add(item);
                     filteroptions.Add(item);
-                    item = new GUIListItem();
-                    item.Label = "Contains not ...";
-                    item.DVDLabel = "not like";
+                    item = new GUIListItem
+                    {
+                      Label = "Contains not ...",
+                      DVDLabel = "not like"
+                    };
                     dlgmenu.Add(item);
                     filteroptions.Add(item);
-                    item = new GUIListItem();
-                    item.Label = "Equals ...";
-                    item.DVDLabel = "=";
+                    item = new GUIListItem
+                    {
+                      Label = "Equals ...",
+                      DVDLabel = "="
+                    };
                     dlgmenu.Add(item);
                     filteroptions.Add(item);
-                    item = new GUIListItem();
-                    item.Label = "Equals not ...";
-                    item.DVDLabel = "<>";
+                    item = new GUIListItem
+                    {
+                      Label = "Equals not ...",
+                      DVDLabel = "<>"
+                    };
                     dlgmenu.Add(item);
                     filteroptions.Add(item);
                     #endregion
@@ -12550,18 +12928,18 @@ namespace MyFilmsPlugin.MyFilmsGUI
                     dlgmenu.DoModal(GetID);
                     if (dlgmenu.SelectedLabel == -1) break;
 
-                    string FilterSign = filteroptions[dlgmenu.SelectedLabel].DVDLabel;
+                    string filterSign = filteroptions[dlgmenu.SelectedLabel].DVDLabel;
 
-                    ArrayList w_tableau = new ArrayList();
+                    List<string> wTableau = new List<string>();
                     // var w_tableau = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
                     // var w_tableau = new List<string>();
 
                     #region get possible values
                     string champselect = "";
-                    FieldType fieldType = GetFieldType(AntFilteritem);
+                    FieldType fieldType = GetFieldType(antFilteritem);
                     bool isperson = IsPersonField(fieldType);
                     bool isdate = IsDateField(fieldType);
-                    bool issplitfield = IsSplittableField(AntFilteritem);
+                    bool issplitfield = IsSplittableField(antFilteritem);
                     bool dontsplitvalues = conf.BoolDontSplitValuesInViews;
                     bool showEmptyValues = conf.BoolShowEmptyValuesInViews;
                     bool reversenames = isperson && conf.BoolReverseNames;
@@ -12571,54 +12949,52 @@ namespace MyFilmsPlugin.MyFilmsGUI
                       if (isdate)
                       {
                         DateTime tmpdate;
-                        champselect = (DateTime.TryParse(row[AntFilteritem].ToString(), out tmpdate)) ? string.Format("{0:yyyy/MM/dd}", tmpdate.ToShortDateString()) : "";
+                        champselect = (DateTime.TryParse(row[antFilteritem].ToString(), out tmpdate)) ? string.Format("{0:yyyy/MM/dd}", tmpdate.ToShortDateString()) : "";
                       }
                       else
-                        champselect = row[AntFilteritem].ToString().Trim();
+                        champselect = row[antFilteritem].ToString().Trim();
 
                       if (issplitfield && !dontsplitvalues)
                       {
-                        ArrayList wtab = Search_String(champselect, reversenames); //ArrayList wtab = Search_String(champselect, isperson);
+                        List<string> wtab = Search_String(champselect, reversenames); //ArrayList wtab = Search_String(champselect, isperson);
                         if (wtab.Count > 0)
                         {
-                          foreach (object t in wtab) w_tableau.Add(t); // w_tableau.AddRange(wtab);
+                          wTableau.AddRange(wtab);
                         }
                         else if (showEmptyValues)  // only add empty entries, if they should show - speeds up sorting otherwise ...
                         {
-                          w_tableau.Add(champselect);
+                          wTableau.Add(champselect);
                         }
                       }
                       else
                       {
                         if (champselect.Length > 0 || showEmptyValues)  // only add empty entries, if they should show - speeds up sorting otherwise ...
                         {
-                          w_tableau.Add(champselect);
+                          wTableau.Add(champselect);
                         }
                       }
                     }
 
-                    w_tableau = Helper.RemoveDuplicate(w_tableau);  
+                    wTableau = wTableau.Distinct().ToList();   //wTableau = Helper.RemoveDuplicate(wTableau);
 
                     switch (fieldType)
                     {
                       case FieldType.AlphaNumeric:
                       case FieldType.Decimal:
-                        IComparer myComparer = new AlphanumComparatorFast();
-                        w_tableau.Sort(0, w_tableau.Count, myComparer);
+                        wTableau.Sort(0, wTableau.Count, new AlphanumComparatorFastString());
                         break;
 
                       default: // default sorter
-                        w_tableau.Sort(0, w_tableau.Count, StringComparer.OrdinalIgnoreCase);
+                        wTableau.Sort(0, wTableau.Count, StringComparer.OrdinalIgnoreCase);
                         break;
                     }
                     #endregion
 
                     dlgmenu.Reset();
                     dlgmenu.SetHeading("add filter - choose operator");
-                    foreach (string value in w_tableau)
+                    foreach (string value in wTableau)
                     {
-                      item = new GUIListItem();
-                      item.Label = value;
+                      item = new GUIListItem {Label = value};
                       dlgmenu.Add(item);
                     }
                     dlgmenu.DoModal(GetID);
@@ -12627,34 +13003,34 @@ namespace MyFilmsPlugin.MyFilmsGUI
                     string sValue = dlgmenu.SelectedLabelText;
 
                     // create the filter rule
-                    string StrViewFilterSelect = string.Empty;
+                    string strViewFilterSelect = string.Empty;
 
-                    switch (FilterSign)
+                    switch (filterSign)
                     {
                       case "not like":
                       case "#":
-                        StrViewFilterSelect = "(" + AntFilteritem + " " + FilterSign + " #" + Convert.ToDateTime(sValue) + "# or " + AntFilteritem + " is null) ";
+                        strViewFilterSelect = "(" + antFilteritem + " " + filterSign + " #" + Convert.ToDateTime(sValue) + "# or " + antFilteritem + " is null) ";
                         break;
                       //case "not in":
                       //case "in":
-                      //  StrViewFilterSelect = "(" + AntFilteritem + " " + FilterSign + " (" + DBitemList(sValuet, true) + ")) ";
+                      //  strViewFilterSelect = "(" + AntFilteritem + " " + FilterSign + " (" + DBitemList(sValuet, true) + ")) ";
                       //  break;
                       //case "like in":
-                      //  StrViewFilterSelect = "(" + TransformedLikeIn(FilterSign, sValue, true) + ") ";
+                      //  strViewFilterSelect = "(" + TransformedLikeIn(FilterSign, sValue, true) + ") ";
                       //  break;
                       default:
-                        StrViewFilterSelect = "(" + AntFilteritem + " " + FilterSign + " #" + Convert.ToDateTime(sValue) + "# ) ";
+                        strViewFilterSelect = "(" + antFilteritem + " " + filterSign + " #" + Convert.ToDateTime(sValue) + "# ) ";
                         break;
                     }
-                    LogMyFilms.Debug("New filter expression = '" + StrViewFilterSelect + "'");
+                    LogMyFilms.Debug("New filter expression = '" + strViewFilterSelect + "'");
 
                     if (viewRow.Filter.Length > 0)
                     {
-                      viewRow.Filter += " AND " + StrViewFilterSelect;
+                      viewRow.Filter += " AND " + strViewFilterSelect;
                     }
                     else
                     {
-                      viewRow.Filter = StrViewFilterSelect;
+                      viewRow.Filter = strViewFilterSelect;
                     }
                     LogMyFilms.Debug("Resulting view filter expression = '" + viewRow.Filter + "'");
                     SaveCustomViews();
@@ -13006,7 +13382,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
           }
           else
           {
-            // Grabber.Grabber_URLClass Grab = new Grabber.Grabber_URLClass();
+            // Grabber.GrabberUrlClass Grab = new Grabber.GrabberUrlClass();
 
             string personartworkpath = string.Empty;
             string imdbid = MyFilmsDetail.GetIMDB_Id(r[conf.StrIndex]);
@@ -13243,7 +13619,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
                     ArrayList personUrls = MyFilmsDetail.FindActor(searchexpression, grabberscript);
                     if (personUrls.Count > 0)
                     {
-                      var wurl = (Grabber_URLClass.IMDBUrl)personUrls[0];
+                      var wurl = (GrabberUrlClass.IMDBUrl)personUrls[0];
                       if (wurl.URL.Length != 0)
                       {
                         url = wurl.URL + extension; // Assign proper Webpage for Actorinfos
@@ -13348,10 +13724,10 @@ namespace MyFilmsPlugin.MyFilmsGUI
 
       foreach (string personfield in PersonTypes.Where(personfield => r[index][personfield].ToString().Length > 0))
       {
-        ArrayList wTableau = Search_String(System.Web.HttpUtility.HtmlDecode(HTMLParser.removeHtml(r[index][personfield].ToString())));
-        wTableau = new ArrayList(wTableau.ToArray().Distinct().ToList()); // make list unique/distinct
+        // IEnumerable<string> wTableau = Search_String(System.Web.HttpUtility.HtmlDecode(HTMLParser.removeHtml(r[index][personfield].ToString()))); var wTableau = new List<string>(wTableau.ToArray().Distinct().ToList()); // make list unique/distinct
+        IEnumerable<string> wTableau = Search_String(System.Web.HttpUtility.HtmlDecode(HTMLParser.removeHtml(r[index][personfield].ToString()))).Distinct();
 
-        dlg.Add(BaseMesFilms.TranslateColumn(personfield) + " (" + wTableau.Count + ")");
+        dlg.Add(BaseMesFilms.TranslateColumn(personfield) + " (" + wTableau.Count() + ")");
         choiceSearch.Add(personfield);
       }
       if (choiceSearch.Count == 0)
@@ -13372,8 +13748,8 @@ namespace MyFilmsPlugin.MyFilmsGUI
     //*****************************************************************************************
     private void SearchRelatedMoviesbyPersons(int index, bool returnToContextmenu)
     {
-      var dlg = (GUIDialogMenu)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_MENU);
-      var dlgPrgrs = (GUIDialogProgress)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_PROGRESS);
+      GUIDialogMenu dlg = (GUIDialogMenu)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_MENU);
+      GUIDialogProgress dlgPrgrs = (GUIDialogProgress)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_PROGRESS);
       string[] roles = { "Actors", "Producer", "Director", "Writer" }; // , "Persons"
 
       new Thread(delegate()
@@ -13382,22 +13758,22 @@ namespace MyFilmsPlugin.MyFilmsGUI
           if (dlg == null) return;
           dlg.Reset();
           dlg.SetHeading(GUILocalizeStrings.Get(1079867)); // menu
-          var choiceSearch = new List<string>();
-          var personartworkpath = conf.StrPathArtist;
+          List<string> choiceSearch = new List<string>();
+          string personartworkpath = conf.StrPathArtist;
 
           #region show available persons
           foreach (string role in roles.Where(role => r[index][role].ToString().Length > 0))
           {
-            ArrayList wTableau = Search_String(System.Web.HttpUtility.HtmlDecode(HTMLParser.removeHtml(r[index][role].ToString())));
-            foreach (object t in wTableau)
+            IEnumerable<string> wTableau = Search_String(System.Web.HttpUtility.HtmlDecode(HTMLParser.removeHtml(r[index][role].ToString())));
+            foreach (string t in wTableau)
             {
-              var item = new GUIListItem { Label = BaseMesFilms.TranslateColumn(role) + " : " + t };
+              GUIListItem item = new GUIListItem { Label = BaseMesFilms.TranslateColumn(role) + " : " + t };
               if (conf.UseThumbsForPersons && !string.IsNullOrEmpty(conf.StrPathArtist))
               {
                 item.IconImage = File.Exists(personartworkpath + "\\" + t + ".jpg") ? personartworkpath + "\\" + t + ".jpg" : conf.DefaultCoverArtist;
               }
               dlg.Add(item);
-              choiceSearch.Add(t.ToString());
+              choiceSearch.Add(t);
             }
           }
 
@@ -13485,7 +13861,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
           switch (choiceSearch[dlg.SelectedLabel])
           {
             case "Actors":
-              conf.StrTxtSelect = GUILocalizeStrings.Get(1079870) + " " + GUILocalizeStrings.Get(1079868) + " *" + wperson + @"*"; // "Seletion"
+              conf.StrTxtSelect = GUILocalizeStrings.Get(1079870) + " " + GUILocalizeStrings.Get(1079868) + " *" + wperson + @"*"; // "Selection"
               break;
             case "Producer":
               conf.StrTxtSelect = GUILocalizeStrings.Get(1079870) + " " + GUILocalizeStrings.Get(10798612) + " *" + wperson + @"*";
@@ -13536,7 +13912,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
         LogMyFilms.Debug("IMDB - " + personUrls.Count + " person(s) found for '" + personName + "' with person grabber script '" + grabberscript + "'");
         if (personUrls.Count > 0)
         {
-          var wurl = (Grabber_URLClass.IMDBUrl)personUrls[0];
+          var wurl = (GrabberUrlClass.IMDBUrl)personUrls[0];
           if (wurl.URL.Length != 0)
           {
             MyFilmsDetail.GrabActorDetails(wurl.URL, grabberscript, out imdbActor);
@@ -13820,12 +14196,11 @@ namespace MyFilmsPlugin.MyFilmsGUI
     private void SearchRelatedMoviesbyProperties(int index, bool returnToContextmenu) // (int Index, IEnumerable<string> wSearchList)
     {
       // first select the property to be searching on
-      var dlg = (GUIDialogMenu)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_MENU);
-      var choiceSearch = new List<string>();
-      var wTableau = new ArrayList();
-      var wsubTableau = new ArrayList();
+      GUIDialogMenu dlg = (GUIDialogMenu)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_MENU);
+      List<string> choiceSearch = new List<string>();
+
       int minChars = 2;
-      bool filter = true;
+      const bool filter = true;
       if (dlg == null) return;
 
       conf.StrSelect = conf.StrViewSelect = conf.StrTitleSelect = conf.StrTxtSelect = ""; //clear all selects
@@ -13904,16 +14279,18 @@ namespace MyFilmsPlugin.MyFilmsGUI
       dlg.Reset();
       choiceSearch.Clear();
       LogMyFilms.Debug("(RelatedPropertySearch): Searchstring in Property: '" + r[index][wproperty] + "'");
+      
       //PersonTitle Grabbing (Double Words)
+      IEnumerable<string> wTableau = new List<string>();
       if (wproperty != "Description" && wproperty != "Comments" && wproperty != "Rating")
       {
         wTableau = Search_String(r[index][wproperty].ToString());
-        foreach (var t in wTableau)
+        foreach (string t in wTableau)
         {
           foreach (string entry in from string[] displayItem in displayItems where wproperty.Equals(displayItem[0]) select (string.IsNullOrEmpty(displayItem[1])) ? displayItem[0] : displayItem[1])
           {
             dlg.Add(entry + ": " + t);
-            choiceSearch.Add(t.ToString());
+            choiceSearch.Add(t);
             LogMyFilms.Debug("(RelatedPropertySearch): Searchstring Result Add: '" + t + "'");
             break;
           }
@@ -13923,8 +14300,6 @@ namespace MyFilmsPlugin.MyFilmsGUI
       //SubWordGrabbing for more Details, if necessary
       minChars = wproperty != "Description" && wproperty != "Comments" ? 2 : 5;
 
-      if (r[index][wproperty].ToString().Length > 0) //To avoid exception in subgrabbing
-        wsubTableau = SubWordGrabbing(r[index][wproperty].ToString(), minChars, filter);
       if (wproperty == "Rating")
       {
         dlg.Add(GUILocalizeStrings.Get(10798657) + ": = " + r[index][wproperty].ToString().Replace(",", "."));
@@ -13937,20 +14312,20 @@ namespace MyFilmsPlugin.MyFilmsGUI
         LogMyFilms.Debug("(RelatedPropertySearch): Length: '" + r[index][wproperty].ToString().Length + "'");
         if (r[index][wproperty].ToString().Length > 0)
         {
-          foreach (object t in wsubTableau)
+          foreach (string value in SubWordGrabbing(r[index][wproperty].ToString(), minChars, filter))
           {
-            if (wTableau.Contains(t)) // Only Add SubWordItems if not already present in SearchStrin Table
+            if (wTableau.Contains(value)) // Only Add SubWordItems if not already present in SearchStrin Table
             {
-              LogMyFilms.Debug("(RelatedPropertySearch): Searchstring Result already Present: '" + t + "'");
+              LogMyFilms.Debug("(RelatedPropertySearch): Searchstring Result already Present: '" + value + "'");
               break;
             }
             else
             {
               foreach (string entry in from string[] displayItem in displayItems where wproperty.ToLower().Equals(displayItem[0].ToLower()) select (string.IsNullOrEmpty(displayItem[1])) ? displayItem[0] : displayItem[1])
               {
-                dlg.Add(entry + " (" + GUILocalizeStrings.Get(10798627) + "): '" + t + "'"); // property (singleword): 'value'
-                choiceSearch.Add(t.ToString());
-                LogMyFilms.Debug("(RelatedPropertySearch): Searchstring Result Add: '" + t + "'");
+                dlg.Add(entry + " (" + GUILocalizeStrings.Get(10798627) + "): '" + value + "'"); // property (singleword): 'value'
+                choiceSearch.Add(value);
+                LogMyFilms.Debug("(RelatedPropertySearch): Searchstring Result Add: '" + value + "'");
                 break;
               }
             }
@@ -14009,11 +14384,11 @@ namespace MyFilmsPlugin.MyFilmsGUI
     {
       currentTrailerMoviesList.Clear();
       // first select the area where to make random search on - "all", "category", "year", "country" - then populate the currentTrailerMovieList
-      var ds = new AntMovieCatalog();
-      var dlg = (GUIDialogMenu)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_MENU);
-      var choiceSearch = new List<string>();
-      var wTableau = new ArrayList();
-      var wsubTableau = new ArrayList();
+      AntMovieCatalog ds = new AntMovieCatalog();
+      GUIDialogMenu dlg = (GUIDialogMenu)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_MENU);
+      List<string> choiceSearch = new List<string>();
+      ArrayList wTableau = new ArrayList();
+
       if (dlg == null) return;
       dlg.Reset();
       dlg.SetHeading(GUILocalizeStrings.Get(10798621)); // menu for random search
@@ -14036,36 +14411,34 @@ namespace MyFilmsPlugin.MyFilmsGUI
       }
       string wproperty = choiceSearch[dlg.SelectedLabel];
 
-      var w_count = new ArrayList();
+      ArrayList wCount = new ArrayList();
       if (dlg == null) return;
       dlg.Reset();
       dlg.SetHeading(GUILocalizeStrings.Get(10798613)); // menu
       string GlobalFilterString = GlobalFilterStringUnwatched + GlobalFilterStringIsOnline + GlobalFilterStringTrailersOnly + GlobalFilterStringMinRating + GlobalFilterStringMovieFormat3D;
       DataRow[] wr = BaseMesFilms.ReadDataMovies(GlobalFilterString + conf.StrDfltSelect, conf.StrTitle1 + " like '*'", conf.StrSorta, conf.StrSortSens);
       wTableau.Add(string.Format(GUILocalizeStrings.Get(10798623))); //Add Defaultgroup for invalid or empty properties
-      w_count.Add(0);
+      wCount.Add(0);
       foreach (DataRow wsr in wr)
       {
         foreach (DataColumn dc in ds.Movie.Columns.Cast<DataColumn>().Where(dc => dc.ToString().Contains(wproperty)))
         {
           if (wsr[dc.ColumnName].ToString().Length == 0) //Empty property special handling
           {
-            w_count[0] = (int)w_count[0] + 1;
+            wCount[0] = (int)wCount[0] + 1;
             break;
           }
           else
           {
-            wsubTableau = SubItemGrabbing(wsr[dc.ColumnName].ToString()); //Grab SubItems
-            foreach (object t in wsubTableau)
+            foreach (string t in SubItemGrabbing(wsr[dc.ColumnName].ToString()))
             {
-              if (wTableau.Contains(t.ToString())) // search position in w_tableau for adding +1 to w_count
+              if (wTableau.Contains(t)) // search position in w_tableau for adding +1 to w_count
               {
                 for (int i = 0; i < wTableau.Count; i++)
                 {
-                  if (wTableau[i].ToString() == t.ToString())
+                  if (wTableau[i].ToString() == t)
                   {
-                    w_count[i] = (int)w_count[i] + 1;
-                    //LogMyFilms.Debug("SubItemGrabber: add Counter for '" + wsub_tableau[wi].ToString() + "'");
+                    wCount[i] = (int)wCount[i] + 1;
                     break;
                   }
                 }
@@ -14073,8 +14446,8 @@ namespace MyFilmsPlugin.MyFilmsGUI
               else // add to w_tableau and move 1 to w_count
               {
                 LogMyFilms.Debug("SubItemGrabber: add new Entry for '" + wsr[dc.ColumnName] + "'");
-                wTableau.Add(t.ToString());
-                w_count.Add(1);
+                wTableau.Add(t);
+                wCount.Add(1);
               }
             }
           }
@@ -14082,7 +14455,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
       }
       if (wTableau.Count == 0) LogMyFilms.Debug("PropertyClassCount is 0");
 
-      string wproperty2 = "";
+      string wproperty2;
 
       if (wproperty != "randomall")
       {
@@ -14092,7 +14465,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
         //w_tableau = Array.Sort(w_tableau);
         for (int i = 0; i < wTableau.Count; i++)
         {
-          dlg.Add(string.Format(GUILocalizeStrings.Get(10798626), w_count[i], wTableau[i]));
+          dlg.Add(string.Format(GUILocalizeStrings.Get(10798626), wCount[i], wTableau[i]));
           choiceSearch.Add(wTableau[i].ToString());
         }
         dlg.DoModal(GetID);
@@ -14244,11 +14617,11 @@ namespace MyFilmsPlugin.MyFilmsGUI
       {
         try
         {
-          var movie = new MFMovie();
+          MFMovie movie = new MFMovie();
           movie.Config = Configuration.CurrentConfig; // MF config context
           movie.ID = !string.IsNullOrEmpty(sr["Number"].ToString()) ? Int32.Parse(sr["Number"].ToString()) : 0;
-          int year = 1900;
-          movie.Year = (Int32.TryParse(sr["Year"].ToString(), out year)) ? year : 1900;
+          int year;
+          movie.Year = Int32.TryParse(sr["Year"].ToString(), out year) ? year : 1900;
           movie.Title = Helper.TitleWithoutGroupName(sr["OriginalTitle"].ToString());
           movie.TranslatedTitle = Helper.TitleWithoutGroupName(sr["TranslatedTitle"].ToString());
 
@@ -14360,7 +14733,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
         //  false,
         //  10);
         //if (dontplaynexttrailer)
-        var dlgYesNo = (GUIDialogYesNo)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_YES_NO);
+        GUIDialogYesNo dlgYesNo = (GUIDialogYesNo)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_YES_NO);
         dlgYesNo.SetHeading(GUILocalizeStrings.Get(10798981)); // Trailer Scrobbling ...
         dlgYesNo.SetLine(2, GUILocalizeStrings.Get(10798982)); // Play next Trailer ?
         dlgYesNo.TimeOut = 10;
@@ -14378,11 +14751,11 @@ namespace MyFilmsPlugin.MyFilmsGUI
       }
 
       //Choose Random Movie from Resultlist
-      var rnd = new Random();
+      Random rnd = new Random();
       Int32 randomNumber = rnd.Next(currentTrailerMoviesList.Count);
       LogMyFilms.Debug("RandomNumber: '" + randomNumber + "', Record: '" + currentTrailerMoviesList[randomNumber].ID + "', RandomTitle: '" + currentTrailerMoviesList[randomNumber].Title + "'");
 
-      var trailer = new ArrayList { currentTrailerMoviesList[randomNumber].File };
+      ArrayList trailer = new ArrayList { currentTrailerMoviesList[randomNumber].File };
       currentTrailerPlayingItem = currentTrailerMoviesList[randomNumber];
 
       // set the active movie in facade
@@ -14423,8 +14796,8 @@ namespace MyFilmsPlugin.MyFilmsGUI
       //// Exit fullscreen Video so we can see main facade again			
       //if (GUIGraphicsContext.IsFullScreenVideo) {
       //  GUIGraphicsContext.IsFullScreenVideo = false;
-      var dlg = (GUIDialogMenu)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_MENU);
-      var choiceSearch = new List<string>();
+      GUIDialogMenu dlg = (GUIDialogMenu)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_MENU);
+      List<string> choiceSearch = new List<string>();
 
       while (dlg.SelectedLabel != -1)
       {
@@ -14448,8 +14821,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
         dlg.Add(string.Format("Zurück zum Hauptmenü", "Back"));
         choiceSearch.Add("Back");
         dlg.DoModal(ID_MyFilms);
-        if ((dlg.SelectedLabel == -1) || (dlg.SelectedLabel == 6))
-          return;
+        if ((dlg.SelectedLabel == -1) || (dlg.SelectedLabel == 6)) return;
 
         switch (choiceSearch[dlg.SelectedLabel])
         {
@@ -14529,7 +14901,6 @@ namespace MyFilmsPlugin.MyFilmsGUI
       var dlg = (GUIDialogMenu)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_MENU);
       var choiceSearch = new List<string>();
       var wTableau = new ArrayList();
-      var wsub_tableau = new ArrayList();
       bool GetItems = false;
       bool GetSubItems = true;
       if (dlg == null) return;
@@ -14590,17 +14961,16 @@ namespace MyFilmsPlugin.MyFilmsGUI
                 if (GetSubItems)
                 {
                   LogMyFilms.Debug("SubItemGrabber: Input: " + wsr[dc.ColumnName]);
-                  wsub_tableau = SubItemGrabbing(wsr[dc.ColumnName].ToString()); //Grab SubItems
-                  foreach (object t in wsub_tableau)
+                  foreach (string t in SubItemGrabbing(wsr[dc.ColumnName].ToString()))
                   {
                     LogMyFilms.Debug("SubItemGrabber: Output: " + t);
                     {
-                      if (wTableau.Contains(t.ToString())) // search position in w_tableau for adding +1 to w_count
+                      if (wTableau.Contains(t)) // search position in w_tableau for adding +1 to w_count
                       {
                         //if (!w_index.Contains(
                         for (int i = 0; i < wTableau.Count; i++)
                         {
-                          if (wTableau[i].ToString() == t.ToString())
+                          if (wTableau[i].ToString() == t)
                           {
                             w_count[i] = (int)w_count[i] + 1;
                             //LogMyFilms.Debug("SubItemGrabber: add Counter for '" + wsub_tableau[wi].ToString() + "'");
@@ -14612,7 +14982,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
                       // add to w_tableau and move 1 to w_count
                       {
                         LogMyFilms.Debug("SubItemGrabber: add new Entry for '" + wsr[dc.ColumnName] + "'");
-                        wTableau.Add(t.ToString());
+                        wTableau.Add(t);
                         w_count.Add(1);
                       }
                     }
@@ -14904,11 +15274,10 @@ namespace MyFilmsPlugin.MyFilmsGUI
     private void SearchMoviesbyAreas(bool returnToContextmenu)
     {
       // first select the area where to make random search on - "all", "category", "year", "country"
-      var ds = new AntMovieCatalog();
-      var dlg = (GUIDialogMenu)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_MENU);
-      var choiceSearch = new List<string>();
-      var wTableau = new ArrayList();
-      var wsub_tableau = new ArrayList();
+      AntMovieCatalog ds = new AntMovieCatalog();
+      GUIDialogMenu dlg = (GUIDialogMenu)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_MENU);
+      List<string> choiceSearch = new List<string>();
+      ArrayList wTableau = new ArrayList();
       bool getItems = false;
       bool getSubItems = true;
       if (dlg == null) return;
@@ -14970,17 +15339,16 @@ namespace MyFilmsPlugin.MyFilmsGUI
                 if (getSubItems)
                 {
                   LogMyFilms.Debug("SubItemGrabber: Input: " + wsr[dc.ColumnName]);
-                  wsub_tableau = SubItemGrabbing(wsr[dc.ColumnName].ToString()); //Grab SubItems
-                  foreach (object t in wsub_tableau)
+                  foreach (string t in SubItemGrabbing(wsr[dc.ColumnName].ToString()))
                   {
                     LogMyFilms.Debug("SubItemGrabber: Output: " + t);
                     {
-                      if (wTableau.Contains(t.ToString())) // search position in w_tableau for adding +1 to w_count
+                      if (wTableau.Contains(t)) // search position in w_tableau for adding +1 to w_count
                       {
                         //if (!w_index.Contains(
                         for (int i = 0; i < wTableau.Count; i++)
                         {
-                          if (wTableau[i].ToString() == t.ToString())
+                          if (wTableau[i].ToString() == t)
                           {
                             wCount[i] = (int)wCount[i] + 1;
                             //LogMyFilms.Debug("SubItemGrabber: add Counter for '" + wsub_tableau[wi].ToString() + "'");
@@ -14992,7 +15360,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
                       // add to w_tableau and move 1 to w_count
                       {
                         LogMyFilms.Debug("SubItemGrabber: add new Entry for '" + wsr[dc.ColumnName] + "'");
-                        wTableau.Add(t.ToString());
+                        wTableau.Add(t);
                         wCount.Add(1);
                       }
                     }
@@ -15181,28 +15549,24 @@ namespace MyFilmsPlugin.MyFilmsGUI
       GetSelectFromDivx(conf.StrSelect, conf.WStrSort, conf.WStrSortSens, wperson, true, ""); // GetSelectFromDivx(conf.StrSelect, conf.wStrSort, conf.wStrSortSens, conf.StrPersons, true, string.Empty);
     }
 
-    private int CountPersonsFound(DataRow[] wr, string WStrSort, string searchexpression)
+    private int CountPersonsFound(DataRow[] wr, string wStrSort, string searchexpression)
     {
-      int wi;
       int count = 0;
       var set = new HashSet<string>(StringComparer.OrdinalIgnoreCase); //List<string> itemList = new List<string>();
 
-      bool issplitfield = IsSplittableField(WStrSort);
+      bool issplitfield = IsSplittableField(wStrSort);
       bool dontsplitvalues = conf.BoolDontSplitValuesInViews;
       bool showEmptyValues = conf.BoolShowEmptyValuesInViews;
 
       watch.Reset(); watch.Start();
-      foreach (string champselect in wr.Select(row => row[WStrSort].ToString().Trim()))
+      foreach (string champselect in wr.Select(row => row[wStrSort].ToString().Trim()))
       {
         if (issplitfield && !dontsplitvalues)
         {
-          ArrayList wtab = Search_String(champselect, false);
-          if (wtab.Count > 0) // itemList.AddRange(wtab);
+          List<string> wtab = Search_String(champselect, false).ToList();
+          if (wtab.Any()) // itemList.AddRange(wtab);
           {
-            for (wi = 0; wi < wtab.Count; wi++)
-            {
-              if (set.Add((string)wtab[wi])) count++; // itemList.Add((string)wtab[wi]);
-            }
+            count += wtab.Count(t => set.Add(t));
           }
           else if (showEmptyValues)  // only add empty entries, if they should show - speeds up sorting otherwise ...
           {
@@ -15217,7 +15581,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
           }
         }
       }
-      LogMyFilms.Debug("CountViewItems - Finished Count ('" + count + "') (" + (watch.ElapsedMilliseconds) + " ms)  - Read View Names for '" + WStrSort + "' finished (splittable items = '" + issplitfield + "', dontsplitvalues = '" + dontsplitvalues + "')");
+      LogMyFilms.Debug("CountViewItems - Finished Count ('" + count + "') (" + (watch.ElapsedMilliseconds) + " ms)  - Read View Names for '" + wStrSort + "' finished (splittable items = '" + issplitfield + "', dontsplitvalues = '" + dontsplitvalues + "')");
       count = set.Count(t => t.IndexOf(searchexpression, StringComparison.OrdinalIgnoreCase) >= 0); // count = set.Count(t => t.ToUpperInvariant().Contains(searchexpression.ToUpperInvariant()));
       watch.Stop();
       LogMyFilms.Debug("CountViewItems - '" + count + "' Items found for SearchExpression '" + searchexpression + "' (" + (watch.ElapsedMilliseconds) + " ms)");
@@ -15696,7 +16060,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
       }
       conf.StrSearchHistory = his;
 
-      var xmlConfig = new XmlConfig();
+      XmlConfig xmlConfig = new XmlConfig();
       xmlConfig.WriteXmlConfig("MyFilms", Configuration.CurrentConfig, "SearchHistory", conf.StrSearchHistory);
     }
 
@@ -15964,7 +16328,6 @@ namespace MyFilmsPlugin.MyFilmsGUI
       if (!Directory.Exists(MyFilmsSettings.GetPath(MyFilmsSettings.Path.ThumbsCache) + @"\MyFilms_Views")) Directory.CreateDirectory(MyFilmsSettings.GetPath(MyFilmsSettings.Path.ThumbsCache) + @"\MyFilms_Views");
       if (!Directory.Exists(MyFilmsSettings.GetPath(MyFilmsSettings.Path.ThumbsCache) + @"\MyFilms_Persons")) Directory.CreateDirectory(MyFilmsSettings.GetPath(MyFilmsSettings.Path.ThumbsCache) + @"\MyFilms_Persons");
       if (!Directory.Exists(MyFilmsSettings.GetPath(MyFilmsSettings.Path.ThumbsCache) + @"\MyFilms_Logos")) Directory.CreateDirectory(MyFilmsSettings.GetPath(MyFilmsSettings.Path.ThumbsCache) + @"\MyFilms_Logos");
-
       if (!Directory.Exists(MyFilmsSettings.GetPath(MyFilmsSettings.Path.MyFilmsThumbsPath) + @"\MovieThumbs")) Directory.CreateDirectory(MyFilmsSettings.GetPath(MyFilmsSettings.Path.MyFilmsThumbsPath) + @"\MovieThumbs");
     }
 
@@ -16029,18 +16392,6 @@ namespace MyFilmsPlugin.MyFilmsGUI
               return;
             }
 
-            if (conf == null)
-            {
-              LogMyFilms.Info("InitializeQueuedTrailerDownloader() - MyFilms config not yet loaded - waiting 10 seconds!");
-              Thread.Sleep(10000);
-            }
-
-            if (conf == null)
-            {
-              LogMyFilms.Info("InitializeQueuedTrailerDownloader() - No MyFilms config loaded - exiting!");
-              return;
-            }
-
             if (!conf.CacheOnlineTrailer)
             {
               LogMyFilms.Info("InitializeQueuedTrailerDownloader() - trailer caching is disabled - exiting !");
@@ -16048,6 +16399,30 @@ namespace MyFilmsPlugin.MyFilmsGUI
             }
 
             Thread.Sleep(delayToStart * 1000); // wait specified delay to let OV instance initialize
+
+            int retry = 0;
+            while (retry < 5)
+            {
+              if (conf == null)
+              {
+                LogMyFilms.Info("InitializeQueuedTrailerDownloader() - MyFilms config not yet loaded - waiting 10 seconds!");
+                retry++;
+                Thread.Sleep(10000);
+              }
+              else if (!OVplayer.IsOnlineVideosReady())
+              {
+                LogMyFilms.Info("InitializeQueuedTrailerDownloader() - retry '" + retry + "', OnlineVideos not yet loaded - waiting 10 seconds!");
+                retry++;
+                Thread.Sleep(10000);
+              }
+              else break;
+            }
+
+            if (conf == null)
+            {
+              LogMyFilms.Info("InitializeQueuedTrailerDownloader() - No MyFilms config loaded - exiting!");
+              return;
+            }
 
             // start the parallel downloader, of there is anything in queue
             if (TrailertoDownloadQueue.Count > 0)
@@ -16106,16 +16481,16 @@ namespace MyFilmsPlugin.MyFilmsGUI
       if (mfConf.AMCUwatchScanFolders)
       {
         // DeviceManager.StartMonitor(); // we disable device monitoring for now
-        setUpFolderWatches(mfConf);
+        SetUpFolderWatches(mfConf);
       }
     }
 
-    private void setUpFolderWatches(Configuration mfConf)
+    private void SetUpFolderWatches(Configuration mfConf)
     {
       const int filescanintervalinminutes = 120;
-      var splitRegex = new Regex(";");
-      var importFolders = new List<String>();
-      var amcXmlConfig = new XmlConfig();
+      Regex splitRegex = new Regex(";");
+      List<string> importFolders = new List<String>();
+      XmlConfig amcXmlConfig = new XmlConfig();
 
       //// Go through all myfilms search folders, and add a watchfolder on it - we should NOT watch them for imports !
       //searchDir = splitRegex.Split(MyFilms.conf.StrDirStor); // this is the MyFilms search directories - we shouldn't watch them for AMCU importer !
@@ -16349,17 +16724,8 @@ namespace MyFilmsPlugin.MyFilmsGUI
     }
 
     #region GetSet for Network and Powermode
-    private static bool IsResumeFromStandby
-    {
-      get { return m_bResumeFromStandby; }
-      set { m_bResumeFromStandby = value; }
-    }
-
-    private static bool IsNetworkAvailable
-    {
-      get { return m_bIsNetworkAvailable; }
-      set { m_bIsNetworkAvailable = value; }
-    }
+    private static bool IsResumeFromStandby { get; set; }
+    private static bool IsNetworkAvailable { get; set; }
     #endregion
 
     void SystemEvents_PowerModeChanged(object sender, Microsoft.Win32.PowerModeChangedEventArgs e)
@@ -16429,7 +16795,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
             {
               LogMyFilms.Debug("PowerModeChanged() - starting folders watchers ...");
               // DeviceManager.StartMonitor(); // we disable device monitoring for now
-              setUpFolderWatches(conf);
+              SetUpFolderWatches(conf);
             }
           }
           catch (Exception ex)
@@ -16617,7 +16983,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
       }
     }
 
-    void bgUpdateDB_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
+    void bgUpdateDB_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
     {
       if (e.Cancelled)
       {
@@ -16676,7 +17042,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
     static void bgUpdateFanart_DoWork(object sender, DoWorkEventArgs e)
     {
       // BackgroundWorker worker = sender as BackgroundWorker;
-      var grab = new Grabber_URLClass();
+      var grab = new GrabberUrlClass();
       string personartworkpath = string.Empty, wtitle = string.Empty, wttitle = string.Empty, wftitle = string.Empty, wdirector = string.Empty, wimdbid = string.Empty;
       int wyear = 0;
       if (conf.UseThumbsForPersons && !string.IsNullOrEmpty(conf.StrPathArtist)) // if persoin artwork path present and person thumbs enabled, also load person images
@@ -16719,7 +17085,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
     void bgUpdateActors_DoWork(object sender, DoWorkEventArgs e)
     {
       ////BackgroundWorker worker = sender as BackgroundWorker;
-      ////Grabber.Grabber_URLClass Grab = new Grabber.Grabber_URLClass();
+      ////Grabber.GrabberUrlClass Grab = new Grabber.GrabberUrlClass();
       //ArrayList persons = e.Argument as ArrayList;
       //Grabber.TheMovieDb.TmdbAPI api = new TmdbAPI(TmdbApiKey);
 
@@ -17229,8 +17595,8 @@ namespace MyFilmsPlugin.MyFilmsGUI
           #region recheck download URL
           if (f.SourceUrl == null)
           {
-            Dictionary<string, string> availableTrailerFiles = MyFilmsPlugin.Utils.OVplayer.GetYoutubeDownloadUrls(f.OriginalUrl);
-            KeyValuePair<string, string> highestQualitySelection = MyFilmsPlugin.Utils.OVplayer.GetPreferredQualityOption(availableTrailerFiles, "FHD");
+            Dictionary<string, string> availableTrailerFiles = OVplayer.GetYoutubeDownloadUrls(f.OriginalUrl);
+            KeyValuePair<string, string> highestQualitySelection = OVplayer.GetPreferredQualityOption(availableTrailerFiles, "FHD");
             f.SourceUrl = highestQualitySelection.Value;
             f.Quality = highestQualitySelection.Key;
           }
@@ -18246,7 +18612,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
         MyFilmsDetail.Init_Detailed_DB(false); // clear all GUI properties
         Clear_Logos();
 
-        var obj = _navigationStack.Pop() as MyFilmsPlugin.Utils.NavigationObject;
+        NavigationObject obj = _navigationStack.Pop() as NavigationObject;
 
 
         #region restore state properties

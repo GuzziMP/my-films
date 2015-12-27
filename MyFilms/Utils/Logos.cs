@@ -116,7 +116,7 @@ namespace MyFilmsPlugin.Utils
         LogMyFilms.Debug("Using MyFilms default logo config file: '" + activeLogoConfigFile + "'");
       }
 
-      using (var xmlConfig = new XmlSettings(activeLogoConfigFile))
+      using (XmlSettings xmlConfig = new XmlSettings(activeLogoConfigFile))
       {
         // First check, if Config specific LogoConfig exists, if not create it from default file!
         LogosPath = xmlConfig.ReadXmlConfig(activeLogoConfigFile, "ID0000", "LogosPath", "");
@@ -226,15 +226,14 @@ namespace MyFilmsPlugin.Utils
       {
         LogMyFilms.Debug("Logo picture to be added " + fileLogoName);
         string skinName = GUIGraphicsContext.Skin.Substring(GUIGraphicsContext.Skin.LastIndexOf("\\", StringComparison.Ordinal) + 1);
-        fileLogoName = id == MyFilmsGUI.MyFilms.ID_MyFilms
+        fileLogoName = id == MyFilms.ID_MyFilms
                          ? "MyFilms_" + skinName + "_M" + LogoConfigOverride + fileLogoName + ".png"
                          : "MyFilms_" + skinName + "_D" + LogoConfigOverride + fileLogoName + ".png";
         int wHeight = 0;
         int wWidth = 0;
         if (!Directory.Exists(LogosPathThumbs))
         {
-          try { Directory.CreateDirectory(LogosPathThumbs); }
-          catch { }
+          try { Directory.CreateDirectory(LogosPathThumbs); } catch { }
         }
 
         foreach (string listelogo in listelogos)
@@ -251,7 +250,7 @@ namespace MyFilmsPlugin.Utils
         }
         catch (Exception ex)
         {
-          LogMyFilms.Debug("BuildLogos error: " + ex.Message);
+          LogMyFilms.Debug(ex, "BuildLogos error: " + ex.Message);
         }
 
         if (!File.Exists(LogosPathThumbs + fileLogoName) || wHeight != imgHeight || wWidth != imgWidth)
@@ -268,7 +267,7 @@ namespace MyFilmsPlugin.Utils
           }
           catch (Exception e)
           {
-            LogMyFilms.Error("Unable to save Logo file ! error : " + e.Message);
+            LogMyFilms.Error(e, "Unable to save Logo file ! error : " + e.Message);
           }
         }
         return LogosPathThumbs + fileLogoName;
@@ -318,7 +317,7 @@ namespace MyFilmsPlugin.Utils
         }
         else
         {
-          LogMyFilms.Debug("GetLogos() - Logo NOT found for '" + (wtab[7]??"") + "'");
+          // LogMyFilms.Debug("GetLogos() - Logo NOT found for '" + (wtab[7]??"") + "'");
         }
 
         if (File.Exists(wtab[7]))
@@ -356,7 +355,7 @@ namespace MyFilmsPlugin.Utils
         }
         else
         {
-          LogMyFilms.Debug("Missing logo for '" + wtab[7] + "'");
+          LogMyFilms.Debug("GetLogos() - Logo missing for '" + wtab[7] + "'");
         }
       }
       return fileLogoName;
@@ -457,7 +456,7 @@ namespace MyFilmsPlugin.Utils
               else
               {
                 // if (r[field].ToString().ToLower().CompareTo(value.ToLower()) > 0) return true;
-                IComparer myComparer = new MyFilmsGUI.MyFilms.AlphanumComparatorFast();
+                IComparer myComparer = new MyFilms.AlphanumComparatorFast();
                 return myComparer.Compare(r[field].ToString().ToLower(), value.ToLower()) > 0;
               }
           }
@@ -477,7 +476,7 @@ namespace MyFilmsPlugin.Utils
               else
               {
                 // if (!(r[field].ToString().ToLower().CompareTo(value.ToLower()) > 0)) return true;
-                IComparer myComparer = new MyFilmsGUI.MyFilms.AlphanumComparatorFast();
+                IComparer myComparer = new MyFilms.AlphanumComparatorFast();
                 return myComparer.Compare(r[field].ToString().ToLower(), value.ToLower()) < 0;
               }
           }
@@ -506,7 +505,7 @@ namespace MyFilmsPlugin.Utils
       int xPos = 0, yPos = 0;
       foreach (string t in listelogos)
       {
-        Image single = null;
+        Image single;
         try
         {
           single = ImageFast.FastFromFile(t);

@@ -329,7 +329,7 @@ namespace MyFilmsPlugin.Configuration
 
     private void LoadCentralConfigSetupAndUpdateVisibility()
     {
-      var myFilmsServer = new XmlConfig();
+      XmlConfig myFilmsServer = new XmlConfig();
       string centralConfigDir = myFilmsServer.ReadXmlConfig("MyFilmsServer", "MyFilmsServerConfig", "MyFilmsCentralConfigFile", "");
       bool syncFromServerOnStartup = myFilmsServer.ReadXmlConfig("MyFilmsServer", "MyFilmsServerConfig", "SyncOnStartup", false);
       if (syncFromServerOnStartup && centralConfigDir.Length > 0)
@@ -4417,7 +4417,7 @@ namespace MyFilmsPlugin.Configuration
         throw new ArgumentNullException("shortcutFile");
 
       // Create WshShellClass instance:
-      var wshShell = new WshShellClass();
+      WshShellClass wshShell = new WshShellClass();
 
       // Create shortcut object:
       IWshRuntimeLibrary.IWshShortcut shorcut = (IWshRuntimeLibrary.IWshShortcut)wshShell.CreateShortcut(shortcutFile);

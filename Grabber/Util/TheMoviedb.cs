@@ -31,7 +31,7 @@ namespace Grabber.Util
     {
       LogMyFilms.Debug("GetMoviesByTitle - title = '" + title + "', year = '" + year + "', imdbid = '" + imdbid + "', tmdbid = '" + tmdbid + "', choose = '" + choose + "', language = '" + language + "'");
 
-      //title = Grabber.GrabUtil.normalizeTitle(title);
+      //title = Grabber.GrabUtil.NormalizeTitle(title);
 
       //string apiSearchLanguage = ApiSearchMovie;
       //string apiGetMovieInfoLanguage = ApiGetMovieInfo;
@@ -47,8 +47,7 @@ namespace Grabber.Util
       //  language = CultureInfo.CurrentCulture.Name.Substring(0, 2); // use local language instead 
       //}
 
-      if (language.Length != 2)
-        language = CultureInfo.CurrentCulture.Name.Substring(0, 2); // use local language instead 
+      if (language.Length != 2) language = CultureInfo.CurrentCulture.Name.Substring(0, 2); // use local language instead 
 
       List<DbMovieInfo> results = new List<DbMovieInfo>();
       List<DbMovieInfo> resultsdet = new List<DbMovieInfo>();
@@ -116,7 +115,7 @@ namespace Grabber.Util
           foreach (TmdbMovie movieResult in movies)
           {
             DbMovieInfo movie = GetMovieInformation(api, movieResult, language);
-            if (movie != null && GrabUtil.normalizeTitle(movie.Name.ToLower()).Contains(GrabUtil.normalizeTitle(title.ToLower())))
+            if (movie != null && GrabUtil.NormalizeTitle(movie.Name.ToLower()).Contains(GrabUtil.NormalizeTitle(title.ToLower())))
               if (year > 0 && movie.Year > 0 && !choose)
               {
                 if ((year >= movie.Year - 2) && (year <= movie.Year + 2))
@@ -140,8 +139,7 @@ namespace Grabber.Util
     {
       Tmdb api = new Tmdb(TmdbApiKey, language); // language is optional, default is "en"
 
-      if (language.Length != 2)
-        language = CultureInfo.CurrentCulture.Name.Substring(0, 2); // use local language instead 
+      if (language.Length != 2) language = CultureInfo.CurrentCulture.Name.Substring(0, 2); // use local language instead 
 
       TmdbPerson singleperson = api.GetPersonInfo(int.Parse(id));
 

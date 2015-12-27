@@ -7,7 +7,7 @@ using MediaPortal.GUI.Library;
 
 namespace MyFilmsPlugin.Utils
 {
-  using MyFilmsPlugin.MyFilmsGUI;
+  using MyFilmsGUI;
 
   public class MenuNavigationObject
   {
@@ -68,8 +68,9 @@ namespace MyFilmsPlugin.Utils
 
     public MyFilms.Layout CurrentView { get; set; }
 
-    public NavigationObject(GUIListControl control, string title, string itemtype, string nbobjects, string moviecontext, int pos, 
-      MyFilms.Layout curview, Configuration curconf, GUISortButtonControl srtButton, GUIButtonControl viewButton, GUIButtonControl layoutButton,
+    public NavigationObject(
+      GUIListControl control, string title, string itemtype, string nbobjects, string moviecontext, int pos, MyFilms.Layout curview, 
+      Configuration curconf, GUISortButtonControl srtButton, GUIButtonControl viewButton, GUIButtonControl layoutButton, 
       CoverState coverstate, DateTime lastDBupdate)
     {
       Items = new List<GUIListItem>();

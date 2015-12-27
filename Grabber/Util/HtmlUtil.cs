@@ -106,8 +106,7 @@ namespace Grabber.Util
 
     public void ConvertHTMLToAnsi(string strHtml, out string strStripped)
     {
-      strStripped = "";
-      //	    int i=0; 
+        //	    int i=0; 
       if (strHtml.Length == 0)
       {
         strStripped = "";
@@ -118,8 +117,8 @@ namespace Grabber.Util
 
       HttpUtility.HtmlDecode(strHtml, writer);
 
-      String DecodedString = writer.ToString();
-      strStripped = DecodedString.Replace("<br>", "\n");
+      String decodedString = writer.ToString();
+      strStripped = decodedString.Replace("<br>", "\n");
       if (true)
         return;
       /*

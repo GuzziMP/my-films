@@ -28,7 +28,7 @@ namespace MyFilmsPlugin.Utils
   using System.Diagnostics;
   using System.Linq;
 
-  static public class PerfWatcher
+  public static class PerfWatcher
   {
     static readonly Dictionary<string, Watch> Watches = new Dictionary<string, Watch>();
     const string anonName = "Anonymous";
@@ -44,7 +44,7 @@ namespace MyFilmsPlugin.Utils
     /// <summary>
     /// Starts the Anonymous Watch
     /// </summary>
-    static public void StartWatch()
+    public static void StartWatch()
     {
       StartNamedWatch(null);
     }
@@ -53,7 +53,7 @@ namespace MyFilmsPlugin.Utils
     /// Starts the Watch named "name" (creates it if it doesn't exist yet)
     /// </summary>
     /// <param name="name">The Name of the Watch to Start</param>
-    static public void StartNamedWatch(string name)
+    public static void StartNamedWatch(string name)
     {
       GetNamedWatch(name, true).Start();
     }
@@ -61,7 +61,7 @@ namespace MyFilmsPlugin.Utils
     /// <summary>
     /// Stops the Anonymous Watch
     /// </summary>
-    static public void StopWatch()
+    public static void StopWatch()
     {
       StopNamedWatch(null);
     }
@@ -70,7 +70,7 @@ namespace MyFilmsPlugin.Utils
     /// Stops the Watch named "name" (does nothing if Watch doesn't exist)
     /// </summary>
     /// <param name="name">The Name of the Watch to Stop</param>
-    static public void StopNamedWatch(string name)
+    public static void StopNamedWatch(string name)
     {
       Watch w = GetNamedWatch(name, false);
       if (w != null) w.Stop();
@@ -79,7 +79,7 @@ namespace MyFilmsPlugin.Utils
     /// <summary>
     /// Resets the Anonymous Watch
     /// </summary>
-    static public void ResetWatch()
+    public static void ResetWatch()
     {
       ResetNamedWatch(null);
     }
@@ -88,7 +88,7 @@ namespace MyFilmsPlugin.Utils
     /// Resets the Watch named "name" (does nothing if Watch doesn't exist)
     /// </summary>
     /// <param name="name">The Name of the Watch to Reset</param>
-    static public void ResetNamedWatch(string name)
+    public static void ResetNamedWatch(string name)
     {
       Watch w = GetNamedWatch(name, false);
       if (w != null) w.Reset();
@@ -98,7 +98,7 @@ namespace MyFilmsPlugin.Utils
     /// Releases the Watch named "name" from the internal store (does nothing if Watch doesn't exist)
     /// </summary>
     /// <param name="name">The Name of the Watch to Release</param>
-    static public void ReleaseWatch(string name)
+    public static void ReleaseWatch(string name)
     {
       Watch w = GetNamedWatch(name, false);
       if (w == null) return;
@@ -112,7 +112,7 @@ namespace MyFilmsPlugin.Utils
     /// <param name="name">The Name of the Watch to Return</param>
     /// <param name="createNewIfNotExists">Indicates wether a new Watch should be instantiated with the given name if it doesn't exist yet</param>
     /// <returns></returns>
-    static public Watch GetNamedWatch(string name, bool createNewIfNotExists = true)
+    public static Watch GetNamedWatch(string name, bool createNewIfNotExists = true)
     {
       Watch watch = null;
       if (name == null) name = anonName; // for null we use a generic Anonymouse name
@@ -127,7 +127,7 @@ namespace MyFilmsPlugin.Utils
     /// Note: very rarely will you need to call this yourself
     /// </summary>
     /// <param name="w">The Watch to add</param>
-    static public void AddWatch(Watch w)
+    public static void AddWatch(Watch w)
     {
       lock (Watches)
       {
@@ -144,7 +144,7 @@ namespace MyFilmsPlugin.Utils
     /// <summary>
     /// Returns all Watches that have been instantiated
     /// </summary>
-    static public IEnumerable<Watch> InstantiatedWatches
+    public static IEnumerable<Watch> InstantiatedWatches
     {
       get
       {
@@ -211,15 +211,11 @@ namespace MyFilmsPlugin.Utils
     {
       get
       {
-        long msStart;
-        long usStart;
         if (StartCounter > 0)
         {
-          msStart = ElapsedMilliseconds / StartCounter;
-          usStart = ElapsedMicroseconds / StartCounter;
-
-          return string.Format("Watch: Started: {1} time(s) - Elapsed: {2}ms ({3} 탎) -> {4} ms ({5} 탎)/start \"{0}\"",
-                           Name, StartCounter, ElapsedMilliseconds, ElapsedMicroseconds, msStart, usStart);
+          long msStart = ElapsedMilliseconds / StartCounter;
+          long usStart = ElapsedMicroseconds / StartCounter;
+          return string.Format("Watch: Started: {1} time(s) - Elapsed: {2}ms ({3} 탎) -> {4} ms ({5} 탎)/start \"{0}\"", Name, StartCounter, ElapsedMilliseconds, ElapsedMicroseconds, msStart, usStart);
         }
         else return string.Format("Watch: {0} - Started: never", Name);
       }
