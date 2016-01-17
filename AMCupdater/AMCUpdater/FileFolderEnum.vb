@@ -79,22 +79,17 @@ Public Class FileFolderEnum
         tblExcludedFiles = New Hashtable
         tblExcludedFolders = New Hashtable
 
-        Dim item As String
-
         If ExcludedFiles.Length > 0 Then
-            For Each item In ExcludedFiles.Split("|")
+            For Each item In From item1 In ExcludedFiles.Split("|") Where item1.Length > 0
                 tblExcludedFiles.Add(item, item)
-                'tblExcludedFiles.Rows.Add(item)
             Next
         End If
 
         If ExcludedFolders.Length > 0 Then
-            For Each item In ExcludedFolders.Split("|")
+            For Each item In From item1 In ExcludedFolders.Split("|") Where item1.Length > 0
                 tblExcludedFolders.Add(item, item)
-                'tblExcludedFolders.Rows.Add(item)
             Next
         End If
-
     End Sub
 
 
@@ -127,7 +122,7 @@ Public Class FileFolderEnum
     End Sub
 
 
-    Public Sub GetFiles(ByVal Path As String)
+    Public Sub GetFiles(ByVal path As String)
 
         LoadExclusions()
 
@@ -139,9 +134,8 @@ Public Class FileFolderEnum
 
         Try
             For Each fi In myDirectoryRoot.GetFiles
-                'Check the file is not marked as hidden:
                 If Not (fi.Attributes And FileAttributes.Hidden) = FileAttributes.Hidden Then
-                    If Not fnMatchExclusions(fi.Name.Substring(0, fi.Name.LastIndexOf(".")), tblExcludedFiles) = True Then
+                    If Not fnMatchExclusions(IO.Path.GetFileNameWithoutExtension(fi.Name), tblExcludedFiles) = True Then
                         _Files.Add(fi.FullName)
                         _TotalFiles += 1
                         _TotalSize += fi.Length
@@ -151,6 +145,7 @@ Public Class FileFolderEnum
                 End If
             Next
         Catch ex As Exception
+            LogEvent("  File Scan Error - " & ex.Message, EventLogLevel.ErrorEvent)
         End Try
 
         Try
@@ -167,12 +162,15 @@ Public Class FileFolderEnum
                 End If
             Next
         Catch ex As Exception
+            LogEvent("  Directory Scan Error - " & ex.Message, EventLogLevel.ErrorEvent)
         End Try
         myDirectoryRoot = Nothing
     End Sub
 
-    Private Function fnMatchExclusions(ByVal ItemName As String, ByVal ExclusionList As Hashtable) As Boolean
-        Dim ReturnValue As Boolean = False
+    Private Function fnMatchExclusions(ByVal itemName As String, ByVal exclusionList As Hashtable) As Boolean
+
+        'Return (From s As String In ExclusionList.Keys Select regCheck = New Regex(s.ToLower) Select regCheck.Match(itemName.ToLower)).Any(Function(m) m.Success)
+        Return ExclusionList.Keys.Cast (Of String)().Any(Function(s) (itemName.ToLower.Contains(s.ToLower)))
 
         'Dim RegCheck As Regex
         'Dim m As Match
@@ -186,11 +184,10 @@ Public Class FileFolderEnum
         '        End If
         '    End If
         'Next
-        For Each blah In From blah1 As String In ExclusionList.Keys Where blah1.Length > 0 Where ItemName.ToLower.Contains(blah1.ToLower)
-            ReturnValue = True
-        Next
 
-        Return ReturnValue
+        'For Each blah In From blah1 As String In ExclusionList.Keys Where blah1.Length > 0 Where itemName.ToLower.Contains(blah1.ToLower)
+        '    return True
+        'Next
     End Function
 
 End Class
