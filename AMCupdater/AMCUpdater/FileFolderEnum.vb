@@ -135,7 +135,7 @@ Public Class FileFolderEnum
         Try
             For Each fi In myDirectoryRoot.GetFiles
                 If Not (fi.Attributes And FileAttributes.Hidden) = FileAttributes.Hidden Then
-                    If Not fnMatchExclusions(IO.Path.GetFileNameWithoutExtension(fi.Name), tblExcludedFiles) = True Then
+                    If Not fnMatchExclusions(IO.Path.GetFileNameWithoutExtension(fi.Name), tblExcludedFiles) = True And Not String.IsNullOrEmpty(IO.Path.GetExtension(fi.Name)) Then
                         _Files.Add(fi.FullName)
                         _TotalFiles += 1
                         _TotalSize += fi.Length
