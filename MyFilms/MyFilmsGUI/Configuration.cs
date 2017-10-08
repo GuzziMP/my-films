@@ -112,7 +112,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
       //  //}
       //  //using (MediaPortal.Profile.Settings xmlreader = new MediaPortal.Profile.Settings(Config.GetFile(Config.Dir.Config, "MyFilms.xml")))
       //}
-      using (var xmlConfig = new XmlSettings(Config.GetFile(Config.Dir.Config, "MyFilms.xml"), true)) // true = cached !
+      using (XmlSettings xmlConfig = new XmlSettings(Config.GetFile(Config.Dir.Config, "MyFilms.xml"), true)) // true = cached !
       {
         if (setcurrentconfig)
         {
@@ -249,8 +249,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
           view.SortDirectionView = view.SortDirectionView.Contains("ASC") ? " ASC" : " DESC";
           view.LayoutView = xmlConfig.ReadXmlConfig("MyFilms", currentConfig, string.Format("AntViewLayoutView{0}", index), "0");
           // LogMyFilms.Debug("Adding view - #: '" + index + "', DBitem: '" + view.DBfield + "', View Label: '" + view.Label + "'");
-          if (view.DBfield.Length > 0)
-            CustomViews.View.AddViewRow(view);
+          if (view.DBfield.Length > 0) CustomViews.View.AddViewRow(view);
           index++;
         }
         #endregion
@@ -701,7 +700,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
 
         AlwaysDefaultView = xmlConfig.ReadXmlConfig("MyFilms", currentConfig, "AlwaysDefaultView", false);
         
-        if (AlwaysDefaultView || MyFilms.InitialStart || (loadParams != null && (!string.IsNullOrEmpty(loadParams.View) || !string.IsNullOrEmpty(loadParams.MovieID))))
+        if (AlwaysDefaultView || MyFilms.InitialStart || (loadParams != null && (!string.IsNullOrEmpty(loadParams.View) || !string.IsNullOrEmpty(loadParams.MovieId))))
         {
           #region overrides for "AlwaysDefaultView"
           ViewContext = MyFilms.ViewContext.StartView;
@@ -1125,7 +1124,7 @@ namespace MyFilmsPlugin.MyFilmsGUI
       CurrentConfig = null;
       bool isDefaultConfig = false;
 
-      using (var xmlConfig = new XmlSettings(Config.GetFile(Config.Dir.Config, "MyFilms.xml")))
+      using (XmlSettings xmlConfig = new XmlSettings(Config.GetFile(Config.Dir.Config, "MyFilms.xml")))
       {
         NbConfig = xmlConfig.ReadXmlConfig("MyFilms", "MyFilms", "NbConfig", 0);
         PluginMode = xmlConfig.ReadXmlConfig("MyFilms", "MyFilms", "PluginMode", "normal");
@@ -1167,54 +1166,54 @@ namespace MyFilmsPlugin.MyFilmsGUI
 
     private static bool NewConfigWizard()
     {
-      //bool result = GUIUtils.ShowYesNoDialog("New Config Wizard", "Do you want to create a new MF config?");
-      //if (!result) return false;
-      //GUIUtils.ShowTextDialog("textheading", "söhgösdhgkösdgh hsudgö uögusioö ghisuöhg suioöhioöushgiosh<i öghsdöuiogh isöu<ghuiöh suiögh ösusöh uiö<h gusi<gh suiöhg  uiö<hö<");
+      bool result = GUIUtils.ShowYesNoDialog("New Config Wizard", "Do you want to create a new MF config?");
+      if (!result) return false;
+      // GUIUtils.ShowTextDialog("textheading", "söhgösdhgkösdgh hsudgö uögusioö ghisuöhg suioöhioöushgiosh<i öghsdöuiogh isöu<ghuiöh suiögh ösusöh uiö<h gusi<gh suiöhg  uiö<hö<");
 
       //string scandirectory = "";
       //GUIUtils.GetDirectoryDialog(ref scandirectory);
 
-      //try
-      //{
-      //  FileStream fs = File.Create(Config.GetFile(Config.Dir.Config, "MyFilms.xml"));
-      //  fs.Close();
-      //}
-      //catch (Exception ex)
-      //{
-      //  LogMyFilms.Error("CreateNewMyFilmsConfigFile - error creating file: : '" + ex.Message + "'");
-      //  return false;
-      //}
-      
-      //const string newConfigName = "Default";
-      //var tmpconf = new MyFilmsGUI.Configuration(newConfigName, true, true, null);
-      //Configuration.CurrentConfig = newConfigName;
-      //MyFilms.Load_Config(newConfigName, true, null);
-      //SaveConfiguration(Configuration.CurrentConfig, -1, string.Empty);
+      try
+      {
+        System.IO.FileStream fs = System.IO.File.Create(Config.GetFile(Config.Dir.Config, "MyFilms.xml"));
+        fs.Close();
+      }
+      catch (Exception ex)
+      {
+        LogMyFilms.Error("CreateNewMyFilmsConfigFile - error creating file: : '" + ex.Message + "'");
+        return false;
+      }
+
+      const string newConfigName = "Default";
+      Configuration tmpconf = new Configuration(newConfigName, true, true, null);
+      CurrentConfig = newConfigName;
+      MyFilms.Load_Config(newConfigName, true, null);
+      SaveConfiguration(CurrentConfig, -1, string.Empty);
 
 
-      //GUIDialogMenu mnu = (GUIDialogMenu)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_MENU);
-      //mnu.Reset();
-      ////			mnu.SetHeading("Select drive");
-      //mnu.SetHeading("heading");
+      GUIDialogMenu mnu = (GUIDialogMenu)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_MENU);
+      mnu.Reset();
+      mnu.SetHeading("Select drive");
 
-      //foreach (Helper.Drive d in Helper.GetDrivesList())
-      //{
-      //  mnu.Add(d.Path + " " + d.TypeDescription);
-      //}
+      foreach (Helper.Drive d in Helper.GetDrivesList())
+      {
+        mnu.Add(d.Path + " " + d.TypeDescription);
+      }
 
-      //mnu.DoModal(GUIWindowManager.ActiveWindow);
+      mnu.DoModal(GUIWindowManager.ActiveWindow);
 
-      //int i = 0;
-      //foreach (Helper.Drive d in Helper.GetDrivesList())
-      //{
-      //  if (i == mnu.SelectedLabel)
-      //  {
-      //    string currentDrive = d.Path;
-      //  }
+      int i = 0;
+      foreach (Helper.Drive d in Helper.GetDrivesList())
+      {
+        if (i == mnu.SelectedLabel)
+        {
+          string currentDrive = d.Path;
+        }
 
-      //  i++;
-      //}
+        i++;
+      }
 
+      // Todo: add dialog to select path for movie source, set config accordingly, etc.
       return true;
     }
 
